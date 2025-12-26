@@ -1,825 +1,311 @@
-<!DOCTYPE html>
-<html lang="id" data-bs-theme="light">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="MessHub - Sistem Manajemen Hunian Karyawan Gratis dan Open Source">
-    <meta name="keywords" content="hunian, mess, karyawan, manajemen, apartemen, sistem">
-    <meta name="author" content="MessHub Team">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://yourusername.github.io/messhub/">
-    <meta property="og:title" content="MessHub - Sistem Hunian Karyawan">
-    <meta property="og:description" content="Sistem manajemen hunian karyawan modern dan gratis">
-    <meta property="og:image" content="https://yourusername.github.io/messhub/assets/images/og-image.png">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://yourusername.github.io/messhub/">
-    <meta property="twitter:title" content="MessHub - Sistem Hunian Karyawan">
-    <meta property="twitter:description" content="Sistem manajemen hunian karyawan modern dan gratis">
-    <meta property="twitter:image" content="https://yourusername.github.io/messhub/assets/images/og-image.png">
-    
-    <title>MessHub | Sistem Hunian Karyawan Gratis</title>
-    
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css">
-    
-    <!-- PWA -->
-    <link rel="manifest" href="manifest.json">
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <!-- Theme Color -->
-    <meta name="theme-color" content="#4f46e5">
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Search, 
+  Plus, 
+  Users, 
+  Home, 
+  Filter, 
+  Download, 
+  Edit2, 
+  Trash2, 
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  MoreVertical,
+  LayoutDashboard
+} from 'lucide-react';
 
-    <style>
-        /* ===== VARIABLES ===== */
-        :root {
-            --primary: #4f46e5;
-            --primary-dark: #4338ca;
-            --primary-light: #e0e7ff;
-            
-            --secondary: #10b981;
-            --warning: #f59e0b;
-            --danger: #ef4444;
-            --info: #3b82f6;
-            
-            --light: #f8f9fa;
-            --dark: #212529;
-            
-            --gray-100: #f8f9fa;
-            --gray-200: #e9ecef;
-            --gray-300: #dee2e6;
-            --gray-400: #ced4da;
-            --gray-500: #adb5bd;
-            --gray-600: #6c757d;
-            --gray-700: #495057;
-            --gray-800: #343a40;
-            --gray-900: #212529;
-            
-            --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            --border-radius: 0.5rem;
-            --box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            --transition: all 0.3s ease;
-        }
-        
-        [data-theme="dark"] {
-            --light: #212529;
-            --dark: #f8f9fa;
-            --gray-100: #343a40;
-            --gray-200: #495057;
-            --gray-300: #6c757d;
-            --gray-400: #adb5bd;
-            --gray-500: #ced4da;
-            --gray-600: #dee2e6;
-            --gray-700: #e9ecef;
-            --gray-800: #f8f9fa;
-            --gray-900: #ffffff;
-        }
-        
-        /* ===== BASE STYLES ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: var(--font-family);
-            background-color: var(--light);
-            color: var(--dark);
-            min-height: 100vh;
-            transition: var(--transition);
-        }
-        
-        /* ===== LOADING SCREEN ===== */
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-        }
-        
-        .loading-content {
-            text-align: center;
-            color: white;
-            max-width: 400px;
-            padding: 2rem;
-        }
-        
-        .logo-animation {
-            margin-bottom: 2rem;
-            animation: bounce 2s infinite;
-        }
-        
-        .logo-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 2.5rem;
-        }
-        
-        .logo-text {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: white;
-        }
-        
-        .logo-text span {
-            color: var(--primary-light);
-            font-weight: 300;
-        }
-        
-        .loading-progress {
-            margin-top: 2rem;
-        }
-        
-        .progress-bar {
-            width: 100%;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-bottom: 1rem;
-        }
-        
-        .progress-fill {
-            height: 100%;
-            background: white;
-            width: 0%;
-            border-radius: 3px;
-            transition: width 0.3s ease;
-        }
-        
-        .loading-text {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 0.9rem;
-        }
-        
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        /* ===== NAVIGATION ===== */
-        .navbar {
-            padding: 0.75rem 0;
-        }
-        
-        .navbar-brand {
-            font-weight: 700;
-            font-size: 1.25rem;
-        }
-        
-        /* ===== MAIN CONTENT ===== */
-        main {
-            min-height: calc(100vh - 120px);
-            padding-bottom: 2rem;
-        }
-        
-        /* ===== CARDS ===== */
-        .card {
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-            transition: var(--transition);
-            margin-bottom: 1.5rem;
-            background: var(--light);
-            color: var(--dark);
-        }
-        
-        .card:hover {
-            box-shadow: var(--box-shadow);
-            transform: translateY(-2px);
-        }
-        
-        .card-header {
-            background-color: rgba(var(--primary), 0.1);
-            border-bottom: 1px solid var(--gray-300);
-            padding: 1rem 1.25rem;
-            border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
-        }
-        
-        .card-title {
-            margin: 0;
-            font-weight: 600;
-            color: var(--primary);
-        }
-        
-        /* ===== STATS CARDS ===== */
-        .stats-card {
-            text-align: center;
-            padding: 1.5rem;
-        }
-        
-        .stats-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1rem;
-            font-size: 1.5rem;
-        }
-        
-        .stats-icon.primary { background: var(--primary-light); color: var(--primary); }
-        .stats-icon.success { background: #d1fae5; color: var(--secondary); }
-        .stats-icon.warning { background: #fef3c7; color: var(--warning); }
-        .stats-icon.danger { background: #fee2e2; color: var(--danger); }
-        
-        .stats-number {
-            font-size: 2rem;
-            font-weight: 700;
-            margin: 0.5rem 0;
-            color: var(--dark);
-        }
-        
-        .stats-label {
-            color: var(--gray-600);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .stats-change {
-            font-size: 0.85rem;
-            font-weight: 500;
-        }
-        
-        .stats-change.positive { color: var(--secondary); }
-        .stats-change.negative { color: var(--danger); }
-        
-        /* ===== TABLES ===== */
-        .table-responsive {
-            border-radius: var(--border-radius);
-            overflow: hidden;
-        }
-        
-        .table {
-            margin: 0;
-            color: var(--dark);
-        }
-        
-        .table thead th {
-            background-color: rgba(var(--primary), 0.1);
-            border-bottom: 2px solid var(--primary);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
-            padding: 1rem;
-        }
-        
-        .table tbody tr {
-            transition: background-color 0.2s;
-        }
-        
-        .table tbody tr:hover {
-            background-color: rgba(var(--primary), 0.05);
-        }
-        
-        .table td {
-            padding: 1rem;
-            vertical-align: middle;
-            border-color: var(--gray-300);
-        }
-        
-        /* ===== BADGES ===== */
-        .badge {
-            padding: 0.35em 0.65em;
-            font-weight: 500;
-        }
-        
-        .badge.bg-primary { background-color: var(--primary) !important; }
-        .badge.bg-success { background-color: var(--secondary) !important; }
-        .badge.bg-warning { background-color: var(--warning) !important; }
-        .badge.bg-danger { background-color: var(--danger) !important; }
-        
-        /* ===== BUTTONS ===== */
-        .btn {
-            border-radius: var(--border-radius);
-            font-weight: 500;
-            transition: var(--transition);
-            padding: 0.5rem 1rem;
-        }
-        
-        .btn-primary {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .btn-primary:hover {
-            background-color: var(--primary-dark);
-            border-color: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: 0 0.25rem 0.5rem rgba(79, 70, 229, 0.3);
-        }
-        
-        .btn-outline-primary {
-            color: var(--primary);
-            border-color: var(--primary);
-        }
-        
-        .btn-outline-primary:hover {
-            background-color: var(--primary);
-            border-color: var(--primary);
-            transform: translateY(-1px);
-        }
-        
-        /* ===== FORMS ===== */
-        .form-control, .form-select {
-            border-radius: var(--border-radius);
-            border: 1px solid var(--gray-400);
-            padding: 0.5rem 0.75rem;
-            transition: var(--transition);
-            background-color: var(--light);
-            color: var(--dark);
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.25rem rgba(79, 70, 229, 0.25);
-            background-color: var(--light);
-            color: var(--dark);
-        }
-        
-        .form-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--dark);
-        }
-        
-        /* ===== FLOATING ACTION BUTTON ===== */
-        .fab-container {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 1000;
-        }
-        
-        .fab {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-        
-        .fab-actions {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: var(--transition);
-            pointer-events: none;
-        }
-        
-        .fab-container:hover .fab-actions {
-            opacity: 1;
-            transform: translateY(0);
-            pointer-events: all;
-        }
-        
-        .fab-action {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            font-size: 1rem;
-        }
-        
-        /* ===== TOASTS ===== */
-        .toast-container {
-            z-index: 9999;
-        }
-        
-        .toast {
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            background: var(--light);
-            color: var(--dark);
-        }
-        
-        .toast-header {
-            background: rgba(var(--primary), 0.1);
-            border-bottom: 1px solid var(--gray-300);
-            color: var(--dark);
-        }
-        
-        .toast-body {
-            padding: 1rem;
-        }
-        
-        /* ===== MODALS ===== */
-        .modal-content {
-            border: none;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            background: var(--light);
-            color: var(--dark);
-        }
-        
-        .modal-header {
-            border-bottom: 1px solid var(--gray-300);
-            background: rgba(var(--primary), 0.1);
-        }
-        
-        .modal-footer {
-            border-top: 1px solid var(--gray-300);
-        }
-        
-        /* ===== HOME PAGE ===== */
-        .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 4rem 0;
-            margin: -1rem -0.75rem 2rem;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-        }
-        
-        .hero h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-        
-        .hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-        
-        .feature-card {
-            text-align: center;
-            padding: 2rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--border-radius);
-            transition: var(--transition);
-            height: 100%;
-            background: var(--light);
-        }
-        
-        .feature-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-5px);
-            box-shadow: var(--box-shadow);
-        }
-        
-        .feature-icon {
-            width: 70px;
-            height: 70px;
-            background: var(--primary-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 1.5rem;
-            font-size: 1.75rem;
-            color: var(--primary);
-        }
-        
-        .feature-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            color: var(--dark);
-        }
-        
-        .feature-description {
-            color: var(--gray-600);
-            font-size: 0.95rem;
-        }
-        
-        /* ===== DASHBOARD ===== */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-        }
-        
-        .quick-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-        
-        /* ===== FOOTER ===== */
-        .footer {
-            background: var(--light);
-            border-top: 1px solid var(--gray-300);
-            color: var(--gray-600);
-        }
-        
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .hero {
-                padding: 3rem 0;
-            }
-            
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .stats-number {
-                font-size: 1.5rem;
-            }
-            
-            .fab-container {
-                bottom: 1rem;
-                right: 1rem;
-            }
-            
-            .table-responsive {
-                font-size: 0.9rem;
-            }
-            
-            .card {
-                margin-bottom: 1rem;
-            }
-        }
-        
-        @media (max-width: 576px) {
-            .hero {
-                padding: 2rem 0;
-                margin: -0.5rem -0.5rem 1rem;
-            }
-            
-            .hero h1 {
-                font-size: 1.75rem;
-            }
-            
-            .feature-card {
-                padding: 1.5rem;
-            }
-            
-            .feature-icon {
-                width: 60px;
-                height: 60px;
-                font-size: 1.5rem;
-            }
-        }
-        
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-        
-        /* ===== UTILITY CLASSES ===== */
-        .text-gradient {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .shadow-sm { box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important; }
-        .shadow { box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important; }
-        .shadow-lg { box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.175) !important; }
-        
-        .hover-shadow:hover {
-            box-shadow: var(--box-shadow) !important;
-            transition: var(--transition);
-        }
-        
-        /* ===== PRINT STYLES ===== */
-        @media print {
-            .navbar, .footer, .fab-container, .no-print {
-                display: none !important;
-            }
-            
-            .card {
-                border: 1px solid #dee2e6 !important;
-                box-shadow: none !important;
-            }
-            
-            .table {
-                border: 1px solid #dee2e6;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Loading Screen -->
-    <div id="loading" class="loading-screen">
-        <div class="loading-content">
-            <div class="logo-animation">
-                <div class="logo-icon">
-                    <i class="fas fa-building"></i>
-                </div>
-                <h1 class="logo-text">Mess<span>Hub</span></h1>
-            </div>
-            <div class="loading-progress">
-                <div class="progress-bar">
-                    <div class="progress-fill" id="loadingProgress"></div>
-                </div>
-                <p class="loading-text" id="loadingText">Menyiapkan sistem...</p>
-            </div>
+/**
+ * PANDUAN SETUP SUPABASE:
+ * 1. Buat proyek di Supabase.
+ * 2. Jalankan query SQL di bawah ini di SQL Editor Supabase untuk membuat tabel.
+ * 3. Masukkan URL dan Anon Key Anda di bagian konfigurasi di bawah.
+ */
+
+/* -- SQL SCHEMA (Jalankan di Supabase SQL Editor) --
+CREATE TABLE data_hunian (
+  id BIGSERIAL PRIMARY KEY,
+  nik VARCHAR(50) UNIQUE,
+  nama VARCHAR(255),
+  gender CHAR(1),
+  department VARCHAR(100),
+  gol VARCHAR(50),
+  jabatan VARCHAR(100),
+  fasilitas VARCHAR(50),
+  point_of_hire VARCHAR(100),
+  tgl_masuk_kerja DATE,
+  perusahaan VARCHAR(100),
+  lokasi_hunian VARCHAR(100),
+  floor VARCHAR(50),
+  block VARCHAR(50),
+  no_kamar VARCHAR(50),
+  status_kamar VARCHAR(50),
+  tgl_masuk_mess DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+*/
+
+const App = () => {
+  // State Management
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('dashboard'); // dashboard | master
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Mock Data (Simulasi data dari Excel/Supabase untuk demo)
+  useEffect(() => {
+    const mockData = [
+      { nik: 'F05240598', nama: 'Mohammad Rahmadhani', gender: 'L', department: 'Dispatch', lokasi_hunian: 'MENTARI', no_kamar: '1', status_kamar: 'TERISI', floor: 'Lantai Bawah', block: '19' },
+      { nik: 'F06240611', nama: 'Bambang Rudiono', gender: 'L', department: 'Dispatch', lokasi_hunian: 'MENTARI', no_kamar: '1', status_kamar: 'TERISI', floor: 'Lantai Bawah', block: '19' },
+      { nik: '131769', nama: 'Yuwita Valencia Waworundeng', gender: 'P', department: 'PT. MPPA', lokasi_hunian: 'SURYA RESIDENCE', no_kamar: '14', status_kamar: 'TERISI', floor: 'LANTAI ATAS', block: '44' },
+      // ... bayangkan ada 20.000 data di sini
+    ];
+    
+    // Simulasi loading delay
+    setTimeout(() => {
+      setData(mockData);
+      setLoading(false);
+    }, 1000);
+  }, []);
+
+  // Filter Logic
+  const filteredData = useMemo(() => {
+    return data.filter(item => 
+      item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.nik.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.lokasi_hunian.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [data, searchTerm]);
+
+  // Pagination Logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  // Statistics Calculation
+  const stats = {
+    totalKaryawan: 20000, // Target kapasitas
+    terisi: data.length,
+    tersedia: 20000 - data.length,
+    persentase: ((data.length / 20000) * 100).toFixed(1)
+  };
+
+  const SidebarItem = ({ icon: Icon, label, id }) => (
+    <button 
+      onClick={() => setActiveTab(id)}
+      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
+        activeTab === id ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800'
+      }`}
+    >
+      <Icon size={20} />
+      <span className="font-medium">{label}</span>
+    </button>
+  );
+
+  return (
+    <div className="flex h-screen bg-slate-950 text-slate-100 overflow-hidden font-sans">
+      {/* Sidebar */}
+      <aside className="w-64 bg-slate-900 border-r border-slate-800 p-6 flex flex-col hidden md:flex">
+        <div className="flex items-center space-x-3 mb-10">
+          <div className="bg-blue-600 p-2 rounded-lg">
+            <Home className="text-white" size={24} />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight">MESS APP</h1>
         </div>
-    </div>
 
-    <!-- Main App -->
-    <div id="app" class="d-none">
-        <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow fixed-top">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#home" onclick="navigate('home')">
-                    <i class="fas fa-building me-2"></i>
-                    <span class="d-none d-md-inline">MessHub</span>
-                </a>
-                
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#dashboard" onclick="navigate('dashboard')">
-                                <i class="fas fa-home me-1"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#karyawan" onclick="navigate('karyawan')">
-                                <i class="fas fa-users me-1"></i> Karyawan
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#hunian" onclick="navigate('hunian')">
-                                <i class="fas fa-bed me-1"></i> Hunian
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#laporan" onclick="navigate('laporan')">
-                                <i class="fas fa-chart-bar me-1"></i> Laporan
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#about" onclick="navigate('about')">
-                                <i class="fas fa-info-circle me-1"></i> Tentang
-                            </a>
-                        </li>
-                    </ul>
-                    
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-sm btn-outline-light me-2" id="themeToggle">
-                            <i class="fas fa-moon"></i>
-                        </button>
-                        
-                        <div class="dropdown">
-                            <button class="btn btn-outline-light btn-sm dropdown-toggle" type="button" 
-                                    data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-1"></i> Pengguna
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#profile" onclick="navigate('profile')">
-                                    <i class="fas fa-user-cog me-2"></i> Profil
-                                </a></li>
-                                <li><a class="dropdown-item" href="#help" onclick="navigate('help')">
-                                    <i class="fas fa-question-circle me-2"></i> Bantuan
-                                </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="#" onclick="exportData()">
-                                    <i class="fas fa-download me-2"></i> Backup Data
-                                </a></li>
-                                <li><a class="dropdown-item" href="#" onclick="importData()">
-                                    <i class="fas fa-upload me-2"></i> Restore Data
-                                </a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <nav className="flex-1 space-y-2">
+          <SidebarItem icon={LayoutDashboard} label="Dashboard" id="dashboard" />
+          <SidebarItem icon={Users} label="Data Hunian" id="master" />
         </nav>
 
-        <!-- Main Content -->
-        <main class="container-fluid mt-5 pt-3">
-            <div id="content">
-                <!-- Dynamic content will be loaded here -->
-            </div>
-        </main>
-
-        <!-- Footer -->
-        <footer class="footer mt-auto py-3 bg-light border-top">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-6">
-                        <span class="text-muted">© 2024 MessHub v1.0.0</span>
-                        <span class="text-muted mx-2">•</span>
-                        <span class="text-muted" id="connectionStatus">
-                            <i class="fas fa-circle text-success me-1"></i>Online
-                        </span>
-                    </div>
-                    <div class="col-md-6 text-end">
-                        <span class="text-muted me-3">
-                            <i class="fas fa-database me-1"></i>
-                            <span id="dataCount">0</span> data
-                        </span>
-                        <a href="https://github.com/yourusername/messhub" class="text-muted" target="_blank">
-                            <i class="fab fa-github me-1"></i>GitHub
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </footer>
-
-        <!-- Floating Action Button -->
-        <div class="fab-container">
-            <button class="fab btn btn-primary" onclick="showQuickActions()">
-                <i class="fas fa-plus"></i>
-            </button>
-            <div class="fab-actions">
-                <button class="fab-action btn btn-success" onclick="showAddKaryawan()">
-                    <i class="fas fa-user-plus"></i>
-                </button>
-                <button class="fab-action btn btn-info" onclick="showImportModal()">
-                    <i class="fas fa-file-import"></i>
-                </button>
-                <button class="fab-action btn btn-warning" onclick="navigate('laporan')">
-                    <i class="fas fa-file-pdf"></i>
-                </button>
-            </div>
+        <div className="pt-6 border-t border-slate-800">
+          <button className="flex items-center space-x-3 text-slate-400 hover:text-red-400 transition-colors w-full px-4 py-2">
+            <LogOut size={20} />
+            <span>Keluar</span>
+          </button>
         </div>
+      </aside>
 
-        <!-- Toast Container -->
-        <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+      {/* Main Content */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <header className="h-16 bg-slate-900/50 backdrop-blur-md border-b border-slate-800 flex items-center justify-between px-8 z-10">
+          <div className="flex items-center space-x-4">
+            <h2 className="text-lg font-semibold capitalize">
+              {activeTab === 'dashboard' ? 'Overview Hunian' : 'Master Data Karyawan'}
+            </h2>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <input 
+                type="text" 
+                placeholder="Cari NIK atau Nama..."
+                className="bg-slate-800 border-none rounded-full pl-10 pr-4 py-2 text-sm w-64 focus:ring-2 focus:ring-blue-500 transition-all outline-none"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+          </div>
+        </header>
 
-        <!-- Modals Container -->
-        <div id="modalsContainer"></div>
+        {/* Scrollable Area */}
+        <div className="flex-1 overflow-y-auto p-8">
+          {activeTab === 'dashboard' ? (
+            <div className="space-y-8 animate-in fade-in duration-500">
+              {/* Stats Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { label: 'Total Kapasitas', value: '20,000', sub: 'Kamar Tersedia', icon: Home, color: 'text-blue-500' },
+                  { label: 'Terisi', value: stats.terisi.toLocaleString(), sub: `${stats.persentase}% Okupansi`, icon: Users, color: 'text-emerald-500' },
+                  { label: 'Kamar Kosong', value: stats.tersedia.toLocaleString(), sub: 'Siap Huni', icon: Filter, color: 'text-amber-500' },
+                  { label: 'Update Terakhir', value: 'Hari Ini', sub: '25 Des 2024', icon: Download, color: 'text-purple-500' },
+                ].map((stat, i) => (
+                  <div key={i} className="bg-slate-900 border border-slate-800 p-6 rounded-2xl shadow-sm">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`p-3 rounded-xl bg-slate-800 ${stat.color}`}>
+                        <stat.icon size={24} />
+                      </div>
+                      <MoreVertical className="text-slate-600" size={16} />
+                    </div>
+                    <p className="text-slate-400 text-sm font-medium">{stat.label}</p>
+                    <h3 className="text-2xl font-bold mt-1">{stat.value}</h3>
+                    <p className="text-xs text-slate-500 mt-2">{stat.sub}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Chart Placeholder / Lokasi Summary */}
+              <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+                <h3 className="text-lg font-semibold mb-6">Distribusi Hunian per Lokasi</h3>
+                <div className="space-y-4">
+                  {['MENTARI', 'SURYA RESIDENCE (P2)', 'BINTANG', 'PELANGI'].map((loc, i) => (
+                    <div key={i} className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-slate-300">{loc}</span>
+                        <span className="text-slate-500">{(Math.random() * 5000).toFixed(0)} Orang</span>
+                      </div>
+                      <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-blue-500 transition-all duration-1000" 
+                          style={{ width: `${Math.random() * 80 + 20}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl flex flex-col animate-in slide-in-from-bottom-4 duration-500">
+              <div className="p-6 border-b border-slate-800 flex justify-between items-center">
+                <h3 className="text-lg font-semibold">Daftar Penghuni</h3>
+                <div className="flex space-x-2">
+                  <button className="bg-slate-800 hover:bg-slate-700 text-sm px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors border border-slate-700">
+                    <Download size={16} />
+                    <span>Ekspor Excel</span>
+                  </button>
+                  <button className="bg-blue-600 hover:bg-blue-500 text-sm px-4 py-2 rounded-lg flex items-center space-x-2 transition-colors shadow-lg shadow-blue-900/20">
+                    <Plus size={16} />
+                    <span>Tambah Data</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-800/50 text-slate-400 uppercase text-xs tracking-wider font-semibold">
+                    <tr>
+                      <th className="px-6 py-4">NIK</th>
+                      <th className="px-6 py-4">Nama Karyawan</th>
+                      <th className="px-6 py-4">Dept</th>
+                      <th className="px-6 py-4">Lokasi Mess</th>
+                      <th className="px-6 py-4">Kamar</th>
+                      <th className="px-6 py-4">Status</th>
+                      <th className="px-6 py-4 text-center">Aksi</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-800">
+                    {loading ? (
+                       <tr>
+                        <td colSpan="7" className="px-6 py-10 text-center text-slate-500">
+                          Memuat data...
+                        </td>
+                      </tr>
+                    ) : currentItems.map((item, idx) => (
+                      <tr key={idx} className="hover:bg-slate-800/30 transition-colors group">
+                        <td className="px-6 py-4 font-mono text-blue-400">{item.nik}</td>
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-slate-200">{item.nama}</div>
+                          <div className="text-xs text-slate-500">{item.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-400">{item.department}</td>
+                        <td className="px-6 py-4">
+                          <span className="text-slate-300">{item.lokasi_hunian}</span>
+                          <div className="text-xs text-slate-500">{item.block} - {item.floor}</div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-300">No. {item.no_kamar}</td>
+                        <td className="px-6 py-4">
+                          <span className="px-2 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">
+                            {item.status_kamar}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex items-center justify-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-md transition-colors">
+                              <Edit2 size={16} />
+                            </button>
+                            <button className="p-2 hover:bg-red-500/20 text-red-400 rounded-md transition-colors">
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Pagination */}
+              <div className="p-6 border-t border-slate-800 flex items-center justify-between text-sm text-slate-500">
+                <p>Menampilkan {indexOfFirstItem + 1} sampai {Math.min(indexOfLastItem, filteredData.length)} dari {filteredData.length} data</p>
+                <div className="flex items-center space-x-2">
+                  <button 
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage(p => p - 1)}
+                    className="p-2 rounded-lg hover:bg-slate-800 disabled:opacity-30 transition-colors"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  {[...Array(Math.min(5, totalPages))].map((_, i) => (
+                    <button 
+                      key={i}
+                      onClick={() => setCurrentPage(i + 1)}
+                      className={`w-8 h-8 rounded-lg font-medium transition-colors ${
+                        currentPage === i + 1 ? 'bg-blue-600 text-white' : 'hover:bg-slate-800'
+                      }`}
+                    >
+                      {i + 1}
+                    </button>
+                  ))}
+                  <button 
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage(p => p + 1)}
+                    className="p-2 rounded-lg hover:bg-slate-800 disabled:opacity-30 transition-colors"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </main>
     </div>
+  );
+};
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script src="app.js"></script>
-    
-    <!-- Initialize -->
-    <script>
-        // Initialize app when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            setTimeout(() => {
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('app').classList.remove('d-none');
-                
-                // Initialize routing
-                if (!window.location.hash) {
-                    window.location.hash = '#home';
-                }
-                handleRouteChange();
-                
-                // Initialize theme
-                initTheme();
-                
-                // Show welcome message
-                showToast('Selamat datang di MessHub!', 'success');
-            }, 1500);
-        });
-        
-        // Handle hash changes for SPA routing
-        window.addEventListener('hashchange', handleRouteChange);
-        
-        function handleRouteChange() {
-            const hash = window.location.hash.substring(1) || 'home';
-            navigate(hash);
-        }
-    </script>
-</body>
-</html>
+export default App;
