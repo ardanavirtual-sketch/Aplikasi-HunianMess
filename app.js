@@ -2,8 +2,8 @@
 const CONFIG = {
     APP_NAME: 'Mess Hunian Karyawan',
     VERSION: '1.0.0',
-    SUPABASE_URL: '', // Set your Supabase URL here
-    SUPABASE_KEY: '', // Set your Supabase anon key here
+    SUPABASE_URL: 'https://ahzfpguvgdjytshlgjfv.supabase.co', // Set your Supabase URL here
+    SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74', // Set your Supabase anon key here
     ITEMS_PER_PAGE: 20
 };
 
