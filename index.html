@@ -43,6 +43,9 @@
     <!-- XLSX Library -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.38.4/dist/umd/supabase.min.js"></script>
+    
     <!-- Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
@@ -142,6 +145,11 @@
             gap: 8px;
             display: none;
         }
+        
+        /* Sync Status */
+        .sync-status {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body class="bg-gradient-dark text-slate-100 min-h-screen">
@@ -223,6 +231,12 @@
                 </div>
                 
                 <div class="flex items-center space-x-4">
+                    <!-- Sync Status -->
+                    <div id="sync-status" class="sync-status hidden items-center space-x-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs">
+                        <i data-lucide="check-circle" class="w-3 h-3"></i>
+                        <span id="sync-time">Tersinkronisasi</span>
+                    </div>
+                    
                     <!-- Search Bar -->
                     <div class="relative">
                         <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-500 w-4 h-4"></i>
@@ -396,6 +410,10 @@
                             <button id="export-excel-btn" 
                                 class="bg-slate-800 hover:bg-slate-700 border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all">
                                 <i data-lucide="external-link" class="w-3 h-3 text-emerald-400"></i> Export Excel
+                            </button>
+                            <button id="sync-cloud-btn"
+                                class="bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 transition-all">
+                                <i data-lucide="cloud" class="w-3 h-3"></i> Sync ke Cloud
                             </button>
                         </div>
                     </div>
@@ -572,17 +590,71 @@
         </div>
     </div>
 
+    <!-- Supabase Configuration Modal -->
+    <div id="configModal" class="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] hidden items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 w-full max-w-lg rounded-3xl overflow-hidden">
+            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-gradient-to-r from-slate-800 to-slate-900">
+                <h3 class="font-bold text-white flex items-center gap-2">
+                    <i data-lucide="settings" class="w-5 h-5"></i> 
+                    <span>Konfigurasi Supabase</span>
+                </h3>
+                <button id="close-config-btn" class="text-slate-500 hover:text-white transition-colors">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <p class="text-sm text-slate-400 mb-4">
+                    Masukkan kredensial Supabase Anda untuk menghubungkan ke database cloud.
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400">Supabase URL</label>
+                        <input type="text" id="config-url" placeholder="https://your-project.supabase.co" 
+                            class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all">
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label class="text-xs font-bold text-slate-400">Supabase Anon Key</label>
+                        <input type="password" id="config-key" placeholder="your-anon-key-here" 
+                            class="w-full bg-slate-900/50 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none transition-all">
+                    </div>
+                    
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-800">
+                        <button id="test-connection-btn" class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-500 text-sm font-semibold flex items-center gap-2">
+                            <i data-lucide="wifi" class="w-4 h-4"></i> Test Koneksi
+                        </button>
+                        
+                        <div class="flex gap-2">
+                            <button id="cancel-config-btn" class="px-4 py-2 rounded-lg border border-slate-800 text-slate-400 text-sm font-semibold hover:bg-slate-800">
+                                Batal
+                            </button>
+                            <button id="save-config-btn" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-sm font-semibold flex items-center gap-2">
+                                <i data-lucide="save" class="w-4 h-4"></i> Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- JavaScript -->
     <script>
-    
-        // ==================== KONFIGURASI ====================
 
         // Konfigurasi Supabase - GANTI DENGAN MILIK ANDA
         // Dapatkan dari: Supabase Dashboard → Settings → API
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co'; // Kosongkan jika tidak menggunakan Supabase
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74'; // Kosongkan jika tidak menggunakan Supabase
         
-        // Global Variables
+        // ==================== KONFIGURASI SUPASTASE ====================
+        // GANTI DENGAN KONFIGURASI ANDA
+        let SUPABASE_URL = localStorage.getItem('messhub_supabase_url') || '';
+        let SUPABASE_ANON_KEY = localStorage.getItem('messhub_supabase_key') || '';
+        let supabase = null;
+
+        // ==================== GLOBAL VARIABLES ====================
         const COLUMN_KEYS = [
             "NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", 
             "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", 
@@ -592,6 +664,26 @@
         let employees = [];
         let activeTab = 'dashboard';
         let editingIndex = -1;
+        let isOnline = navigator.onLine;
+        let lastSyncTime = null;
+
+        // ==================== INISIALISASI SUPASTASE ====================
+        
+        function initializeSupabase() {
+            try {
+                if (SUPABASE_URL && SUPABASE_ANON_KEY) {
+                    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('Supabase initialized successfully');
+                    return true;
+                } else {
+                    console.log('Supabase not configured');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Failed to initialize Supabase:', error);
+                return false;
+            }
+        }
 
         // ==================== UTILITY FUNCTIONS ====================
         
@@ -665,16 +757,43 @@
         }
 
         function updateOnlineStatus() {
-            const isOnline = navigator.onLine;
+            isOnline = navigator.onLine;
             const indicator = document.getElementById('offline-indicator');
             
             if (!indicator) return;
             
             if (isOnline) {
                 indicator.style.display = 'none';
+                // Coba sinkronisasi otomatis saat kembali online
+                if (supabase && employees.length > 0) {
+                    setTimeout(() => syncWithSupabase(), 2000);
+                }
             } else {
                 indicator.style.display = 'flex';
                 showToast('Anda sedang offline', 'warning');
+            }
+        }
+
+        function updateSyncStatus() {
+            const syncStatus = document.getElementById('sync-status');
+            const syncTime = document.getElementById('sync-time');
+            
+            if (!syncStatus || !syncTime) return;
+            
+            if (lastSyncTime) {
+                const now = new Date();
+                const diffMs = now - new Date(lastSyncTime);
+                const diffMins = Math.floor(diffMs / 60000);
+                
+                let timeText = 'Baru saja';
+                if (diffMins > 0) {
+                    timeText = `${diffMins} menit yang lalu`;
+                }
+                
+                syncTime.textContent = `Tersinkronisasi ${timeText}`;
+                syncStatus.classList.remove('hidden');
+            } else {
+                syncStatus.classList.add('hidden');
             }
         }
 
@@ -860,6 +979,9 @@
             
             const tbody = document.getElementById('table-body');
             const noData = document.getElementById('no-data');
+            const tableLoading = document.getElementById('table-loading');
+            
+            if (tableLoading) tableLoading.classList.add('hidden');
             
             if (filtered.length === 0) {
                 if (tbody) tbody.innerHTML = '';
@@ -977,7 +1099,241 @@
             editingIndex = -1;
         }
 
-        function saveEmployee(formData) {
+        // ==================== SUPASTASE FUNCTIONS ====================
+        
+        async function syncWithSupabase() {
+            if (!supabase) {
+                showToast('Supabase belum dikonfigurasi', 'warning');
+                openConfigModal();
+                return;
+            }
+            
+            if (!isOnline) {
+                showToast('Tidak dapat sinkronisasi saat offline', 'warning');
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const syncBtn = document.getElementById('sync-button');
+                const originalHTML = syncBtn.innerHTML;
+                syncBtn.innerHTML = '<div class="loading"></div>';
+                syncBtn.disabled = true;
+                
+                // Jika ada data lokal, upload ke Supabase
+                if (employees.length > 0) {
+                    const { data, error } = await supabase
+                        .from('employees')
+                        .upsert(employees, {
+                            onConflict: 'NIK',
+                            ignoreDuplicates: false
+                        });
+                    
+                    if (error) throw error;
+                    
+                    lastSyncTime = new Date().toISOString();
+                    localStorage.setItem('messhub_last_sync', lastSyncTime);
+                    updateSyncStatus();
+                    
+                    showToast(`Berhasil sinkronisasi ${employees.length} data ke cloud`, 'success');
+                } else {
+                    showToast('Tidak ada data untuk disinkronisasi', 'info');
+                }
+                
+            } catch (error) {
+                console.error('Sync error:', error);
+                showToast(`Gagal sinkronisasi: ${error.message}`, 'error');
+            } finally {
+                showLoading(false);
+                
+                const syncBtn = document.getElementById('sync-button');
+                if (syncBtn) {
+                    syncBtn.innerHTML = '<i data-lucide="refresh-cw" class="w-4 h-4 text-slate-400"></i>';
+                    syncBtn.disabled = false;
+                }
+                
+                lucide.createIcons();
+            }
+        }
+
+        async function loadFromSupabase() {
+            if (!supabase) {
+                // Load dari localStorage jika Supabase tidak dikonfigurasi
+                loadFromStorage();
+                return;
+            }
+            
+            try {
+                showLoading(true);
+                
+                // Coba load dari Supabase
+                const { data, error } = await supabase
+                    .from('employees')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                
+                if (data && data.length > 0) {
+                    employees = data;
+                    showToast(`Memuat ${data.length} data dari cloud`, 'success');
+                    saveToStorage(); // Backup ke localStorage
+                    lastSyncTime = new Date().toISOString();
+                    updateSyncStatus();
+                } else {
+                    // Jika Supabase kosong, load dari localStorage
+                    loadFromStorage();
+                    showToast('Database cloud kosong', 'info');
+                }
+                
+                updateFilters();
+                renderContent();
+                
+            } catch (error) {
+                console.error('Load from Supabase error:', error);
+                showToast('Gagal memuat dari cloud, menggunakan data lokal', 'warning');
+                
+                // Fallback ke localStorage
+                loadFromStorage();
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        async function saveEmployeeToSupabase(employeeData) {
+            if (!supabase) return false;
+            
+            try {
+                const { data, error } = await supabase
+                    .from('employees')
+                    .upsert([employeeData], {
+                        onConflict: 'NIK'
+                    });
+                
+                if (error) throw error;
+                
+                lastSyncTime = new Date().toISOString();
+                updateSyncStatus();
+                return true;
+            } catch (error) {
+                console.error('Save to Supabase error:', error);
+                return false;
+            }
+        }
+
+        async function deleteEmployeeFromSupabase(nik) {
+            if (!supabase) return false;
+            
+            try {
+                const { error } = await supabase
+                    .from('employees')
+                    .delete()
+                    .eq('NIK', nik);
+                
+                if (error) throw error;
+                
+                lastSyncTime = new Date().toISOString();
+                updateSyncStatus();
+                return true;
+            } catch (error) {
+                console.error('Delete from Supabase error:', error);
+                return false;
+            }
+        }
+
+        async function testSupabaseConnection() {
+            const url = document.getElementById('config-url').value.trim();
+            const key = document.getElementById('config-key').value.trim();
+            
+            if (!url || !key) {
+                showToast('URL dan Key harus diisi', 'warning');
+                return false;
+            }
+            
+            try {
+                showLoading(true);
+                
+                const testClient = window.supabase.createClient(url, key);
+                
+                // Test query sederhana
+                const { error } = await testClient
+                    .from('employees')
+                    .select('count', { count: 'exact', head: true });
+                
+                if (error) {
+                    // Jika tabel tidak ada, coba create
+                    showToast('Tabel employees tidak ditemukan, akan dibuat otomatis', 'info');
+                }
+                
+                showToast('Koneksi berhasil!', 'success');
+                return true;
+                
+            } catch (error) {
+                console.error('Connection test error:', error);
+                showToast(`Koneksi gagal: ${error.message}`, 'error');
+                return false;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ==================== CONFIG MODAL FUNCTIONS ====================
+        
+        function openConfigModal() {
+            const modal = document.getElementById('configModal');
+            if (!modal) return;
+            
+            const urlInput = document.getElementById('config-url');
+            const keyInput = document.getElementById('config-key');
+            
+            if (urlInput) urlInput.value = SUPABASE_URL || '';
+            if (keyInput) keyInput.value = SUPABASE_ANON_KEY || '';
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeConfigModal() {
+            const modal = document.getElementById('configModal');
+            if (!modal) return;
+            
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function saveConfig() {
+            const url = document.getElementById('config-url').value.trim();
+            const key = document.getElementById('config-key').value.trim();
+            
+            if (!url || !key) {
+                showToast('URL dan Key harus diisi', 'warning');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('messhub_supabase_url', url);
+            localStorage.setItem('messhub_supabase_key', key);
+            
+            // Update global variables
+            SUPABASE_URL = url;
+            SUPABASE_ANON_KEY = key;
+            
+            // Reinitialize Supabase
+            if (initializeSupabase()) {
+                showToast('Konfigurasi berhasil disimpan', 'success');
+                closeConfigModal();
+                
+                // Reload data dari Supabase
+                setTimeout(() => loadFromSupabase(), 1000);
+            } else {
+                showToast('Gagal menginisialisasi Supabase', 'error');
+            }
+        }
+
+        // ==================== CRUD FUNCTIONS ====================
+        
+        async function saveEmployee(formData) {
             try {
                 const employeeData = {
                     NIK: formData.nik,
@@ -1003,7 +1359,18 @@
                 if (editingIndex >= 0) {
                     // Update existing
                     employees[editingIndex] = employeeData;
-                    showToast('Data berhasil diperbarui', 'success');
+                    
+                    // Save to Supabase
+                    if (supabase && isOnline) {
+                        const success = await saveEmployeeToSupabase(employeeData);
+                        if (success) {
+                            showToast('Data berhasil diperbarui di cloud', 'success');
+                        } else {
+                            showToast('Data diperbarui secara lokal', 'info');
+                        }
+                    } else {
+                        showToast('Data berhasil diperbarui secara lokal', 'success');
+                    }
                 } else {
                     // Check for duplicate NIK
                     const existingIndex = employees.findIndex(e => e.NIK === employeeData.NIK);
@@ -1014,8 +1381,22 @@
                     
                     // Add new
                     employees.unshift(employeeData);
-                    showToast('Data berhasil ditambahkan', 'success');
+                    
+                    // Save to Supabase
+                    if (supabase && isOnline) {
+                        const success = await saveEmployeeToSupabase(employeeData);
+                        if (success) {
+                            showToast('Data berhasil ditambahkan ke cloud', 'success');
+                        } else {
+                            showToast('Data ditambahkan secara lokal', 'info');
+                        }
+                    } else {
+                        showToast('Data berhasil ditambahkan secara lokal', 'success');
+                    }
                 }
+                
+                // Save to localStorage
+                saveToStorage();
                 
                 updateFilters();
                 renderContent();
@@ -1027,21 +1408,36 @@
             }
         }
 
-        function editEmployee(nik) {
-            const index = employees.findIndex(e => e.NIK === nik);
-            if (index >= 0 && index < employees.length) {
-                openModal(employees[index]);
-            }
-        }
-
-        function deleteEmployee(nik) {
+        async function deleteEmployee(nik) {
             if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
             
             const index = employees.findIndex(e => e.NIK === nik);
             if (index >= 0) {
                 const deletedEmployee = employees.splice(index, 1)[0];
+                
+                // Delete from Supabase
+                if (supabase && isOnline) {
+                    const success = await deleteEmployeeFromSupabase(nik);
+                    if (success) {
+                        showToast(`Data ${deletedEmployee.NAMA} dihapus dari cloud`, 'success');
+                    } else {
+                        showToast(`Data ${deletedEmployee.NAMA} dihapus secara lokal`, 'info');
+                    }
+                } else {
+                    showToast(`Data ${deletedEmployee.NAMA} dihapus secara lokal`, 'success');
+                }
+                
+                // Save to localStorage
+                saveToStorage();
+                
                 renderContent();
-                showToast(`Data ${deletedEmployee.NAMA} berhasil dihapus`, 'success');
+            }
+        }
+
+        function editEmployee(nik) {
+            const index = employees.findIndex(e => e.NIK === nik);
+            if (index >= 0 && index < employees.length) {
+                openModal(employees[index]);
             }
         }
 
@@ -1104,6 +1500,27 @@
                     
                     employees = [...uniqueNewEmployees, ...employees];
                     
+                    // Save to Supabase jika online
+                    if (supabase && isOnline && uniqueNewEmployees.length > 0) {
+                        setTimeout(async () => {
+                            try {
+                                const { error } = await supabase
+                                    .from('employees')
+                                    .upsert(uniqueNewEmployees, { onConflict: 'NIK' });
+                                
+                                if (!error) {
+                                    lastSyncTime = new Date().toISOString();
+                                    updateSyncStatus();
+                                }
+                            } catch (error) {
+                                console.error('Error uploading imported data:', error);
+                            }
+                        }, 1000);
+                    }
+                    
+                    // Save to localStorage
+                    saveToStorage();
+                    
                     showToast(`Berhasil mengimport ${uniqueNewEmployees.length} data dari Excel`, 'success');
                     updateFilters();
                     renderContent();
@@ -1125,7 +1542,7 @@
             reader.readAsArrayBuffer(file);
         }
 
-        // ==================== DATA MANAGEMENT ====================
+        // ==================== LOCAL STORAGE FUNCTIONS ====================
         
         function loadLocalData() {
             // Sample data for local testing
@@ -1172,13 +1589,7 @@
                 }
             ];
             
-            // Save to localStorage
-            try {
-                localStorage.setItem('messhub_employees', JSON.stringify(employees));
-            } catch (e) {
-                console.log('LocalStorage not available');
-            }
-            
+            saveToStorage();
             updateFilters();
             renderContent();
         }
@@ -1192,6 +1603,14 @@
                 } else {
                     loadLocalData();
                 }
+                
+                // Load last sync time
+                const lastSync = localStorage.getItem('messhub_last_sync');
+                if (lastSync) {
+                    lastSyncTime = lastSync;
+                    updateSyncStatus();
+                }
+                
             } catch (e) {
                 loadLocalData();
             }
@@ -1251,12 +1670,14 @@
                 exportExcelBtn.addEventListener('click', exportExcel);
             }
             
+            const syncCloudBtn = document.getElementById('sync-cloud-btn');
+            if (syncCloudBtn) {
+                syncCloudBtn.addEventListener('click', syncWithSupabase);
+            }
+            
             const syncButton = document.getElementById('sync-button');
             if (syncButton) {
-                syncButton.addEventListener('click', () => {
-                    saveToStorage();
-                    showToast('Data disimpan secara lokal', 'success');
-                });
+                syncButton.addEventListener('click', syncWithSupabase);
             }
             
             // Modal buttons
@@ -1268,6 +1689,27 @@
             const cancelModalBtn = document.getElementById('cancel-modal-btn');
             if (cancelModalBtn) {
                 cancelModalBtn.addEventListener('click', closeModal);
+            }
+            
+            // Config modal buttons
+            const closeConfigBtn = document.getElementById('close-config-btn');
+            if (closeConfigBtn) {
+                closeConfigBtn.addEventListener('click', closeConfigModal);
+            }
+            
+            const cancelConfigBtn = document.getElementById('cancel-config-btn');
+            if (cancelConfigBtn) {
+                cancelConfigBtn.addEventListener('click', closeConfigModal);
+            }
+            
+            const testConnectionBtn = document.getElementById('test-connection-btn');
+            if (testConnectionBtn) {
+                testConnectionBtn.addEventListener('click', testSupabaseConnection);
+            }
+            
+            const saveConfigBtn = document.getElementById('save-config-btn');
+            if (saveConfigBtn) {
+                saveConfigBtn.addEventListener('click', saveConfig);
             }
             
             // Form submission
@@ -1300,7 +1742,6 @@
                     }
                     
                     saveEmployee(formData);
-                    saveToStorage();
                 });
             }
             
@@ -1330,6 +1771,13 @@
             
             // Auto-save before page unload
             window.addEventListener('beforeunload', saveToStorage);
+            
+            // Auto-check Supabase config on startup
+            setTimeout(() => {
+                if (!supabase && isOnline) {
+                    showToast('Konfigurasikan Supabase untuk sinkronisasi cloud', 'info');
+                }
+            }, 3000);
         }
 
         // ==================== INITIALIZATION ====================
@@ -1344,11 +1792,24 @@
                     console.log('Lucide icons initialized');
                 }
                 
+                // Initialize Supabase
+                const supabaseInitialized = initializeSupabase();
+                
                 // Setup event listeners
                 setupEventListeners();
                 
-                // Load data from storage
-                loadFromStorage();
+                // Load data
+                if (supabaseInitialized && isOnline) {
+                    loadFromSupabase();
+                } else {
+                    loadFromStorage();
+                    
+                    if (!isOnline) {
+                        showToast('Mode offline aktif', 'info');
+                    } else if (!supabaseInitialized) {
+                        showToast('Jalankan secara lokal, konfigurasikan Supabase untuk cloud sync', 'info');
+                    }
+                }
                 
                 // Set default tab
                 switchTab('dashboard');
@@ -1357,7 +1818,6 @@
                 updateOnlineStatus();
                 
                 console.log('App initialized successfully');
-                showToast('MessHub Pro siap digunakan', 'success');
                 
             } catch (error) {
                 console.error('Initialization error:', error);
