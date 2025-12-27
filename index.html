@@ -4,102 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mess Management System | Professional</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Gunakan Tailwind CSS dari local build -->
+    <link href="./dist/output.css" rel="stylesheet">
+    <!-- Atau gunakan CDN alternatif yang aman untuk development -->
+    <!-- <script src="https://cdn.tailwindcss.com?plugins=forms"></script> -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Supabase Client -->
+    <!-- Supabase Client - HANYA SATU KALI IMPORT -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        :root {
-            --primary: #4361ee;
-            --primary-dark: #3a56d4;
-            --secondary: #7209b7;
-            --success: #06d6a0;
-            --danger: #ef476f;
-            --warning: #ffd166;
-            --dark: #0f172a;
-            --light: #f8fafc;
+        
+        /* Animasi tambahan */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        
+        .animate-fade-in {
+            animation: fadeIn 0.3s ease-out;
         }
-        .glass-card {
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease-out;
         }
-        .glass-sidebar {
-            background: rgba(15, 23, 42, 0.9);
-            backdrop-filter: blur(20px);
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .stat-card {
-            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
-            border: 1px solid rgba(67, 97, 238, 0.2);
-        }
-        .hover-glow:hover {
-            box-shadow: 0 0 20px rgba(67, 97, 238, 0.3);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #4361ee, #7209b7);
-            border-radius: 10px;
-        }
-        .table-row-hover:hover {
-            background: linear-gradient(90deg, rgba(67, 97, 238, 0.1) 0%, rgba(114, 9, 183, 0.1) 100%);
-        }
-        .gradient-text {
-            background: linear-gradient(135deg, #4361ee, #7209b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .loading-spinner {
-            border: 3px solid rgba(67, 97, 238, 0.1);
-            border-top: 3px solid #4361ee;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .status-badge {
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-        .status-occupied {
-            background: rgba(6, 214, 160, 0.2);
-            color: #06d6a0;
-            border: 1px solid rgba(6, 214, 160, 0.3);
-        }
-        .status-vacant {
-            background: rgba(255, 209, 102, 0.2);
-            color: #ffd166;
-            border: 1px solid rgba(255, 209, 102, 0.3);
-        }
-        .modal-enter {
-            animation: modalEnter 0.3s ease-out;
-        }
-        @keyframes modalEnter {
-            from {
-                opacity: 0;
-                transform: scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
     </style>
 </head>
@@ -126,7 +58,7 @@
                         <i data-lucide="building-2" class="w-6 h-6 text-white"></i>
                     </div>
                     <div>
-                        <h1 class="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">MESS HUB</h1>
+                        <h1 class="text-xl font-bold gradient-text">MESS HUB</h1>
                         <p class="text-xs text-gray-400">Management System</p>
                     </div>
                 </div>
@@ -585,11 +517,20 @@
         // ====================
         // SUPABASE CONFIGURATION
         // ====================
+        // GANTI DENGAN SUPABASE URL DAN ANON KEY ANDA
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
 
-        // Initialize Supabase
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Inisialisasi Supabase - HANYA SATU KALI
+        let supabase;
+        
+        try {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            console.log('Supabase initialized successfully');
+        } catch (error) {
+            console.error('Error initializing Supabase:', error);
+            showToast('Gagal menginisialisasi database', 'error');
+        }
 
         // ====================
         // GLOBAL VARIABLES
@@ -616,10 +557,17 @@
                 info: 'info'
             };
             
-            toast.className = `glass-card p-4 rounded-xl shadow-xl flex items-center gap-3 animate-in slide-in-from-right-full ${type}`;
+            const colors = {
+                success: 'bg-emerald-500/20 text-emerald-400',
+                error: 'bg-rose-500/20 text-rose-400',
+                warning: 'bg-amber-500/20 text-amber-400',
+                info: 'bg-blue-500/20 text-blue-400'
+            };
+            
+            toast.className = `glass-card p-4 rounded-xl shadow-xl flex items-center gap-3 animate-fade-in ${colors[type]}`;
             toast.innerHTML = `
-                <div class="p-2 rounded-lg ${type === 'success' ? 'bg-emerald-500/20' : type === 'error' ? 'bg-rose-500/20' : 'bg-blue-500/20'}">
-                    <i data-lucide="${icons[type]}" class="w-5 h-5 ${type === 'success' ? 'text-emerald-400' : type === 'error' ? 'text-rose-400' : 'text-blue-400'}"></i>
+                <div class="p-2 rounded-lg">
+                    <i data-lucide="${icons[type]}" class="w-5 h-5"></i>
                 </div>
                 <div>
                     <p class="font-semibold">${message}</p>
@@ -630,15 +578,27 @@
             container.appendChild(toast);
             lucide.createIcons();
             
+            // Hapus toast setelah 5 detik
             setTimeout(() => {
-                toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-full');
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
                 setTimeout(() => toast.remove(), 300);
             }, 5000);
+            
+            // Batasi jumlah toast maksimal 5
+            if (container.children.length > 5) {
+                container.removeChild(container.firstChild);
+            }
         }
 
         function showLoading(show = true) {
             const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.toggle('hidden', !show);
+            if (show) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            } else {
+                overlay.classList.add('hidden');
+                overlay.classList.remove('flex');
+            }
         }
 
         // ====================
@@ -647,6 +607,10 @@
         async function loadEmployees() {
             showLoading(true);
             try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+                
                 const { data, error } = await supabase
                     .from('employees')
                     .select('*')
@@ -655,13 +619,27 @@
                 if (error) throw error;
                 
                 employees = data || [];
-                showToast(`Berhasil memuat ${employees.length} data`, 'success');
+                console.log(`Loaded ${employees.length} employees`);
+                
                 updateDashboard();
                 updateFilters();
                 renderTable();
+                
+                return employees;
             } catch (error) {
                 console.error('Error loading employees:', error);
                 showToast('Gagal memuat data dari database', 'error');
+                
+                // Fallback: gunakan data dummy untuk development
+                if (!SUPABASE_URL.includes('your-project')) {
+                    employees = getDummyData();
+                    updateDashboard();
+                    updateFilters();
+                    renderTable();
+                    showToast('Menggunakan data dummy untuk development', 'warning');
+                }
+                
+                return [];
             } finally {
                 showLoading(false);
             }
@@ -669,24 +647,34 @@
 
         async function saveEmployee(employeeData) {
             try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+                
                 const { error } = await supabase
                     .from('employees')
-                    .upsert(employeeData);
+                    .upsert(employeeData, {
+                        onConflict: 'nik'
+                    });
                 
                 if (error) throw error;
                 
                 showToast('Data berhasil disimpan', 'success');
-                loadEmployees();
+                await loadEmployees();
                 return true;
             } catch (error) {
                 console.error('Error saving employee:', error);
-                showToast('Gagal menyimpan data', 'error');
+                showToast('Gagal menyimpan data: ' + error.message, 'error');
                 return false;
             }
         }
 
         async function deleteEmployee(id) {
             try {
+                if (!supabase) {
+                    throw new Error('Supabase not initialized');
+                }
+                
                 const { error } = await supabase
                     .from('employees')
                     .delete()
@@ -695,11 +683,11 @@
                 if (error) throw error;
                 
                 showToast('Data berhasil dihapus', 'success');
-                loadEmployees();
+                await loadEmployees();
                 return true;
             } catch (error) {
                 console.error('Error deleting employee:', error);
-                showToast('Gagal menghapus data', 'error');
+                showToast('Gagal menghapus data: ' + error.message, 'error');
                 return false;
             }
         }
@@ -711,26 +699,43 @@
             activeTab = tab;
             
             // Hide all tabs
-            ['Dashboard', 'Master', 'Rooms', 'Reports'].forEach(t => {
-                document.getElementById(`tab${t}`)?.classList.add('hidden');
-                document.getElementById(`nav${t.toLowerCase()}`)?.classList.remove(
-                    'bg-gradient-to-r', 'from-blue-500/20', 'to-purple-500/20',
-                    'text-blue-400', 'border', 'border-blue-500/30'
-                );
-                document.getElementById(`nav${t.toLowerCase()}`)?.classList.add(
-                    'text-gray-400', 'hover:bg-white/5', 'hover:text-white'
-                );
+            const tabs = ['Dashboard', 'Master', 'Rooms', 'Reports'];
+            tabs.forEach(t => {
+                const tabElement = document.getElementById(`tab${t}`);
+                const navElement = document.getElementById(`nav-${t.toLowerCase()}`);
+                
+                if (tabElement) {
+                    tabElement.classList.add('hidden');
+                }
+                
+                if (navElement) {
+                    navElement.classList.remove(
+                        'bg-gradient-to-r', 'from-blue-500/20', 'to-purple-500/20',
+                        'text-blue-400', 'border', 'border-blue-500/30'
+                    );
+                    navElement.classList.add(
+                        'text-gray-400', 'hover:bg-white/5', 'hover:text-white'
+                    );
+                }
             });
             
             // Show active tab
-            document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`)?.classList.remove('hidden');
-            document.getElementById(`nav${tab}`)?.classList.add(
-                'bg-gradient-to-r', 'from-blue-500/20', 'to-purple-500/20',
-                'text-blue-400', 'border', 'border-blue-500/30'
-            );
-            document.getElementById(`nav${tab}`)?.classList.remove(
-                'text-gray-400', 'hover:bg-white/5', 'hover:text-white'
-            );
+            const activeTabElement = document.getElementById(`tab${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
+            const activeNavElement = document.getElementById(`nav-${tab}`);
+            
+            if (activeTabElement) {
+                activeTabElement.classList.remove('hidden');
+            }
+            
+            if (activeNavElement) {
+                activeNavElement.classList.add(
+                    'bg-gradient-to-r', 'from-blue-500/20', 'to-purple-500/20',
+                    'text-blue-400', 'border', 'border-blue-500/30'
+                );
+                activeNavElement.classList.remove(
+                    'text-gray-400', 'hover:bg-white/5', 'hover:text-white'
+                );
+            }
             
             // Update page title
             const titles = {
@@ -747,12 +752,13 @@
                 reports: 'Analisis data hunian'
             };
             
-            document.getElementById('pageTitle').textContent = titles[tab];
-            document.getElementById('pageSubtitle').textContent = subtitles[tab];
+            document.getElementById('pageTitle').textContent = titles[tab] || 'Dashboard';
+            document.getElementById('pageSubtitle').textContent = subtitles[tab] || 'Sistem Manajemen Hunian';
         }
 
         function toggleMobileMenu() {
-            document.getElementById('mobileMenu').classList.toggle('hidden');
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
         }
 
         function updateDashboard() {
@@ -761,25 +767,33 @@
             const vacant = employees.filter(e => e.status_kamar === 'KOSONG').length;
             const male = employees.filter(e => e.gender === 'L').length;
             const female = employees.filter(e => e.gender === 'P').length;
+            const occupancyRate = total > 0 ? Math.round((occupied / total) * 100) : 0;
             
             document.getElementById('totalResidents').textContent = total.toLocaleString();
             document.getElementById('occupiedRooms').textContent = occupied.toLocaleString();
             document.getElementById('vacantRooms').textContent = vacant.toLocaleString();
-            document.getElementById('occupancyRate').textContent = total > 0 ? 
-                Math.round((occupied / 20000) * 100) + '%' : '0%';
+            document.getElementById('occupancyRate').textContent = occupancyRate + '%';
             document.getElementById('maleCount').textContent = male;
             document.getElementById('femaleCount').textContent = female;
         }
 
         function updateFilters() {
-            const locations = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
-            const blocks = [...new Set(employees.map(e => e.block))].filter(Boolean).sort();
-            const rooms = [...new Set(employees.map(e => e.no_kamar))].filter(Boolean).sort();
+            const locations = [...new Set(employees.map(e => e.lokasi_hunian).filter(Boolean))].sort();
+            const blocks = [...new Set(employees.map(e => e.block).filter(Boolean))].sort((a, b) => {
+                // Sort secara alami untuk angka dan teks
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            });
+            const rooms = [...new Set(employees.map(e => e.no_kamar).filter(Boolean))].sort((a, b) => {
+                return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+            });
             
             const populateSelect = (id, data, placeholder) => {
                 const select = document.getElementById(id);
+                if (!select) return;
+                
+                const currentValue = select.value;
                 select.innerHTML = `<option value="">${placeholder}</option>` +
-                    data.map(item => `<option value="${item}">${item}</option>`).join('');
+                    data.map(item => `<option value="${item}" ${item === currentValue ? 'selected' : ''}>${item}</option>`).join('');
             };
             
             populateSelect('filterLocation', locations, 'Semua Lokasi');
@@ -796,9 +810,10 @@
             
             const filtered = employees.filter(emp => {
                 const matchSearch = 
-                    emp.nik?.toLowerCase().includes(search) ||
-                    emp.nama?.toLowerCase().includes(search) ||
-                    emp.no_kamar?.toLowerCase().includes(search);
+                    (emp.nik && emp.nik.toLowerCase().includes(search)) ||
+                    (emp.nama && emp.nama.toLowerCase().includes(search)) ||
+                    (emp.no_kamar && emp.no_kamar.toLowerCase().includes(search)) ||
+                    (emp.department && emp.department.toLowerCase().includes(search));
                 
                 const matchLocation = !location || emp.lokasi_hunian === location;
                 const matchBlock = !block || emp.block === block;
@@ -815,15 +830,21 @@
             const tbody = document.getElementById('tableBody');
             const noData = document.getElementById('noData');
             
+            if (!tbody || !noData) return;
+            
             if (data.length === 0) {
                 tbody.innerHTML = '';
                 noData.classList.remove('hidden');
-                document.getElementById('tableCount').textContent = '0';
+                if (document.getElementById('tableCount')) {
+                    document.getElementById('tableCount').textContent = '0';
+                }
                 return;
             }
             
             noData.classList.add('hidden');
-            document.getElementById('tableCount').textContent = data.length.toLocaleString();
+            if (document.getElementById('tableCount')) {
+                document.getElementById('tableCount').textContent = data.length.toLocaleString();
+            }
             
             tbody.innerHTML = data.map(emp => `
                 <tr class="table-row-hover">
@@ -855,11 +876,13 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
                             <button onclick="editEmployee('${emp.id}')" 
-                                class="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                                class="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                                title="Edit">
                                 <i data-lucide="edit-2" class="w-4 h-4 text-blue-400"></i>
                             </button>
                             <button onclick="confirmDelete('${emp.id}')" 
-                                class="p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+                                class="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+                                title="Hapus">
                                 <i data-lucide="trash-2" class="w-4 h-4 text-rose-400"></i>
                             </button>
                         </div>
@@ -877,13 +900,21 @@
             document.getElementById('modalTitle').textContent = 'Tambah Karyawan Baru';
             document.getElementById('employeeForm').reset();
             document.getElementById('editId').value = '';
+            
+            // Set tanggal default ke hari ini
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tglMasukMess').value = today;
+            
             document.getElementById('employeeModal').classList.remove('hidden');
             document.getElementById('employeeModal').classList.add('flex');
         }
 
         function editEmployee(id) {
             const emp = employees.find(e => e.id === id);
-            if (!emp) return;
+            if (!emp) {
+                showToast('Data tidak ditemukan', 'error');
+                return;
+            }
             
             document.getElementById('modalTitle').textContent = 'Edit Data Karyawan';
             document.getElementById('editId').value = emp.id;
@@ -911,36 +942,48 @@
         }
 
         async function confirmDelete(id) {
-            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) return;
+            if (!confirm('Apakah Anda yakin ingin menghapus data ini? Tindakan ini tidak dapat dibatalkan.')) {
+                return;
+            }
             
             showLoading(true);
-            await deleteEmployee(id);
+            const success = await deleteEmployee(id);
             showLoading(false);
+            
+            if (success) {
+                showToast('Data berhasil dihapus', 'success');
+            }
         }
 
         // ====================
         // FORM HANDLING
         // ====================
-        document.getElementById('employeeForm').addEventListener('submit', async (e) => {
+        document.getElementById('employeeForm')?.addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const employeeData = {
-                nik: document.getElementById('nik').value,
-                nama: document.getElementById('nama').value,
+                nik: document.getElementById('nik').value.trim(),
+                nama: document.getElementById('nama').value.trim(),
                 gender: document.getElementById('gender').value,
-                department: document.getElementById('department').value,
-                jabatan: document.getElementById('jabatan').value,
-                perusahaan: document.getElementById('perusahaan').value,
-                lokasi_hunian: document.getElementById('lokasi').value,
-                block: document.getElementById('block').value,
-                no_kamar: document.getElementById('kamar').value,
-                gol: document.getElementById('gol').value,
-                fasilitas: document.getElementById('fasilitas').value,
+                department: document.getElementById('department').value.trim(),
+                jabatan: document.getElementById('jabatan').value.trim(),
+                perusahaan: document.getElementById('perusahaan').value.trim(),
+                lokasi_hunian: document.getElementById('lokasi').value.trim(),
+                block: document.getElementById('block').value.trim(),
+                no_kamar: document.getElementById('kamar').value.trim(),
+                gol: document.getElementById('gol').value.trim(),
+                fasilitas: document.getElementById('fasilitas').value.trim(),
                 tgl_masuk_kerja: document.getElementById('tglMasukKerja').value,
                 tgl_masuk_mess: document.getElementById('tglMasukMess').value,
                 status_kamar: 'TERISI',
                 updated_at: new Date().toISOString()
             };
+            
+            // Validasi required fields
+            if (!employeeData.nik || !employeeData.nama || !employeeData.lokasi_hunian || !employeeData.block || !employeeData.no_kamar) {
+                showToast('Harap isi semua field yang wajib diisi (bertanda *)', 'error');
+                return;
+            }
             
             const editId = document.getElementById('editId').value;
             if (editId) {
@@ -948,9 +991,12 @@
             }
             
             showLoading(true);
-            await saveEmployee(employeeData);
-            closeModal();
+            const success = await saveEmployee(employeeData);
             showLoading(false);
+            
+            if (success) {
+                closeModal();
+            }
         });
 
         // ====================
@@ -958,7 +1004,7 @@
         // ====================
         function downloadTemplate() {
             const templateHeaders = COLUMN_KEYS.map(key => 
-                key.replace(/_/g, ' ').toUpperCase()
+                key.toUpperCase().replace(/_/g, ' ')
             );
             
             const ws = XLSX.utils.aoa_to_sheet([templateHeaders]);
@@ -972,49 +1018,82 @@
             const file = e.target.files[0];
             if (!file) return;
             
+            // Validasi tipe file
+            if (!file.name.match(/\.(xlsx|xls)$/i)) {
+                showToast('Hanya file Excel (.xlsx, .xls) yang diperbolehkan', 'error');
+                e.target.value = '';
+                return;
+            }
+            
             showLoading(true);
             
             try {
                 const reader = new FileReader();
+                
                 reader.onload = async (evt) => {
-                    const workbook = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                    
-                    // Normalize data
-                    const importedData = json.map(row => {
-                        const normalized = {};
-                        COLUMN_KEYS.forEach(key => {
-                            const displayKey = key.replace(/_/g, ' ').toUpperCase();
-                            normalized[key] = row[displayKey] || row[key] || '';
+                    try {
+                        const workbook = XLSX.read(new Uint8Array(evt.target.result), { type: 'array' });
+                        const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                        
+                        if (json.length === 0) {
+                            throw new Error('File Excel kosong');
+                        }
+                        
+                        // Normalize data
+                        const importedData = json.map(row => {
+                            const normalized = {};
+                            COLUMN_KEYS.forEach(key => {
+                                const displayKey = key.toUpperCase().replace(/_/g, ' ');
+                                normalized[key] = row[displayKey] || row[key] || '';
+                            });
+                            normalized.status_kamar = normalized.status_kamar || 'TERISI';
+                            normalized.created_at = new Date().toISOString();
+                            normalized.updated_at = new Date().toISOString();
+                            return normalized;
                         });
-                        normalized.status_kamar = normalized.status_kamar || 'TERISI';
-                        normalized.created_at = new Date().toISOString();
-                        normalized.updated_at = new Date().toISOString();
-                        return normalized;
-                    });
-                    
-                    // Save to Supabase
-                    const { error } = await supabase
-                        .from('employees')
-                        .upsert(importedData);
-                    
-                    if (error) throw error;
-                    
-                    showToast(`Berhasil mengimport ${importedData.length} data`, 'success');
-                    loadEmployees();
+                        
+                        // Save to Supabase
+                        if (supabase) {
+                            const { error } = await supabase
+                                .from('employees')
+                                .upsert(importedData, {
+                                    onConflict: 'nik'
+                                });
+                            
+                            if (error) throw error;
+                        }
+                        
+                        showToast(`Berhasil mengimport ${importedData.length} data`, 'success');
+                        await loadEmployees();
+                    } catch (error) {
+                        console.error('Import processing error:', error);
+                        showToast('Gagal memproses file Excel: ' + error.message, 'error');
+                    } finally {
+                        e.target.value = '';
+                    }
+                };
+                
+                reader.onerror = () => {
+                    showToast('Gagal membaca file', 'error');
                     e.target.value = '';
+                    showLoading(false);
                 };
                 
                 reader.readAsArrayBuffer(file);
             } catch (error) {
                 console.error('Import error:', error);
-                showToast('Gagal mengimport data', 'error');
-            } finally {
+                showToast('Gagal mengimport data: ' + error.message, 'error');
+                e.target.value = '';
                 showLoading(false);
             }
         }
 
         function exportExcel() {
+            if (employees.length === 0) {
+                showToast('Tidak ada data untuk diexport', 'warning');
+                return;
+            }
+            
             const exportData = employees.map(emp => ({
                 'NIK': emp.nik,
                 'NAMA': emp.nama,
@@ -1037,18 +1116,61 @@
             const ws = XLSX.utils.json_to_sheet(exportData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Data Mess");
-            XLSX.writeFile(wb, `Data_Mess_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast('Data berhasil diexport', 'success');
+            
+            const fileName = `Data_Mess_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+            showToast(`Data berhasil diexport ke ${fileName}`, 'success');
         }
 
         // ====================
-        // EVENT LISTENERS
+        // HELPER FUNCTIONS
         // ====================
-        document.getElementById('globalSearch').addEventListener('input', filterTable);
-        document.getElementById('filterLocation').addEventListener('change', filterTable);
-        document.getElementById('filterBlock').addEventListener('change', filterTable);
-        document.getElementById('filterRoom').addEventListener('change', filterTable);
-        document.getElementById('filterStatus').addEventListener('change', filterTable);
+        function getDummyData() {
+            return [
+                {
+                    id: '1',
+                    nik: "F05240598",
+                    nama: "Mohammad Rahmadhani",
+                    gender: "L",
+                    department: "Dispatch",
+                    gol: "P1.3",
+                    jabatan: "Mechanic",
+                    fasilitas: "CR",
+                    point_of_hire: "Makassar",
+                    tgl_masuk_kerja: "2024-05-22",
+                    perusahaan: "PT. HJF",
+                    lokasi_hunian: "MENTARI",
+                    floor: "Lantai Bawah",
+                    block: "19",
+                    no_kamar: "1",
+                    status_kamar: "TERISI",
+                    tgl_masuk_mess: "2024-06-01",
+                    created_at: "2024-01-01T00:00:00Z",
+                    updated_at: "2024-01-01T00:00:00Z"
+                },
+                {
+                    id: '2',
+                    nik: "131769",
+                    nama: "Yuwita Valencia W",
+                    gender: "P",
+                    department: "PT. MPPA",
+                    gol: "-",
+                    jabatan: "Cashier",
+                    fasilitas: "CR",
+                    point_of_hire: "-",
+                    tgl_masuk_kerja: "2024-11-25",
+                    perusahaan: "PT. HJF",
+                    lokasi_hunian: "SURYA RESIDENCE",
+                    floor: "Lantai Atas",
+                    block: "44",
+                    no_kamar: "14",
+                    status_kamar: "TERISI",
+                    tgl_masuk_mess: "2024-11-25",
+                    created_at: "2024-01-01T00:00:00Z",
+                    updated_at: "2024-01-01T00:00:00Z"
+                }
+            ];
+        }
 
         function refreshData() {
             showToast('Memperbarui data...', 'info');
@@ -1056,62 +1178,40 @@
         }
 
         // ====================
+        // EVENT LISTENERS
+        // ====================
+        document.getElementById('globalSearch')?.addEventListener('input', filterTable);
+        document.getElementById('filterLocation')?.addEventListener('change', filterTable);
+        document.getElementById('filterBlock')?.addEventListener('change', filterTable);
+        document.getElementById('filterRoom')?.addEventListener('change', filterTable);
+        document.getElementById('filterStatus')?.addEventListener('change', filterTable);
+
+        // ====================
         // INITIALIZATION
         // ====================
-        window.onload = async () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM loaded, initializing app...');
+            
             // Initialize Lucide icons
             lucide.createIcons();
+            
+            // Set default tab
+            switchTab('dashboard');
             
             // Load initial data
             await loadEmployees();
             
-            // Add some sample data if empty
-            if (employees.length === 0) {
-                const sampleData = [
-                    {
-                        nik: "F05240598",
-                        nama: "Mohammad Rahmadhani",
-                        gender: "L",
-                        department: "Dispatch",
-                        gol: "P1.3",
-                        jabatan: "Mechanic",
-                        fasilitas: "CR",
-                        point_of_hire: "Makassar",
-                        tgl_masuk_kerja: "2024-05-22",
-                        perusahaan: "PT. HJF",
-                        lokasi_hunian: "MENTARI",
-                        floor: "Lantai Bawah",
-                        block: "19",
-                        no_kamar: "1",
-                        status_kamar: "TERISI",
-                        tgl_masuk_mess: "2024-06-01"
-                    },
-                    {
-                        nik: "131769",
-                        nama: "Yuwita Valencia W",
-                        gender: "P",
-                        department: "PT. MPPA",
-                        gol: "-",
-                        jabatan: "Cashier",
-                        fasilitas: "CR",
-                        point_of_hire: "-",
-                        tgl_masuk_kerja: "2024-11-25",
-                        perusahaan: "PT. HJF",
-                        lokasi_hunian: "SURYA RESIDENCE",
-                        floor: "Lantai Atas",
-                        block: "44",
-                        no_kamar: "14",
-                        status_kamar: "TERISI",
-                        tgl_masuk_mess: "2024-11-25"
-                    }
-                ];
-                
-                showLoading(true);
-                await supabase.from('employees').upsert(sampleData);
-                await loadEmployees();
-                showLoading(false);
-            }
-        };
+            console.log('App initialized successfully');
+            
+            // Auto-refresh setiap 30 detik (opsional)
+            // setInterval(loadEmployees, 30000);
+        });
+
+        // Handle window errors
+        window.addEventListener('error', (event) => {
+            console.error('Global error:', event.error);
+            showToast('Terjadi kesalahan dalam aplikasi', 'error');
+        });
     </script>
 </body>
 </html>
