@@ -6,6 +6,8 @@
     <title>Mess Management Pro System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- SheetJS untuk pengolahan Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
         
@@ -39,7 +41,7 @@
 <body class="bg-slate-950 text-slate-100 overflow-hidden">
 
     <!-- Toast Notification Container -->
-    <div id="toast-container" class="fixed top-5 right-5 z-[100] flex flex-col gap-3"></div>
+    <div id="toast-container" class="fixed top-5 right-5 z-[110] flex flex-col gap-3"></div>
 
     <div class="flex h-screen overflow-hidden">
         <!-- Sidebar -->
@@ -64,12 +66,15 @@
 
             <div class="p-6 border-t border-slate-800">
                 <div class="bg-slate-800/50 p-4 rounded-xl mb-4">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">User Aktif</p>
-                    <p class="text-sm font-semibold text-slate-200">Admin Utama</p>
+                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Status Sistem</p>
+                    <p class="text-xs font-semibold text-emerald-400 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Terhubung Lokal
+                    </p>
                 </div>
                 <button class="flex items-center space-x-3 text-slate-500 hover:text-red-400 transition-colors w-full px-2 text-sm font-medium">
                     <i data-lucide="log-out" class="w-4 h-4"></i>
-                    <span>Sign Out</span>
+                    <span>Keluar</span>
                 </button>
             </div>
         </aside>
@@ -89,9 +94,6 @@
                         <input type="text" id="searchInput" placeholder="Cari NIK, Nama, atau Lokasi..." 
                             class="bg-slate-900/50 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm w-80 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 outline-none transition-all text-slate-200">
                     </div>
-                    <button class="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition-all">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                    </button>
                 </div>
             </header>
 
@@ -104,30 +106,29 @@
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="p-3 rounded-2xl bg-blue-500/10 text-blue-500"><i data-lucide="building"></i></div>
-                                <span class="text-[10px] font-bold text-blue-500 bg-blue-500/10 px-2 py-1 rounded">PRO</span>
                             </div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Total Kapasitas</p>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Kapasitas</p>
                             <h3 class="text-3xl font-bold mt-2 tabular-nums">20,000</h3>
                         </div>
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="p-3 rounded-2xl bg-emerald-500/10 text-emerald-500"><i data-lucide="user-check"></i></div>
                             </div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Terisi Saat Ini</p>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Terisi</p>
                             <h3 id="stat-terisi" class="text-3xl font-bold mt-2 tabular-nums">0</h3>
                         </div>
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="p-3 rounded-2xl bg-amber-500/10 text-amber-500"><i data-lucide="door-open"></i></div>
                             </div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Unit Tersedia</p>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Tersedia</p>
                             <h3 id="stat-tersedia" class="text-3xl font-bold mt-2 tabular-nums">0</h3>
                         </div>
                         <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
                             <div class="flex justify-between items-start mb-4">
                                 <div class="p-3 rounded-2xl bg-purple-500/10 text-purple-500"><i data-lucide="activity"></i></div>
                             </div>
-                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Tingkat Okupansi</p>
+                            <p class="text-slate-500 text-xs font-bold uppercase tracking-widest">Okupansi</p>
                             <h3 id="stat-occupancy" class="text-3xl font-bold mt-2 tabular-nums">0%</h3>
                         </div>
                     </div>
@@ -135,29 +136,35 @@
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2 bg-slate-900/50 border border-slate-800 rounded-3xl p-8 backdrop-blur-sm">
                             <div class="flex justify-between items-center mb-8">
-                                <h3 class="text-lg font-bold">Kapasitas per Lokasi Mess</h3>
-                                <i data-lucide="more-horizontal" class="text-slate-500 cursor-pointer"></i>
+                                <h3 class="text-lg font-bold">Sebaran Lokasi Mess</h3>
                             </div>
-                            <div id="location-progress" class="space-y-6">
-                                <!-- Bars via JS -->
-                            </div>
+                            <div id="location-progress" class="space-y-6"></div>
                         </div>
                         <div class="bg-slate-900/50 border border-slate-800 rounded-3xl p-8 backdrop-blur-sm">
-                            <h3 class="text-lg font-bold mb-6">Aksi Cepat</h3>
+                            <h3 class="text-lg font-bold mb-6">Kelola Cepat</h3>
                             <div class="space-y-3">
-                                <button onclick="openModal()" class="w-full flex items-center justify-between p-4 bg-blue-600 hover:bg-blue-500 rounded-2xl transition-all group">
-                                    <div class="flex items-center space-x-3">
-                                        <i data-lucide="user-plus" class="w-5 h-5 text-white"></i>
-                                        <span class="font-semibold text-white">Input Karyawan Baru</span>
+                                <button onclick="openModal()" class="w-full flex items-center justify-between p-4 bg-blue-600 hover:bg-blue-500 rounded-2xl transition-all group shadow-lg shadow-blue-900/20">
+                                    <div class="flex items-center space-x-3 text-white">
+                                        <i data-lucide="user-plus" class="w-5 h-5"></i>
+                                        <span class="font-semibold">Input Manual</span>
                                     </div>
-                                    <i data-lucide="chevron-right" class="w-4 h-4 text-white/50 group-hover:translate-x-1 transition-transform"></i>
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
                                 </button>
-                                <button onclick="switchTab('master')" class="w-full flex items-center justify-between p-4 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-all group">
-                                    <div class="flex items-center space-x-3 text-slate-300">
-                                        <i data-lucide="file-text" class="w-5 h-5"></i>
-                                        <span class="font-semibold">Generate Laporan</span>
+                                <button onclick="document.getElementById('importFile').click()" class="w-full flex items-center justify-between p-4 bg-emerald-600 hover:bg-emerald-500 rounded-2xl transition-all group shadow-lg shadow-emerald-900/20">
+                                    <div class="flex items-center space-x-3 text-white">
+                                        <i data-lucide="file-up" class="w-5 h-5"></i>
+                                        <span class="font-semibold">Import Excel</span>
                                     </div>
-                                    <i data-lucide="download" class="w-4 h-4 text-slate-500"></i>
+                                    <i data-lucide="upload" class="w-4 h-4"></i>
+                                </button>
+                                <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="importExcel(event)">
+                                
+                                <button onclick="downloadTemplate()" class="w-full flex items-center justify-between p-4 bg-slate-800 hover:bg-slate-700 rounded-2xl transition-all group border border-slate-700">
+                                    <div class="flex items-center space-x-3 text-slate-300">
+                                        <i data-lucide="download-cloud" class="w-5 h-5"></i>
+                                        <span class="font-semibold">Download Template</span>
+                                    </div>
+                                    <i data-lucide="file-type" class="w-4 h-4"></i>
                                 </button>
                             </div>
                         </div>
@@ -169,12 +176,12 @@
                     <div class="flex justify-between items-end">
                         <div>
                             <h3 class="text-2xl font-bold">Database Hunian</h3>
-                            <p class="text-slate-500 text-sm">Total <span id="total-count" class="text-blue-400 font-bold">0</span> entri ditemukan</p>
+                            <p class="text-slate-500 text-sm">Kelola seluruh data karyawan secara massal</p>
                         </div>
                         <div class="flex space-x-3">
-                            <button class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold px-6 py-3 rounded-xl border border-slate-700 transition-all flex items-center space-x-2">
-                                <i data-lucide="filter" class="w-4 h-4"></i>
-                                <span>Filter</span>
+                            <button onclick="exportExcel()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm font-bold px-6 py-3 rounded-xl border border-slate-700 transition-all flex items-center space-x-2">
+                                <i data-lucide="file-down" class="w-4 h-4 text-emerald-400"></i>
+                                <span>Export ke Excel</span>
                             </button>
                             <button onclick="openModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold px-6 py-3 rounded-xl shadow-lg shadow-blue-900/20 transition-all flex items-center space-x-2">
                                 <i data-lucide="plus" class="w-4 h-4 text-white"></i>
@@ -189,27 +196,23 @@
                                 <thead class="bg-slate-800/40 text-slate-400 uppercase text-[10px] tracking-widest font-bold">
                                     <tr>
                                         <th class="px-8 py-5 border-b border-slate-800">Profil Karyawan</th>
-                                        <th class="px-8 py-5 border-b border-slate-800">Organisasi</th>
+                                        <th class="px-8 py-5 border-b border-slate-800">Departemen</th>
                                         <th class="px-8 py-5 border-b border-slate-800">Detail Hunian</th>
                                         <th class="px-8 py-5 border-b border-slate-800">Status</th>
                                         <th class="px-8 py-5 border-b border-slate-800 text-right">Manajemen</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-body" class="divide-y divide-slate-800/50">
-                                    <!-- Rows via JS -->
-                                </tbody>
+                                <tbody id="table-body" class="divide-y divide-slate-800/50"></tbody>
                             </table>
                         </div>
 
                         <div class="p-8 border-t border-slate-800 flex items-center justify-between text-xs font-bold text-slate-500 bg-slate-900/20">
-                            <div class="flex items-center space-x-4">
-                                <span id="pagination-info">PAGE 1 OF 1</span>
-                            </div>
+                            <span id="pagination-info">PAGE 1 OF 1</span>
                             <div class="flex items-center space-x-2">
-                                <button onclick="prevPage()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-20 transition-all border border-slate-700">
+                                <button onclick="prevPage()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-20 border border-slate-700 transition-all">
                                     <i data-lucide="chevron-left" class="w-5 h-5"></i>
                                 </button>
-                                <button onclick="nextPage()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-20 transition-all border border-slate-700">
+                                <button onclick="nextPage()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-20 border border-slate-700 transition-all">
                                     <i data-lucide="chevron-right" class="w-5 h-5"></i>
                                 </button>
                             </div>
@@ -221,14 +224,11 @@
         </main>
     </div>
 
-    <!-- Modal Form (Create/Update) -->
+    <!-- Modal Form -->
     <div id="dataModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden">
             <div class="p-8 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
-                <div>
-                    <h3 id="modalTitle" class="text-xl font-bold text-white">Input Data Hunian</h3>
-                    <p class="text-xs text-slate-500 mt-1">Pastikan data NIK dan Nama sesuai dengan KTP/ID Card</p>
-                </div>
+                <h3 id="modalTitle" class="text-xl font-bold text-white">Input Data Hunian</h3>
                 <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
@@ -236,26 +236,21 @@
             
             <form id="employeeForm" class="p-8 grid grid-cols-1 md:grid-cols-2 gap-6">
                 <input type="hidden" id="editIndex">
-                
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">NIK Karyawan</label>
-                    <input type="text" id="formNik" required placeholder="Contoh: F05240xxx"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">NIK</label>
+                    <input type="text" id="formNik" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nama Lengkap</label>
-                    <input type="text" id="formNama" required placeholder="Nama sesuai ID"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <input type="text" id="formNama" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="space-y-2">
                     <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Departemen</label>
-                    <input type="text" id="formDept" required placeholder="Contoh: Dispatch"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <input type="text" id="formDept" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lokasi Hunian</label>
-                    <select id="formLokasi" required
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Lokasi</label>
+                    <select id="formLokasi" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                         <option value="MENTARI">MENTARI</option>
                         <option value="SURYA RESIDENCE">SURYA RESIDENCE</option>
                         <option value="BINTANG">BINTANG</option>
@@ -263,119 +258,153 @@
                     </select>
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Nomor Kamar</label>
-                    <input type="text" id="formKamar" required placeholder="01"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Kamar</label>
+                    <input type="text" id="formKamar" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
                 <div class="space-y-2">
-                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Blok / Lantai</label>
-                    <input type="text" id="formBlock" required placeholder="Contoh: Blok 19 / Lt. Bawah"
-                        class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none transition-all">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Blok</label>
+                    <input type="text" id="formBlock" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
-
                 <div class="md:col-span-2 pt-4 flex space-x-3">
-                    <button type="button" onclick="closeModal()" 
-                        class="flex-1 px-6 py-4 rounded-2xl border border-slate-800 text-slate-400 font-bold hover:bg-slate-800 transition-all">
-                        Batalkan
-                    </button>
-                    <button type="submit" 
-                        class="flex-1 px-6 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-xl shadow-blue-900/20 transition-all">
-                        Simpan Perubahan
-                    </button>
+                    <button type="button" onclick="closeModal()" class="flex-1 px-6 py-4 rounded-2xl border border-slate-800 text-slate-400 font-bold hover:bg-slate-800 transition-all">Batal</button>
+                    <button type="submit" class="flex-1 px-6 py-4 rounded-2xl bg-blue-600 text-white font-bold hover:bg-blue-500 shadow-xl shadow-blue-900/20 transition-all">Simpan Data</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // --- CORE STATE ---
+        // --- DATA STATE ---
         let allData = [
-            { nik: 'F05240598', nama: 'Mohammad Rahmadhani', department: 'Dispatch', lokasi: 'MENTARI', kamar: '1', status: 'TERISI', block: '19 / Bawah' },
-            { nik: 'F06240611', nama: 'Bambang Rudiono', department: 'Dispatch', lokasi: 'MENTARI', kamar: '1', status: 'TERISI', block: '19 / Bawah' },
-            { nik: '131769', nama: 'Yuwita Valencia W', department: 'PT. MPPA', lokasi: 'SURYA RESIDENCE', kamar: '14', status: 'TERISI', block: '44 / Atas' },
-            { nik: '131775', nama: 'Tassya Firdha Anissa', department: 'Logistics', lokasi: 'PELANGI', kamar: '10', status: 'TERISI', block: '05 / Bawah' },
-            { nik: '128621', nama: 'Chartika Natalia', department: 'PT. MPPA', lokasi: 'SURYA RESIDENCE', kamar: '14', status: 'TERISI', block: '44 / Atas' }
+            { nik: 'F05240598', nama: 'Mohammad Rahmadhani', department: 'Dispatch', lokasi: 'MENTARI', kamar: '1', status: 'TERISI', block: '19' },
+            { nik: 'F06240611', nama: 'Bambang Rudiono', department: 'Dispatch', lokasi: 'MENTARI', kamar: '1', status: 'TERISI', block: '19' },
+            { nik: '131769', nama: 'Yuwita Valencia W', department: 'PT. MPPA', lokasi: 'SURYA RESIDENCE', kamar: '14', status: 'TERISI', block: '44' },
+            { nik: '131775', nama: 'Tassya Firdha Anissa', department: 'Logistics', lokasi: 'PELANGI', kamar: '10', status: 'TERISI', block: '05' },
+            { nik: '128621', nama: 'Chartika Natalia', department: 'PT. MPPA', lokasi: 'SURYA RESIDENCE', kamar: '14', status: 'TERISI', block: '44' }
         ];
 
         let currentPage = 1;
-        const itemsPerPage = 8;
+        const itemsPerPage = 7;
         let activeTab = 'dashboard';
 
         // --- TOAST SYSTEM ---
         function showToast(message, type = 'success') {
-            const id = Date.now();
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.id = `toast-${id}`;
-            
-            const colorClass = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
+            const color = type === 'success' ? 'bg-emerald-500' : 'bg-red-500';
             const icon = type === 'success' ? 'check-circle' : 'alert-circle';
             
-            toast.className = `flex items-center space-x-3 p-4 rounded-2xl shadow-2xl text-white ${colorClass} animate-in slide-in-from-right-full duration-300`;
-            toast.innerHTML = `
-                <i data-lucide="${icon}" class="w-5 h-5"></i>
-                <span class="text-sm font-bold">${message}</span>
-            `;
+            toast.className = `flex items-center space-x-3 p-4 rounded-2xl shadow-2xl text-white ${color} animate-in slide-in-from-right-full duration-300`;
+            toast.innerHTML = `<i data-lucide="${icon}" class="w-5 h-5"></i><span class="text-sm font-bold">${message}</span>`;
             
             container.appendChild(toast);
             lucide.createIcons();
-            
             setTimeout(() => {
                 toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-full');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // --- NAVIGATION ---
+        // --- EXCEL LOGIC ---
+        function downloadTemplate() {
+            const headers = [["NIK", "NAMA", "DEPARTMENT", "LOKASI", "KAMAR", "BLOCK"]];
+            const ws = XLSX.utils.aoa_to_sheet(headers);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template_Mess");
+            XLSX.writeFile(wb, "Template_Import_Mess.xlsx");
+            showToast("Template Excel berhasil diunduh");
+        }
+
+        function exportExcel() {
+            const exportData = allData.map(d => ({
+                NIK: d.nik,
+                NAMA: d.nama,
+                DEPARTMENT: d.department,
+                LOKASI: d.lokasi,
+                KAMAR: d.kamar,
+                BLOCK: d.block,
+                STATUS: d.status
+            }));
+            const ws = XLSX.utils.json_to_sheet(exportData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data_Hunian");
+            XLSX.writeFile(wb, `Data_Mess_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast("Data berhasil dieksport ke Excel");
+        }
+
+        function importExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(worksheet);
+
+                if (json.length === 0) {
+                    showToast("File Excel kosong atau format salah", "error");
+                    return;
+                }
+
+                // Map Excel data to our structure
+                const mapped = json.map(row => ({
+                    nik: String(row.NIK || row.nik || ''),
+                    nama: String(row.NAMA || row.nama || ''),
+                    department: String(row.DEPARTMENT || row.department || ''),
+                    lokasi: String(row.LOKASI || row.lokasi || 'MENTARI'),
+                    kamar: String(row.KAMAR || row.kamar || ''),
+                    block: String(row.BLOCK || row.block || ''),
+                    status: 'TERISI'
+                })).filter(r => r.nik && r.nama);
+
+                allData = [...mapped, ...allData]; // Merge new data at top
+                showToast(`${mapped.length} data berhasil diimport!`);
+                renderDashboard();
+                if(activeTab === 'master') renderTable();
+                event.target.value = ''; // Reset input
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // --- NAVIGATION & CRUD ---
         function switchTab(tabId) {
             activeTab = tabId;
             document.getElementById('tab-dashboard').classList.toggle('hidden', tabId !== 'dashboard');
             document.getElementById('tab-master').classList.toggle('hidden', tabId !== 'master');
             
-            const navDashboard = document.getElementById('nav-dashboard');
-            const navMaster = document.getElementById('nav-master');
-            
-            const activeClass = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-lg shadow-blue-900/20";
-            const inactiveClass = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-slate-200";
+            const btns = { dashboard: 'nav-dashboard', master: 'nav-master' };
+            Object.keys(btns).forEach(key => {
+                const el = document.getElementById(btns[key]);
+                if (key === tabId) {
+                    el.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all bg-blue-600 text-white shadow-lg shadow-blue-900/20";
+                } else {
+                    el.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-slate-200";
+                }
+            });
 
-            if (tabId === 'dashboard') {
-                navDashboard.className = activeClass;
-                navMaster.className = inactiveClass;
-                document.getElementById('page-title').innerText = "Dashboard Overview";
-                document.getElementById('page-subtitle').innerText = "Pantau statistik hunian secara real-time";
-                renderDashboard();
-            } else {
-                navMaster.className = activeClass;
-                navDashboard.className = inactiveClass;
-                document.getElementById('page-title').innerText = "Master Data Hub";
-                document.getElementById('page-subtitle').innerText = "Manajemen database karyawan mess";
-                renderTable();
-            }
+            tabId === 'dashboard' ? renderDashboard() : renderTable();
+            document.getElementById('page-title').innerText = tabId === 'dashboard' ? "Dashboard Overview" : "Master Data Hub";
         }
 
-        // --- CRUD OPERATIONS ---
         function openModal(index = -1) {
-            const modal = document.getElementById('dataModal');
             const form = document.getElementById('employeeForm');
-            const title = document.getElementById('modalTitle');
-            
             form.reset();
             document.getElementById('editIndex').value = index;
+            document.getElementById('modalTitle').innerText = index > -1 ? "Edit Data Hunian" : "Input Karyawan Baru";
 
             if (index > -1) {
                 const item = allData[index];
-                title.innerText = "Edit Data Hunian";
                 document.getElementById('formNik').value = item.nik;
                 document.getElementById('formNama').value = item.nama;
                 document.getElementById('formDept').value = item.department;
                 document.getElementById('formLokasi').value = item.lokasi;
                 document.getElementById('formKamar').value = item.kamar;
                 document.getElementById('formBlock').value = item.block;
-            } else {
-                title.innerText = "Input Karyawan Baru";
             }
-
-            modal.classList.add('modal-active');
+            document.getElementById('dataModal').classList.add('modal-active');
             lucide.createIcons();
         }
 
@@ -386,8 +415,7 @@
         document.getElementById('employeeForm').addEventListener('submit', (e) => {
             e.preventDefault();
             const index = parseInt(document.getElementById('editIndex').value);
-            
-            const newData = {
+            const data = {
                 nik: document.getElementById('formNik').value,
                 nama: document.getElementById('formNama').value,
                 department: document.getElementById('formDept').value,
@@ -398,23 +426,21 @@
             };
 
             if (index > -1) {
-                allData[index] = newData;
-                showToast("Data karyawan berhasil diperbarui");
+                allData[index] = data;
+                showToast("Data berhasil diperbarui");
             } else {
-                allData.unshift(newData);
-                showToast("Karyawan baru berhasil ditambahkan");
+                allData.unshift(data);
+                showToast("Data baru berhasil disimpan");
             }
-
             closeModal();
             activeTab === 'dashboard' ? renderDashboard() : renderTable();
         });
 
         function deleteItem(index) {
-            if (confirm(`Hapus data ${allData[index].nama}?`)) {
+            if (confirm("Hapus data karyawan ini?")) {
                 allData.splice(index, 1);
-                showToast("Data berhasil dihapus dari sistem", "error");
+                showToast("Data dihapus", "error");
                 renderTable();
-                renderDashboard();
             }
         }
 
@@ -423,20 +449,21 @@
             const count = allData.length;
             document.getElementById('stat-terisi').innerText = count.toLocaleString();
             document.getElementById('stat-tersedia').innerText = (20000 - count).toLocaleString();
-            document.getElementById('stat-occupancy').innerText = ((count / 20000) * 100).toFixed(2) + "%";
+            document.getElementById('stat-occupancy').innerText = ((count / 20000) * 100).toFixed(1) + "%";
 
-            const locations = ['MENTARI', 'SURYA RESIDENCE', 'BINTANG', 'PELANGI'];
+            const locs = ['MENTARI', 'SURYA RESIDENCE', 'BINTANG', 'PELANGI'];
             const container = document.getElementById('location-progress');
-            container.innerHTML = locations.map(loc => {
-                const perc = (Math.random() * 40) + 30; 
+            container.innerHTML = locs.map(loc => {
+                const items = allData.filter(d => d.lokasi === loc).length;
+                const perc = Math.min((items / 5000) * 100, 100);
                 return `
-                    <div class="group">
-                        <div class="flex justify-between items-center text-xs mb-3">
-                            <span class="text-slate-200 font-bold group-hover:text-blue-400 transition-colors">${loc}</span>
-                            <span class="text-slate-500 font-mono">${Math.floor(perc * 50)} / 5,000 UNIT</span>
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-2">
+                            <span class="text-slate-200">${loc}</span>
+                            <span>${items} / 5,000</span>
                         </div>
-                        <div class="h-3 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
-                            <div class="h-full bg-blue-500 shadow-[0_0_15px_rgba(59,130,246,0.3)] transition-all duration-1000" style="width: ${perc}%"></div>
+                        <div class="h-2 bg-slate-800 rounded-full overflow-hidden">
+                            <div class="h-full bg-blue-500 transition-all duration-700" style="width: ${perc}%"></div>
                         </div>
                     </div>
                 `;
@@ -446,86 +473,47 @@
         function renderTable() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const filtered = allData.filter(d => 
-                d.nama.toLowerCase().includes(query) || 
-                d.nik.toLowerCase().includes(query) ||
-                d.lokasi.toLowerCase().includes(query)
+                d.nama.toLowerCase().includes(query) || d.nik.toLowerCase().includes(query)
             );
 
-            document.getElementById('total-count').innerText = filtered.length;
             const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginated = filtered.slice(start, end);
+            const paginated = filtered.slice(start, start + itemsPerPage);
 
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = paginated.map((item, i) => {
-                // Find actual index in allData
-                const realIndex = allData.findIndex(d => d.nik === item.nik);
-                return `
-                    <tr class="hover:bg-blue-500/[0.02] transition-all group">
-                        <td class="px-8 py-6">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-blue-400 font-bold border border-slate-700 uppercase">
-                                    ${item.nama.substring(0, 2)}
-                                </div>
-                                <div>
-                                    <div class="text-blue-400 font-mono text-[10px] font-bold">${item.nik}</div>
-                                    <div class="text-slate-100 font-bold text-sm">${item.nama}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="inline-flex items-center px-2 py-1 rounded bg-slate-800 border border-slate-700 text-slate-400 text-[10px] font-bold uppercase">
-                                ${item.department}
-                            </div>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="text-slate-200 font-bold text-sm">${item.lokasi}</div>
-                            <div class="text-[11px] text-slate-500 mt-0.5">KM. ${item.kamar} • ${item.block}</div>
-                        </td>
-                        <td class="px-8 py-6">
-                            <div class="flex items-center space-x-2">
-                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                                <span class="text-emerald-500 text-[10px] font-black uppercase tracking-widest">${item.status}</span>
-                            </div>
-                        </td>
-                        <td class="px-8 py-6 text-right">
-                            <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onclick="openModal(${realIndex})" class="p-2.5 hover:bg-blue-500/10 rounded-xl text-slate-500 hover:text-blue-400 transition-all border border-transparent hover:border-blue-500/20">
-                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
-                                </button>
-                                <button onclick="deleteItem(${realIndex})" class="p-2.5 hover:bg-red-500/10 rounded-xl text-slate-500 hover:text-red-400 transition-all border border-transparent hover:border-red-500/20">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
+            document.getElementById('table-body').innerHTML = paginated.map((item, i) => `
+                <tr class="hover:bg-slate-800/30 group transition-all">
+                    <td class="px-8 py-5">
+                        <div class="text-blue-400 font-mono text-[10px] font-bold">${item.nik}</div>
+                        <div class="text-slate-100 font-bold">${item.nama}</div>
+                    </td>
+                    <td class="px-8 py-5 text-slate-400 text-xs font-medium">${item.department}</td>
+                    <td class="px-8 py-5">
+                        <div class="text-slate-200 font-bold text-sm">${item.lokasi}</div>
+                        <div class="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Kamar ${item.kamar} • Blok ${item.block}</div>
+                    </td>
+                    <td class="px-8 py-5">
+                        <span class="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 text-[10px] font-black border border-emerald-500/20">${item.status}</span>
+                    </td>
+                    <td class="px-8 py-5 text-right">
+                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openModal(${allData.indexOf(item)})" class="p-2 hover:bg-blue-500/10 rounded-lg text-slate-500 hover:text-blue-400 transition-all"><i data-lucide="edit-3" class="w-4 h-4"></i></button>
+                            <button onclick="deleteItem(${allData.indexOf(item)})" class="p-2 hover:bg-red-500/10 rounded-lg text-slate-500 hover:text-red-400 transition-all"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
 
             const totalPages = Math.ceil(filtered.length / itemsPerPage) || 1;
             document.getElementById('pagination-info').innerText = `PAGE ${currentPage} OF ${totalPages}`;
             lucide.createIcons();
         }
 
-        // --- EVENTS ---
-        function nextPage() {
-            if (currentPage * itemsPerPage < allData.length) {
-                currentPage++;
-                renderTable();
-            }
-        }
-
-        function prevPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                renderTable();
-            }
-        }
+        // --- INIT ---
+        function prevPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+        function nextPage() { if (currentPage * itemsPerPage < allData.length) { currentPage++; renderTable(); } }
 
         document.getElementById('searchInput').addEventListener('input', () => {
             currentPage = 1;
-            if(activeTab === 'master') renderTable();
-            else renderDashboard();
+            activeTab === 'master' ? renderTable() : renderDashboard();
         });
 
         window.onload = () => {
