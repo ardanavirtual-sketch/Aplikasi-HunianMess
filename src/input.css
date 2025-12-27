@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@layer base {
+  body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-slate-900/70 backdrop-blur-lg border border-white/10;
+  }
+  
+  .glass-sidebar {
+    @apply bg-slate-900/90 backdrop-blur-xl border-r border-white/10;
+  }
+  
+  .stat-card {
+    @apply bg-gradient-to-br from-blue-500/10 to-purple-600/10 border border-blue-500/20;
+  }
+  
+  .hover-glow:hover {
+    @apply shadow-lg shadow-blue-500/20;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    @apply w-2 h-2;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-slate-900/50 rounded-full;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-gradient-to-b from-blue-500 to-purple-600 rounded-full;
+  }
+  
+  .table-row-hover:hover {
+    @apply bg-gradient-to-r from-blue-500/10 to-purple-600/10;
+  }
+  
+  .gradient-text {
+    @apply bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent;
+  }
+  
+  .loading-spinner {
+    @apply border-4 border-blue-500/10 border-t-blue-500 rounded-full animate-spin;
+  }
+  
+  .status-badge {
+    @apply px-3 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .status-occupied {
+    @apply bg-emerald-500/20 text-emerald-400 border border-emerald-500/30;
+  }
+  
+  .status-vacant {
+    @apply bg-amber-500/20 text-amber-400 border border-amber-500/30;
+  }
+}
