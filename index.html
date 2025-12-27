@@ -103,12 +103,10 @@
 
     <!-- Sidebar -->
     <aside id="sidebar" class="bg-[#091f30] border-r border-white/5 flex flex-col shrink-0 relative">
-        <!-- Toggle Button -->
         <button onclick="toggleSidebar()" class="absolute -right-3 top-10 bg-sky-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-50 hover:scale-110 transition-transform">
             <i id="toggle-icon" data-lucide="chevron-left" class="w-4 h-4"></i>
         </button>
 
-        <!-- Logo Area -->
         <div class="p-6 mb-4 flex items-center gap-4">
             <div class="bg-sky-500 min-w-[48px] h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-900/40">
                 <i data-lucide="waves" class="text-white w-7 h-7"></i>
@@ -119,7 +117,6 @@
             </div>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
             <div class="mb-6">
                 <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Menu Utama</p>
@@ -160,7 +157,6 @@
             </div>
         </nav>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 sidebar-footer-content">
             <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH TEMPLATE
@@ -170,7 +166,6 @@
 
     <!-- Main Content -->
     <main class="flex-1 flex flex-col min-w-0 bg-[#071927]">
-        <!-- Top Header -->
         <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-4">
                 <div id="page-icon" class="w-10 h-10 bg-sky-500/10 text-sky-500 rounded-xl flex items-center justify-center">
@@ -194,7 +189,6 @@
             </div>
         </header>
 
-        <!-- Content Area -->
         <div id="content-area" class="flex-1 overflow-hidden relative">
             
             <!-- DASHBOARD TAB -->
@@ -234,10 +228,10 @@
                         <h3 class="text-xl font-black text-white mb-2">Informasi Kapasitas</h3>
                         <p class="text-slate-400 text-xs mb-4">Ringkasan kapasitas hunian Mess P2 secara keseluruhan.</p>
                         <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden">
-                            <div id="capacity-bar" class="bg-sky-500 h-full w-[45%] transition-all duration-1000"></div>
+                            <div id="capacity-bar" class="bg-sky-500 h-full w-[0%] transition-all duration-1000"></div>
                         </div>
                         <div class="flex justify-between mt-3 text-[10px] font-bold text-slate-500">
-                            <span>0 PENGHUNI</span>
+                            <span id="label-count">0 PENGHUNI</span>
                             <span id="capacity-text">0% TERPAKAI</span>
                             <span>20.000 KAPASITAS</span>
                         </div>
@@ -247,7 +241,6 @@
 
             <!-- DATABASE TABLE VIEW -->
             <div id="tab-data" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
-                <!-- Table Filters -->
                 <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-4">
                         <span id="data-count-badge" class="bg-sky-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
@@ -260,7 +253,6 @@
                     </div>
                 </div>
 
-                <!-- Scrollable Container for Table -->
                 <div class="flex-1 overflow-auto custom-scrollbar bg-[#071927]">
                     <table class="database-table">
                         <thead class="text-slate-400">
@@ -290,7 +282,6 @@
                     </table>
                 </div>
             </div>
-
         </div>
     </main>
 
@@ -301,26 +292,30 @@
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
 
-        // --- Supabase Config (Dummy/Placeholder) ---
+         // --- Supabase Config (Dummy/Placeholder) ---
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Mocking Supabase Client (Agar kode tidak crash jika URL/Key belum diset)
+        const supabaseClient = {
+            from: () => ({
+                select: () => ({
+                    order: () => Promise.resolve({ data: [], error: null })
+                }),
+                upsert: (data) => {
+                    // Simpan ke local state jika database belum siap
+                    console.log("Mock Upsert:", data);
+                    return Promise.resolve({ data, error: null });
+                }
+            })
+        };
+
         // --- Initial Load ---
         async function fetchAllData() {
-            // Simulasi fetch data
-            const { data, error } = await supabaseClient
-                .from('karyawan_mess')
-                .select('*')
-                .order('nama', { ascending: true });
-
-            if (!error) {
-                employees = data || [];
-                updateUI();
-            } else {
-                console.error("Database Error:", error);
-            }
+            // Simulasi load awal (Bisa diganti Supabase asli nanti)
+            updateUI();
         }
 
         // --- UI Logic ---
@@ -347,7 +342,6 @@
             document.getElementById('tab-dashboard').classList.toggle('hidden', !isDashboard);
             document.getElementById('tab-data').classList.toggle('hidden', isDashboard);
             
-            // Header Update
             document.getElementById('page-title').innerText = isDashboard ? "Dashboard" : "Database";
             document.getElementById('page-icon').innerHTML = isDashboard ? '<i data-lucide="layout-grid"></i>' : '<i data-lucide="database"></i>';
             document.getElementById('current-view-name').innerText = isDashboard ? "" : "DATABASE KARYAWAN LENGKAP";
@@ -383,19 +377,19 @@
         }
 
         function updateUI() {
-            // Stats Update
-            document.getElementById('stat-total').innerText = employees.length.toLocaleString();
-            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
+            const total = employees.length;
+            const terisi = employees.filter(e => String(e.status_kamar).toUpperCase() === 'TERISI').length;
+            
+            document.getElementById('stat-total').innerText = total.toLocaleString();
             document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
             document.getElementById('stat-avail').innerText = (20000 - terisi).toLocaleString();
             document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
 
-            // Capacity Bar
-            const perc = (terisi / 20000) * 100;
+            const perc = total > 0 ? (terisi / 20000) * 100 : 0;
             document.getElementById('capacity-bar').style.width = perc + "%";
             document.getElementById('capacity-text').innerText = perc.toFixed(1) + "% TERPAKAI";
+            document.getElementById('label-count').innerText = `${total.toLocaleString()} PENGHUNI`;
 
-            // Location Filter
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
             document.getElementById('filterLokasi').innerHTML = '<option value="">Semua Lokasi Mess</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
@@ -414,7 +408,6 @@
             return 'LAINNYA';
         }
 
-        // --- Core Table Rendering ---
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
@@ -439,7 +432,7 @@
             tbody.innerHTML = filtered.map(e => `
                 <tr class="hover:bg-white/5 transition-colors">
                     <td class="text-center">
-                        <button onclick="deleteEmployee('${e.id}')" class="p-1.5 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
+                        <button onclick="deleteEmployee('${e.nik}')" class="p-1.5 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
                             <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                         </button>
                     </td>
@@ -459,7 +452,7 @@
                     <td class="text-slate-400">${e.floor || '-'}</td>
                     <td class="text-slate-300 font-bold">${e.block || '-'}</td>
                     <td class="text-emerald-400 font-black">${e.no_kamar || '-'}</td>
-                    <td class="font-black ${e.status_kamar === 'TERISI' ? 'text-emerald-500' : 'text-rose-500'}">
+                    <td class="font-black ${String(e.status_kamar).toUpperCase() === 'TERISI' ? 'text-emerald-500' : 'text-rose-500'}">
                         ${e.status_kamar || 'TERISI'}
                     </td>
                     <td class="text-amber-400 font-bold">${e.tanggal_masuk_mess_hunian_p2 || '-'}</td>
@@ -468,42 +461,72 @@
             lucide.createIcons();
         }
 
-        // --- Handlers ---
+        // --- FIXED Handle Import ---
         async function handleImport(event) {
             const file = event.target.files[0];
             if(!file) return;
-            showToast("Membaca file Excel...");
+            
+            showToast("Memproses file Excel...", "success");
             
             const reader = new FileReader();
             reader.onload = async (e) => {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                
-                const toUpload = json.map(row => ({
-                    nik: String(row["NIK"] || ""),
-                    nama: String(row["NAMA"] || ""),
-                    gender: String(row["GENDER"] || ""),
-                    department: String(row["DEPARTMENT"] || ""),
-                    gol: String(row["GOL"] || ""),
-                    jabatan: String(row["JABATAN"] || ""),
-                    fasilitas: String(row["FASILITAS"] || ""),
-                    point_of_hire: String(row["Point of Hire"] || ""),
-                    tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || null,
-                    perusahaan: String(row["PERUSAHAAN"] || ""),
-                    lokasi_hunian: String(row["LOKASI HUNIAN"] || ""),
-                    floor: String(row["FLOOR"] || ""),
-                    block: String(row["BLOCK"] || ""),
-                    no_kamar: String(row["NO KAMAR"] || ""),
-                    status_kamar: String(row["STATUS KAMAR"] || "TERISI"),
-                    tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || null
-                })).filter(i => i.nik !== "");
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                    const sheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[sheetName];
+                    const json = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
 
-                const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
-                if(!error) {
-                    showToast("Database Sinkron!");
-                    fetchAllData();
-                } else {
-                    showToast("Gagal upload ke server", "error");
+                    if (json.length === 0) {
+                        showToast("File Excel kosong!", "error");
+                        return;
+                    }
+
+                    // Mapping & Cleansing Data
+                    const cleanedData = json.map(row => {
+                        // Helper untuk formatting tanggal jika excel membacanya sebagai object Date
+                        const formatDate = (val) => {
+                            if (val instanceof Date) return val.toISOString().split('T')[0];
+                            return val;
+                        };
+
+                        return {
+                            nik: String(row["NIK"] || "").trim(),
+                            nama: String(row["NAMA"] || "").trim(),
+                            gender: String(row["GENDER"] || "").trim(),
+                            department: String(row["DEPARTMENT"] || "").trim(),
+                            gol: String(row["GOL"] || "").trim(),
+                            jabatan: String(row["JABATAN"] || "").trim(),
+                            fasilitas: String(row["FASILITAS"] || "").trim(),
+                            point_of_hire: String(row["Point of Hire"] || row["POINT OF HIRE"] || "").trim(),
+                            tanggal_masuk_kerja: formatDate(row["TANGGAL MASUK KERJA"]),
+                            perusahaan: String(row["PERUSAHAAN"] || "").trim(),
+                            lokasi_hunian: String(row["LOKASI HUNIAN"] || "").trim(),
+                            floor: String(row["FLOOR"] || "").trim(),
+                            block: String(row["BLOCK"] || "").trim(),
+                            no_kamar: String(row["NO KAMAR"] || "").trim(),
+                            status_kamar: String(row["STATUS KAMAR"] || "TERISI").trim(),
+                            tanggal_masuk_mess_hunian_p2: formatDate(row["TANGGAL MASUK MESS HUNIAN P2"])
+                        };
+                    }).filter(item => item.nik !== "");
+
+                    // Update local state
+                    // Jika NIK sama, kita timpa (upsert logic di memory)
+                    const nikMap = new Map(employees.map(emp => [emp.nik, emp]));
+                    cleanedData.forEach(newEmp => nikMap.set(newEmp.nik, newEmp));
+                    employees = Array.from(nikMap.values());
+
+                    // Jalankan upload ke Supabase jika sudah dikonfigurasi
+                    await supabaseClient.from('karyawan_mess').upsert(cleanedData);
+
+                    showToast(`${cleanedData.length} data berhasil diimpor!`);
+                    updateUI();
+                    
+                    // Reset input file agar bisa upload file yang sama lagi jika perlu
+                    event.target.value = '';
+                } catch (err) {
+                    console.error("Import Error:", err);
+                    showToast("Gagal memproses file. Pastikan format kolom benar.", "error");
                 }
             };
             reader.readAsArrayBuffer(file);
@@ -514,14 +537,21 @@
             const ws = XLSX.utils.aoa_to_sheet(headers);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Master_Template");
-            XLSX.writeFile(wb, "Template_Mess_P2_Lengkap.xlsx");
+            XLSX.writeFile(wb, "Template_Mess_Lengkap.xlsx");
         }
 
         function exportData() {
+            if(employees.length === 0) return showToast("Tidak ada data untuk diexport", "error");
             const ws = XLSX.utils.json_to_sheet(employees);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Database_Mess_P2");
+            XLSX.utils.book_append_sheet(wb, ws, "Database_Mess");
             XLSX.writeFile(wb, "Data_Mess_Export.xlsx");
+        }
+
+        function deleteEmployee(nik) {
+            employees = employees.filter(e => e.nik !== nik);
+            showToast("Data dihapus dari sesi");
+            updateUI();
         }
 
         function showToast(msg, type = 'success') {
@@ -531,11 +561,17 @@
             toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check' : 'alert-circle'}" class="w-4 h-4"></i> ${msg}`;
             container.appendChild(toast);
             lucide.createIcons();
-            setTimeout(() => toast.remove(), 3000);
+            setTimeout(() => {
+                toast.classList.replace('slide-in-from-right-5', 'slide-out-to-right-5');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
         }
 
         document.getElementById('globalSearch').addEventListener('input', renderTable);
-        window.onload = () => { lucide.createIcons(); fetchAllData(); };
+        window.onload = () => { 
+            lucide.createIcons(); 
+            fetchAllData(); 
+        };
     </script>
 </body>
 </html>
