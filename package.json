@@ -1,0 +1,24 @@
+{
+  "name": "mess-management-system",
+  "version": "1.0.0",
+  "description": "Modern Employee Housing Management System with Supabase Integration",
+  "main": "index.html",
+  "scripts": {
+    "start": "live-server --port=3000 --open=index.html",
+    "dev": "live-server --port=3000 --open=index.html",
+    "build": "echo 'Build process not required for static site'",
+    "deploy": "echo 'Add deployment commands here'"
+  },
+  "keywords": [
+    "mess-management",
+    "employee-housing",
+    "supabase",
+    "dashboard",
+    "management-system"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
