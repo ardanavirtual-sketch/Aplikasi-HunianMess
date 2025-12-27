@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
@@ -16,12 +15,10 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .table-container { height: calc(100vh - 380px); }
-        th { white-space: nowrap; }
     </style>
 </head>
 <body class="bg-slate-950 text-slate-100 overflow-hidden">
 
-    <!-- Kontainer Notifikasi -->
     <div id="toast-container" class="fixed top-5 right-5 z-[110] flex flex-col gap-3"></div>
 
     <div class="flex h-screen overflow-hidden">
@@ -35,7 +32,7 @@
             </div>
 
             <nav class="flex-1 px-4 space-y-2 mt-4">
-                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-900/20">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all bg-indigo-600 text-white">
                     <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
                     <span class="font-medium">Dashboard</span>
                 </button>
@@ -47,7 +44,6 @@
 
             <div class="p-6 border-t border-slate-800">
                 <div class="bg-slate-800/50 p-4 rounded-xl">
-                    <p class="text-[10px] text-slate-500 uppercase font-bold tracking-wider">Status Cloud</p>
                     <p id="db-status" class="text-xs font-semibold text-emerald-400 flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         Terhubung Supabase
@@ -56,55 +52,47 @@
             </div>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 flex flex-col h-full overflow-hidden bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
-            <!-- Header -->
-            <header class="h-20 border-b border-slate-800 flex items-center justify-between px-8 shrink-0 bg-slate-950/40 backdrop-blur-md z-10">
+        <!-- Main -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-950">
+            <header class="h-20 border-b border-slate-800 flex items-center justify-between px-8 shrink-0">
                 <div>
-                    <h2 id="page-title" class="text-lg font-bold text-slate-100">Dashboard Overview</h2>
-                    <p id="page-subtitle" class="text-xs text-slate-500">Monitoring hunian real-time dari database cloud</p>
+                    <h2 id="page-title" class="text-lg font-bold">Dashboard Overview</h2>
+                    <p id="page-subtitle" class="text-xs text-slate-500">Monitoring hunian real-time</p>
                 </div>
-                
-                <div class="flex items-center space-x-4">
-                    <div class="relative group">
-                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
-                        <input type="text" id="globalSearch" placeholder="Cari NIK atau Nama..." 
-                            class="bg-slate-900/50 border border-slate-800 rounded-xl pl-10 pr-4 py-2.5 text-sm w-72 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 outline-none transition-all text-slate-200">
-                    </div>
+                <div class="relative">
+                    <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
+                    <input type="text" id="globalSearch" placeholder="Cari NIK atau Nama..." 
+                        class="bg-slate-900 border border-slate-800 rounded-xl pl-10 pr-4 py-2 text-sm w-72 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
                 </div>
             </header>
 
-            <!-- Scrollable Content -->
             <div id="content-area" class="flex-1 overflow-y-auto p-8 custom-scrollbar">
                 
                 <!-- Tab Dashboard -->
-                <div id="tab-dashboard" class="space-y-8 animate-in fade-in duration-500">
+                <div id="tab-dashboard" class="space-y-8">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
-                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Total Penghuni Mess</p>
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
+                            <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Total Penghuni</p>
                             <h3 id="stat-total" class="text-4xl font-bold mt-2 text-indigo-400">0</h3>
                         </div>
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
                             <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Kapasitas P2</p>
-                            <h3 class="text-4xl font-bold mt-2">20,000</h3>
+                            <h3 class="text-4xl font-bold mt-2 text-slate-100">20.000</h3>
                         </div>
-                        <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl backdrop-blur-sm">
+                        <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl">
                             <p class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">Okupansi (%)</p>
                             <h3 id="stat-perc" class="text-4xl font-bold mt-2 text-amber-400">0%</h3>
                         </div>
                     </div>
 
-                    <div class="bg-indigo-900/10 border border-indigo-500/20 rounded-3xl p-8 backdrop-blur-sm">
+                    <div class="bg-indigo-900/10 border border-indigo-500/20 rounded-3xl p-8">
                         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
                             <div>
                                 <h3 class="text-xl font-bold">Sinkronisasi Cloud</h3>
-                                <p class="text-sm text-slate-400 mt-1">Unggah file Excel untuk memperbarui database Supabase secara massal.</p>
+                                <p class="text-sm text-slate-400 mt-1">Impor file Excel untuk memperbarui database Supabase.</p>
                             </div>
                             <div class="flex gap-3">
-                                <button onclick="downloadTemplate()" class="px-6 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-sm transition-all border border-slate-700 flex items-center gap-2">
-                                    <i data-lucide="download" class="w-4 h-4"></i> Template
-                                </button>
-                                <button onclick="document.getElementById('importFile').click()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-sm shadow-lg shadow-indigo-900/40 transition-all flex items-center gap-2">
+                                <button onclick="document.getElementById('importFile').click()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 rounded-xl font-bold text-sm transition-all flex items-center gap-2">
                                     <i data-lucide="upload-cloud" class="w-4 h-4"></i> Upload Excel
                                 </button>
                                 <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleImport(event)">
@@ -113,62 +101,39 @@
                     </div>
                 </div>
 
-                <!-- Tab Master Data -->
-                <div id="tab-master" class="hidden space-y-6 animate-in slide-in-from-bottom-4 duration-500">
-                    <!-- Advanced Filters -->
-                    <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-6 backdrop-blur-sm">
+                <!-- Tab Master -->
+                <div id="tab-master" class="hidden space-y-6">
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-3xl grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Filter Lokasi Hunian</label>
-                            <select id="filterLokasi" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="">Semua Lokasi</option>
-                            </select>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Filter Lokasi</label>
+                            <select id="filterLokasi" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm outline-none"></select>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Filter Block</label>
-                            <select id="filterBlock" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="">Semua Block</option>
-                            </select>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Filter Blok</label>
+                            <select id="filterBlock" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm outline-none"></select>
                         </div>
                         <div class="space-y-2">
-                            <label class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Filter No Kamar</label>
-                            <select id="filterKamar" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
-                                <option value="">Semua Kamar</option>
-                            </select>
+                            <label class="text-[10px] font-bold text-slate-500 uppercase">Filter Kamar</label>
+                            <select id="filterKamar" onchange="renderTable()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-sm outline-none"></select>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center">
-                        <p id="table-count" class="text-xs font-bold text-slate-500 uppercase tracking-widest">Menampilkan 0 Data</p>
-                        <div class="flex gap-2">
-                            <button onclick="exportData()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-xs font-bold flex items-center gap-2 border border-slate-700 transition-all">
-                                <i data-lucide="download" class="w-3 h-3 text-emerald-400"></i> Export Cloud Data
-                            </button>
-                            <button onclick="openModal()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-xs font-bold flex items-center gap-2 transition-all shadow-lg shadow-indigo-900/20">
-                                <i data-lucide="plus" class="w-3 h-3"></i> Tambah Baru
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Database Table -->
-                    <div class="bg-slate-900/50 border border-slate-800 rounded-3xl overflow-hidden backdrop-blur-sm shadow-2xl">
+                    <div class="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl">
                         <div class="overflow-x-auto table-container custom-scrollbar">
                             <table class="w-full text-left text-[11px]">
-                                <thead class="bg-slate-800/60 text-slate-400 uppercase font-bold sticky top-0 z-20 backdrop-blur-md">
+                                <thead class="bg-slate-800/60 text-slate-400 uppercase font-bold sticky top-0 z-20">
                                     <tr>
-                                        <th class="px-6 py-4 border-b border-slate-800">NIK</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">NAMA LENGKAP</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">DEPT</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">LOKASI HUNIAN</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">FLOOR</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">BLOCK</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">NO KAMAR</th>
-                                        <th class="px-6 py-4 border-b border-slate-800">STATUS</th>
-                                        <th class="px-6 py-4 border-b border-slate-800 text-center">AKSI</th>
+                                        <th class="px-6 py-4">NIK</th>
+                                        <th class="px-6 py-4">NAMA</th>
+                                        <th class="px-6 py-4">DEPT</th>
+                                        <th class="px-6 py-4">LOKASI</th>
+                                        <th class="px-6 py-4">BLOK</th>
+                                        <th class="px-6 py-4">KAMAR</th>
+                                        <th class="px-6 py-4">TGL MASUK</th>
+                                        <th class="px-6 py-4 text-center">AKSI</th>
                                     </tr>
                                 </thead>
-                                <tbody id="table-body" class="divide-y divide-slate-800/50">
-                                    <tr><td colspan="9" class="p-12 text-center text-slate-500">Memuat data dari Supabase...</td></tr>
-                                </tbody>
+                                <tbody id="table-body" class="divide-y divide-slate-800/50"></tbody>
                             </table>
                         </div>
                     </div>
@@ -178,38 +143,9 @@
         </main>
     </div>
 
-    <!-- Modal Form -->
-    <div id="dataModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[100] hidden items-center justify-center p-4">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl">
-            <div class="p-6 border-b border-slate-800 flex justify-between items-center bg-slate-800/20">
-                <h3 id="modalTitle" class="font-bold text-white flex items-center gap-2"><i data-lucide="user-plus"></i> Input Data Karyawan</h3>
-                <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors"><i data-lucide="x"></i></button>
-            </div>
-            <form id="employeeForm" class="p-8 grid grid-cols-1 md:grid-cols-3 gap-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
-                <input type="hidden" id="editId">
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">NIK</label><input type="text" id="f_nik" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2 md:col-span-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Nama Lengkap</label><input type="text" id="f_nama" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Gender</label><select id="f_gender" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"><option value="L">Laki-laki</option><option value="P">Perempuan</option></select></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Department</label><input type="text" id="f_dept" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Lokasi Hunian</label><input type="text" id="f_lokasi" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Block</label><input type="text" id="f_block" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">No Kamar</label><input type="text" id="f_kamar" required class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                <div class="space-y-2"><label class="text-[10px] text-slate-500 font-bold uppercase">Floor</label><input type="text" id="f_floor" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"></div>
-                
-                <div class="md:col-span-3 flex justify-end gap-3 pt-6">
-                    <button type="button" onclick="closeModal()" class="px-6 py-3 rounded-xl border border-slate-800 text-slate-400 font-bold hover:bg-slate-800 transition-all">Batal</button>
-                    <button type="submit" class="px-10 py-3 rounded-xl bg-indigo-600 text-white font-bold hover:bg-indigo-500 shadow-xl shadow-indigo-900/40 transition-all">Simpan ke Cloud</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
-        /**
-         * PENTING: GANTI DENGAN KREDENSIAL SUPABASE ANDA
-         */
-        const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
+        const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co'; // Ganti
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74'; // Ganti
         
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -217,16 +153,32 @@
         let employees = [];
         let activeTab = 'dashboard';
 
-        // Kolom sesuai request user
-        const EXCEL_HEADERS = [
-            "NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", 
-            "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", 
-            "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"
-        ];
+        // Helper Konversi Tanggal Excel ke String YYYY-MM-DD
+        function formatExcelDate(value) {
+            if (!value) return null;
+            
+            // Jika value adalah angka (format serial Excel seperti 45639)
+            if (!isNaN(value) && typeof value !== 'string') {
+                const date = new Date((value - 25569) * 86400 * 1000);
+                return date.toISOString().split('T')[0];
+            }
+            
+            // Jika value adalah string, bersihkan spasi
+            let dateStr = String(value).trim();
+            if (dateStr === "" || dateStr.toLowerCase() === "null") return null;
 
-        // --- SUPABASE CORE FUNCTIONS ---
+            // Jika format sudah YYYY-MM-DD
+            if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
 
-        // Ambil data semua karyawan
+            // Coba parsing manual jika format lain
+            const parsed = new Date(dateStr);
+            if (!isNaN(parsed.getTime())) {
+                return parsed.toISOString().split('T')[0];
+            }
+
+            return null; // Return null jika tidak valid agar tidak error di DB
+        }
+
         async function fetchAllData() {
             const { data, error } = await supabaseClient
                 .from('karyawan_mess')
@@ -243,42 +195,6 @@
             renderAll();
         }
 
-        // Simpan atau Update data
-        async function upsertEmployee(employeeData) {
-            const { data, error } = await supabaseClient
-                .from('karyawan_mess')
-                .upsert(employeeData, { onConflict: 'nik' });
-
-            if (error) throw error;
-            return data;
-        }
-
-        // Hapus data
-        async function deleteEmployee(id) {
-            if(!confirm("Hapus data karyawan ini dari database cloud?")) return;
-            
-            const { error } = await supabaseClient
-                .from('karyawan_mess')
-                .delete()
-                .eq('id', id);
-
-            if (error) {
-                showToast(error.message, 'error');
-            } else {
-                showToast("Data berhasil dihapus dari cloud");
-                fetchAllData();
-            }
-        }
-
-        // --- EXCEL & IMPORT LOGIC ---
-
-        function downloadTemplate() {
-            const ws = XLSX.utils.aoa_to_sheet([EXCEL_HEADERS]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template_Mess");
-            XLSX.writeFile(wb, "Template_Mess_Supabase.xlsx");
-        }
-
         async function handleImport(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -286,29 +202,39 @@
             const reader = new FileReader();
             reader.onload = async (e) => {
                 try {
-                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-                    const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                    const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array', cellDates: false });
+                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const json = XLSX.utils.sheet_to_json(sheet);
                     
-                    const toUpload = json.map(row => ({
-                        nik: String(row["NIK"] || row["nik"]),
-                        nama: String(row["NAMA"] || row["nama"]),
-                        gender: row["GENDER"] || null,
-                        department: row["DEPARTMENT"] || null,
-                        gol: row["GOL"] || null,
-                        jabatan: row["JABATAN"] || null,
-                        fasilitas: row["FASILITAS"] || null,
-                        point_of_hire: row["Point of Hire"] || null,
-                        tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || null,
-                        perusahaan: row["PERUSAHAAN"] || null,
-                        lokasi_hunian: row["LOKASI HUNIAN"] || 'LAINNYA',
-                        floor: row["FLOOR"] || null,
-                        block: row["BLOCK"] || '-',
-                        no_kamar: row["NO KAMAR"] || '-',
-                        status_kamar: row["STATUS KAMAR"] || 'TERISI',
-                        tanggal_masuk_mess: row["TANGGAL MASUK MESS HUNIAN P2"] || null
-                    }));
+                    if(json.length === 0) throw new Error("File kosong atau tidak terbaca.");
 
-                    showToast(`Sedang mengunggah ${toUpload.length} data...`);
+                    const toUpload = json.map((row, index) => {
+                        // Bersihkan spasi di key dan value
+                        const cleanRow = {};
+                        Object.keys(row).forEach(k => cleanRow[k.trim()] = row[k]);
+
+                        return {
+                            nik: String(cleanRow["NIK"] || "").trim(),
+                            nama: String(cleanRow["NAMA"] || "").trim(),
+                            gender: cleanRow["GENDER"] ? String(cleanRow["GENDER"]).trim() : null,
+                            department: cleanRow["DEPARTMENT"] ? String(cleanRow["DEPARTMENT"]).trim() : null,
+                            gol: cleanRow["GOL"] ? String(cleanRow["GOL"]).trim() : null,
+                            jabatan: cleanRow["JABATAN"] ? String(cleanRow["JABATAN"]).trim() : null,
+                            fasilitas: cleanRow["FASILITAS"] ? String(cleanRow["FASILITAS"]).trim() : null,
+                            point_of_hire: cleanRow["Point of Hire"] ? String(cleanRow["Point of Hire"]).trim() : null,
+                            // PERBAIKAN TANGGAL DISINI
+                            tanggal_masuk_kerja: formatExcelDate(cleanRow["TANGGAL MASUK KERJA"]),
+                            perusahaan: cleanRow["PERUSAHAAN"] ? String(cleanRow["PERUSAHAAN"]).trim() : null,
+                            lokasi_hunian: String(cleanRow["LOKASI HUNIAN"] || "LAINNYA").trim(),
+                            floor: cleanRow["FLOOR"] ? String(cleanRow["FLOOR"]).trim() : null,
+                            block: String(cleanRow["BLOCK"] || "-").trim(),
+                            no_kamar: String(cleanRow["NO KAMAR"] || "-").trim(),
+                            status_kamar: String(cleanRow["STATUS KAMAR"] || "TERISI").trim(),
+                            tanggal_masuk_mess: formatExcelDate(cleanRow["TANGGAL MASUK MESS HUNIAN P2"])
+                        };
+                    }).filter(item => item.nik !== "");
+
+                    showToast(`Memproses ${toUpload.length} data...`);
                     
                     const { error } = await supabaseClient
                         .from('karyawan_mess')
@@ -316,17 +242,16 @@
 
                     if (error) throw error;
 
-                    showToast("Sinkronisasi database berhasil!");
+                    showToast("Database Cloud Berhasil Diperbarui!");
                     fetchAllData();
                 } catch (err) {
+                    console.error(err);
                     showToast("Kesalahan Import: " + err.message, "error");
                 }
                 event.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         }
-
-        // --- UI & RENDERING ---
 
         function renderTable() {
             const sQuery = document.getElementById('globalSearch').value.toLowerCase();
@@ -335,172 +260,78 @@
             const fKam = document.getElementById('filterKamar').value;
 
             const filtered = employees.filter(e => {
-                const matchSearch = e.nama.toLowerCase().includes(sQuery) || e.nik.toLowerCase().includes(sQuery);
+                const matchSearch = (e.nama || "").toLowerCase().includes(sQuery) || (e.nik || "").toLowerCase().includes(sQuery);
                 const matchLok = !fLok || e.lokasi_hunian === fLok;
                 const matchBlk = !fBlk || e.block === fBlk;
                 const matchKam = !fKam || e.no_kamar === fKam;
                 return matchSearch && matchLok && matchBlk && matchKam;
             });
 
-            document.getElementById('table-count').innerText = `Menampilkan ${filtered.length} Data`;
-
             const tbody = document.getElementById('table-body');
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="9" class="p-12 text-center text-slate-500 italic">Tidak ada data yang cocok dengan filter</td></tr>`;
-                return;
-            }
-
             tbody.innerHTML = filtered.map(e => `
-                <tr class="hover:bg-slate-800/40 transition-colors group">
+                <tr class="hover:bg-slate-800/40 transition-colors">
                     <td class="px-6 py-4 font-mono text-indigo-400 font-bold">${e.nik}</td>
-                    <td class="px-6 py-4">
-                        <div class="font-bold text-slate-100">${e.nama}</div>
-                        <div class="text-[9px] text-slate-500 uppercase tracking-tighter">${e.jabatan || 'No Job Title'}</div>
-                    </td>
+                    <td class="px-6 py-4 font-bold text-slate-100">${e.nama}</td>
                     <td class="px-6 py-4 text-slate-400">${e.department || '-'}</td>
-                    <td class="px-6 py-4 font-bold text-indigo-100">${e.lokasi_hunian}</td>
-                    <td class="px-6 py-4 text-slate-400">${e.floor || '-'}</td>
+                    <td class="px-6 py-4">${e.lokasi_hunian}</td>
                     <td class="px-6 py-4 font-bold">${e.block}</td>
                     <td class="px-6 py-4 font-bold">${e.no_kamar}</td>
-                    <td class="px-6 py-4">
-                        <span class="px-2 py-0.5 rounded text-[9px] font-black ${e.status_kamar === 'TERISI' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'}">
-                            ${e.status_kamar}
-                        </span>
-                    </td>
+                    <td class="px-6 py-4 text-slate-500">${e.tanggal_masuk_mess || '-'}</td>
                     <td class="px-6 py-4 text-center">
-                        <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="editEmployee('${e.id}')" class="p-1.5 hover:bg-indigo-500/10 rounded-lg text-slate-500 hover:text-indigo-400 transition-all"><i data-lucide="edit-2" class="w-3.5 h-3.5"></i></button>
-                            <button onclick="deleteEmployee('${e.id}')" class="p-1.5 hover:bg-rose-500/10 rounded-lg text-slate-500 hover:text-rose-400 transition-all"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
-                        </div>
+                        <button onclick="deleteEmployee('${e.id}')" class="p-1.5 hover:bg-rose-500/10 text-slate-500 hover:text-rose-400 transition-all"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
                     </td>
                 </tr>
             `).join('');
             lucide.createIcons();
         }
 
+        async function deleteEmployee(id) {
+            if(!confirm("Hapus data ini?")) return;
+            const { error } = await supabaseClient.from('karyawan_mess').delete().eq('id', id);
+            if (error) showToast(error.message, 'error');
+            else { showToast("Terhapus"); fetchAllData(); }
+        }
+
         function updateFilterOptions() {
             const getUnique = (key) => [...new Set(employees.map(e => e[key]))].filter(Boolean).sort();
-            
             const populate = (id, data, label) => {
                 const el = document.getElementById(id);
-                const current = el.value;
                 el.innerHTML = `<option value="">Semua ${label}</option>` + 
-                    data.map(d => `<option value="${d}" ${d === current ? 'selected' : ''}>${d}</option>`).join('');
+                    data.map(d => `<option value="${d}">${d}</option>`).join('');
             };
-
             populate('filterLokasi', getUnique('lokasi_hunian'), 'Lokasi');
-            populate('filterBlock', getUnique('block'), 'Block');
+            populate('filterBlock', getUnique('block'), 'Blok');
             populate('filterKamar', getUnique('no_kamar'), 'Kamar');
         }
 
         function renderAll() {
             if (activeTab === 'dashboard') {
                 document.getElementById('stat-total').innerText = employees.length.toLocaleString();
-                document.getElementById('stat-perc').innerText = employees.length > 0 ? ((employees.length / 20000) * 100).toFixed(1) + "%" : "0%";
+                document.getElementById('stat-perc').innerText = ((employees.length / 20000) * 100).toFixed(1) + "%";
             } else {
                 renderTable();
             }
         }
 
-        // --- NAVIGATION & MODALS ---
-
         function switchTab(tab) {
             activeTab = tab;
             document.getElementById('tab-dashboard').classList.toggle('hidden', tab !== 'dashboard');
             document.getElementById('tab-master').classList.toggle('hidden', tab !== 'master');
-            
-            const btns = { dashboard: 'nav-dashboard', master: 'nav-master' };
-            Object.keys(btns).forEach(key => {
-                const el = document.getElementById(btns[key]);
-                if (key === tab) {
-                    el.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all bg-indigo-600 text-white shadow-lg shadow-indigo-900/20";
-                } else {
-                    el.className = "nav-item w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all text-slate-400 hover:bg-slate-800 hover:text-slate-200";
-                }
-            });
-
             document.getElementById('page-title').innerText = tab === 'dashboard' ? "Dashboard Overview" : "Database Karyawan P2";
             renderAll();
         }
 
-        function openModal() {
-            document.getElementById('employeeForm').reset();
-            document.getElementById('editId').value = "";
-            document.getElementById('modalTitle').innerHTML = `<i data-lucide="user-plus"></i> Tambah Karyawan Baru`;
-            document.getElementById('dataModal').classList.remove('hidden');
-            document.getElementById('dataModal').classList.add('flex');
-            lucide.createIcons();
-        }
-
-        function editEmployee(id) {
-            const e = employees.find(item => item.id === id);
-            if (!e) return;
-
-            document.getElementById('editId').value = e.id;
-            document.getElementById('f_nik').value = e.nik;
-            document.getElementById('f_nama').value = e.nama;
-            document.getElementById('f_gender').value = e.gender || 'L';
-            document.getElementById('f_dept').value = e.department || '';
-            document.getElementById('f_lokasi').value = e.lokasi_hunian;
-            document.getElementById('f_block').value = e.block;
-            document.getElementById('f_kamar').value = e.no_kamar;
-            document.getElementById('f_floor').value = e.floor || '';
-
-            document.getElementById('modalTitle').innerHTML = `<i data-lucide="edit"></i> Edit Data Karyawan`;
-            document.getElementById('dataModal').classList.remove('hidden');
-            document.getElementById('dataModal').classList.add('flex');
-            lucide.createIcons();
-        }
-
-        function closeModal() {
-            document.getElementById('dataModal').classList.add('hidden');
-            document.getElementById('dataModal').classList.remove('flex');
-        }
-
-        document.getElementById('employeeForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const data = {
-                nik: document.getElementById('f_nik').value,
-                nama: document.getElementById('f_nama').value,
-                gender: document.getElementById('f_gender').value,
-                department: document.getElementById('f_dept').value,
-                lokasi_hunian: document.getElementById('f_lokasi').value,
-                block: document.getElementById('f_block').value,
-                no_kamar: document.getElementById('f_kamar').value,
-                floor: document.getElementById('f_floor').value,
-                status_kamar: 'TERISI'
-            };
-
-            try {
-                await upsertEmployee(data);
-                showToast("Berhasil menyimpan data ke cloud!");
-                closeModal();
-                fetchAllData();
-            } catch (err) {
-                showToast(err.message, "error");
-            }
-        });
-
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            const bg = type === 'success' ? 'bg-emerald-600' : 'bg-rose-600';
-            toast.className = `${bg} text-white px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm animate-in slide-in-from-right-full transition-all`;
+            toast.className = `${type === 'success' ? 'bg-emerald-600' : 'bg-rose-600'} text-white px-6 py-4 rounded-2xl shadow-2xl font-bold text-sm transition-all`;
             toast.innerText = msg;
             container.appendChild(toast);
-            setTimeout(() => {
-                toast.classList.add('animate-out', 'fade-out', 'slide-out-to-right-full');
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            setTimeout(() => toast.remove(), 3000);
         }
 
-        // Global search listener
         document.getElementById('globalSearch').addEventListener('input', renderTable);
-
-        window.onload = () => {
-            lucide.createIcons();
-            fetchAllData();
-        };
+        window.onload = () => { lucide.createIcons(); fetchAllData(); };
     </script>
 </body>
 </html>
