@@ -121,6 +121,9 @@
         .preview-table tr:nth-child(even) {
             background: rgba(255,255,255,0.02);
         }
+        
+        .valid-nik { border-left: 3px solid #10b981; }
+        .invalid-nik { border-left: 3px solid #ef4444; }
     </style>
 </head>
 <body class="flex h-screen">
@@ -163,6 +166,7 @@
                         <table class="preview-table w-full">
                             <thead>
                                 <tr class="text-slate-400">
+                                    <th>#</th>
                                     <th>NIK</th>
                                     <th>NAMA</th>
                                     <th>GENDER</th>
@@ -173,15 +177,30 @@
                                     <th>NO KAMAR</th>
                                     <th>STATUS</th>
                                     <th>ACTION</th>
+                                    <th>VALIDASI</th>
                                 </tr>
                             </thead>
                             <tbody id="preview-table-body"></tbody>
                         </table>
                     </div>
                     
-                    <div id="preview-errors" class="mt-4 hidden">
-                        <h5 class="text-xs font-bold text-rose-400 mb-2">Data yang akan diabaikan:</h5>
-                        <div class="text-[10px] text-slate-400" id="error-list"></div>
+                    <div id="preview-errors" class="mt-4 p-4 bg-rose-500/10 rounded-lg hidden">
+                        <h5 class="text-xs font-bold text-rose-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i> Data yang akan diabaikan:
+                        </h5>
+                        <div class="text-[10px] text-slate-300 space-y-1" id="error-list"></div>
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-sky-500/10 rounded-lg">
+                    <h5 class="text-xs font-bold text-sky-400 mb-2 flex items-center gap-2">
+                        <i data-lucide="info" class="w-4 h-4"></i> Format NIK yang Valid:
+                    </h5>
+                    <div class="text-[10px] text-slate-300 space-y-1">
+                        <div>• Karakter pertama harus huruf (A-Z)</div>
+                        <div>• Dapat diikuti kombinasi huruf dan angka</div>
+                        <div>• Contoh valid: A12345, AB1234, EMP001, KRY1001</div>
+                        <div>• Contoh tidak valid: 12345, 1A2345 (dimulai dengan angka)</div>
                     </div>
                 </div>
             </div>
@@ -210,7 +229,12 @@
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">NIK *</span>
                         <input name="nik" id="field-nik" required 
                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1"
-                               pattern="[0-9]+" title="NIK harus berupa angka">
+                               pattern="^[A-Za-z][A-Za-z0-9]*$" 
+                               title="NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka"
+                               onblur="validateNIK(this)">
+                        <div id="nik-hint" class="text-[10px] text-slate-500 mt-1 hidden">
+                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Contoh: A12345, EMP001, KRY1001
+                        </div>
                     </label>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Nama Lengkap *</span>
@@ -732,6 +756,48 @@
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Fungsi validasi NIK
+        function isValidNIK(nik) {
+            if (!nik || typeof nik !== 'string') return false;
+            
+            // Hilangkan spasi di awal dan akhir, konversi ke uppercase
+            const cleanNIK = nik.toString().trim().toUpperCase();
+            
+            // Validasi: harus dimulai dengan huruf, bisa diikuti kombinasi huruf dan angka
+            const nikPattern = /^[A-Z][A-Z0-9]*$/;
+            
+            // Minimal 2 karakter
+            if (cleanNIK.length < 2) return false;
+            
+            return nikPattern.test(cleanNIK);
+        }
+
+        // Fungsi untuk menampilkan hint NIK
+        function validateNIK(input) {
+            const hint = document.getElementById('nik-hint');
+            if (input.value.trim() === '') {
+                hint.classList.add('hidden');
+                return;
+            }
+            
+            hint.classList.remove('hidden');
+            
+            if (!isValidNIK(input.value)) {
+                input.classList.add('border-rose-500');
+                input.classList.remove('border-white/10');
+                hint.innerHTML = '<i data-lucide="alert-circle" class="w-3 h-3 inline mr-1 text-rose-500"></i> Format NIK tidak valid. Harus dimulai dengan huruf';
+                hint.classList.add('text-rose-500');
+                hint.classList.remove('text-slate-500');
+            } else {
+                input.classList.remove('border-rose-500');
+                input.classList.add('border-white/10');
+                hint.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3 inline mr-1 text-emerald-500"></i> Format NIK valid';
+                hint.classList.add('text-emerald-500');
+                hint.classList.remove('text-slate-500');
+            }
+            lucide.createIcons();
+        }
+
         async function fetchAllData() {
             const { data, error } = await supabaseClient
                 .from('karyawan_mess')
@@ -761,6 +827,7 @@
             const title = document.getElementById('modal-title');
             form.reset();
             document.getElementById('edit-id').value = "";
+            document.getElementById('nik-hint').classList.add('hidden');
 
             if(editData) {
                 title.innerText = "Edit Data Karyawan";
@@ -768,7 +835,10 @@
                 // Isi field
                 Object.keys(editData).forEach(key => {
                     const field = document.getElementById(`field-${key}`);
-                    if(field) field.value = editData[key] || "";
+                    if(field) {
+                        field.value = editData[key] || "";
+                        if (key === 'nik') validateNIK(field);
+                    }
                 });
             } else {
                 title.innerText = "Tambah Karyawan Manual";
@@ -776,7 +846,11 @@
             document.getElementById('modal-form').classList.remove('hidden');
         }
 
-        function closeModal() { document.getElementById('modal-form').classList.add('hidden'); }
+        function closeModal() { 
+            document.getElementById('modal-form').classList.add('hidden');
+            document.getElementById('nik-hint').classList.add('hidden');
+        }
+        
         function triggerImport() { document.getElementById('importFile').click(); }
 
         function switchTab(tab) {
@@ -948,11 +1022,14 @@
             const id = raw.id;
             delete raw.id;
 
-            // Validasi NIK harus angka
-            if (!/^\d+$/.test(raw.nik)) {
-                showToast("NIK harus berupa angka", "error");
+            // Validasi NIK harus dimulai dengan huruf
+            if (!isValidNIK(raw.nik)) {
+                showToast("NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka", "error");
                 return;
             }
+
+            // Konversi NIK ke uppercase
+            raw.nik = raw.nik.trim().toUpperCase();
 
             showToast("Menyimpan data...", "success");
             
@@ -972,7 +1049,7 @@
             }
         }
 
-        // FITUR PREVIEW IMPORT
+        // FITUR PREVIEW IMPORT dengan validasi NIK kombinasi huruf dan angka
         async function handleFileSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
@@ -1004,9 +1081,11 @@
 
                     // Process data untuk preview
                     importPreviewData = json.map((row, index) => {
+                        const rawNik = String(findKey(row, "NIK") || "").trim();
                         const processed = {
-                            id: `preview-${index}`,
-                            nik: String(findKey(row, "NIK") || "").trim(),
+                            id: `preview-${index + 2}`, // +2 karena excel row mulai dari 2
+                            rowNumber: index + 2,
+                            nik: rawNik,
                             nama: String(findKey(row, "NAMA") || "").trim(),
                             gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
                             department: String(findKey(row, "DEPARTMENT") || "").trim(),
@@ -1023,14 +1102,23 @@
                             status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
                             tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2")),
                             isValid: true,
-                            errors: []
+                            errors: [],
+                            isNew: true
                         };
 
-                        // Validasi data
-                        if (!processed.nik || !/^\d+$/.test(processed.nik)) {
+                        // Validasi NIK (harus dimulai dengan huruf)
+                        if (!processed.nik) {
                             processed.isValid = false;
-                            processed.errors.push("NIK tidak valid");
+                            processed.errors.push("NIK tidak boleh kosong");
+                        } else if (!isValidNIK(processed.nik)) {
+                            processed.isValid = false;
+                            processed.errors.push(`Format NIK tidak valid: "${processed.nik}". Harus dimulai dengan huruf`);
+                        } else {
+                            // Konversi NIK ke uppercase untuk konsistensi
+                            processed.nik = processed.nik.toUpperCase();
                         }
+
+                        // Validasi data required lainnya
                         if (!processed.nama) {
                             processed.isValid = false;
                             processed.errors.push("Nama harus diisi");
@@ -1040,14 +1128,19 @@
                             processed.errors.push("No Kamar harus diisi");
                         }
 
+                        // Cek apakah NIK sudah ada di database
+                        const existingNik = employees.map(e => e.nik);
+                        if (existingNik.includes(processed.nik)) {
+                            processed.isNew = false;
+                        }
+
                         return processed;
                     });
 
                     // Filter data yang valid
                     const validData = importPreviewData.filter(item => item.isValid);
-                    const existingNik = employees.map(e => e.nik);
-                    const newData = validData.filter(item => !existingNik.includes(item.nik));
-                    const updateData = validData.filter(item => existingNik.includes(item.nik));
+                    const newData = validData.filter(item => item.isNew);
+                    const updateData = validData.filter(item => !item.isNew);
 
                     // Show preview modal
                     showPreviewModal(validData, newData, updateData);
@@ -1073,8 +1166,9 @@
             // Render preview table
             const tbody = document.getElementById('preview-table-body');
             tbody.innerHTML = validData.map(item => `
-                <tr class="${!item.isValid ? 'bg-rose-500/10' : ''}">
-                    <td class="font-mono text-sky-400">${item.nik || '-'}</td>
+                <tr class="${item.isValid ? 'valid-nik' : 'invalid-nik'}">
+                    <td class="text-slate-500 text-[10px]">${item.rowNumber}</td>
+                    <td class="font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
                     <td class="font-medium">${item.nama || '-'}</td>
                     <td class="text-slate-400">${item.gender || '-'}</td>
                     <td class="text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
@@ -1084,9 +1178,14 @@
                     <td class="font-black text-emerald-400">${item.no_kamar || '-'}</td>
                     <td><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
                     <td class="text-center">
-                        ${employees.map(e => e.nik).includes(item.nik) ? 
+                        ${!item.isNew ? 
                             '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
                             '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
+                    </td>
+                    <td class="text-center">
+                        ${item.isValid ? 
+                            '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : 
+                            '<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>'}
                     </td>
                 </tr>
             `).join('');
@@ -1109,7 +1208,10 @@
             if (invalidData.length > 0) {
                 errorSection.classList.remove('hidden');
                 errorList.innerHTML = invalidData.map(item => 
-                    `<div class="mb-1">Baris ${item.id.replace('preview-', '')}: ${item.errors.join(', ')} - NIK: ${item.nik || 'TIDAK ADA'}</div>`
+                    `<div class="mb-1 p-2 bg-rose-500/5 rounded">
+                        <span class="font-bold">Baris ${item.rowNumber}:</span> ${item.errors.join(', ')} 
+                        <span class="text-slate-400">- NIK: "${item.nik || 'KOSONG'}"</span>
+                    </div>`
                 ).join('');
             } else {
                 errorSection.classList.add('hidden');
@@ -1136,14 +1238,16 @@
 
             // Prepare data for upload (remove preview-specific fields)
             const toUpload = validData.map(item => {
-                const { id, isValid, errors, ...cleanData } = item;
+                const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
+                // Pastikan NIK dalam uppercase
+                cleanData.nik = cleanData.nik.toUpperCase();
                 return cleanData;
             });
 
             const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
             
             if(!error) { 
-                showToast(`Import ${validData.length} data berhasil!`); 
+                showToast(`Import ${validData.length} data berhasil! ${validData.filter(d => d.isNew).length} data baru, ${validData.filter(d => !d.isNew).length} data diperbarui`); 
                 closePreviewModal();
                 fetchAllData();
             } else { 
@@ -1336,26 +1440,35 @@
         function downloadTemplate() {
             const h = [["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"]];
             
-            // Add sample data
-            h.push(["123456", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"]);
-            h.push(["123457", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"]);
+            // Add sample data dengan format NIK yang benar (dimulai huruf)
+            h.push(["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"]);
+            h.push(["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"]);
+            h.push(["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]);
             
             const ws = XLSX.utils.aoa_to_sheet(h);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
             
-            // Add instruction sheet
+            // Add instruction sheet dengan petunjuk format NIK
             const instructions = [
                 ["PETUNJUK PENGISIAN TEMPLATE"],
                 [""],
-                ["1. NIK: Wajib diisi, hanya angka"],
-                ["2. NAMA: Wajib diisi"],
-                ["3. GENDER: Pilih LAKI-LAKI atau PEREMPUAN"],
-                ["4. GOL: Contoh: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
-                ["5. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["6. Tanggal: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["7. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
-                ["8. Pastikan format kolom sesuai dengan contoh"]
+                ["FORMAT NIK (WAJIB DIPERHATIKAN):"],
+                ["• NIK harus dimulai dengan HURUF (A-Z)"],
+                ["• Dapat diikuti kombinasi huruf dan angka"],
+                ["• Contoh format NIK yang VALID:"],
+                ["  - EMP001, KRY1001, A12345, AB1234"],
+                ["• Contoh format NIK yang TIDAK VALID:"],
+                ["  - 12345, 1A2345 (dimulai dengan angka)"],
+                [""],
+                ["PETUNJUK LAINNYA:"],
+                ["1. NAMA: Wajib diisi"],
+                ["2. GENDER: Pilih LAKI-LAKI atau PEREMPUAN"],
+                ["3. GOL: Contoh: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["4. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
+                ["5. Tanggal: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["6. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
+                ["7. Pastikan format kolom sesuai dengan contoh"]
             ];
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
             XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk");
@@ -1372,6 +1485,11 @@
 
         // Event Listeners
         document.getElementById('globalSearch').addEventListener('input', renderTable);
+        
+        // Initialize NIK hint
+        document.getElementById('field-nik').addEventListener('focus', function() {
+            document.getElementById('nik-hint').classList.remove('hidden');
+        });
         
         window.onload = () => { 
             lucide.createIcons(); 
