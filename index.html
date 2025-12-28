@@ -98,6 +98,14 @@
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
         }
+
+        .chart-container {
+            height: 300px;
+        }
+
+        .status-available { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        .status-occupied { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
+        .status-reserved { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
     </style>
 </head>
 <body class="flex h-screen">
@@ -126,75 +134,147 @@
                 
                 <div class="space-y-4">
                     <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">NIK</span>
-                        <input name="nik" id="field-nik" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">NIK *</span>
+                        <input name="nik" id="field-nik" required 
+                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1"
+                               pattern="[0-9]+" title="NIK harus berupa angka">
                     </label>
                     <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Nama Lengkap</span>
-                        <input name="nama" id="field-nama" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Nama Lengkap *</span>
+                        <input name="nama" id="field-nama" required 
+                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                     </label>
                     <div class="grid grid-cols-2 gap-4">
                         <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Gender</span>
-                            <select name="gender" id="field-gender" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Gender *</span>
+                            <select name="gender" id="field-gender" required 
+                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                <option value="">Pilih Gender</option>
                                 <option value="LAKI-LAKI">LAKI-LAKI</option>
                                 <option value="PEREMPUAN">PEREMPUAN</option>
                             </select>
                         </label>
                         <label class="block">
                             <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Golongan</span>
-                            <input name="gol" id="field-gol" placeholder="Contoh: 1, 2, 4A" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <select name="gol" id="field-gol" 
+                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                <option value="">Pilih Golongan</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                                <option value="5">5</option>
+                                <option value="M">M</option>
+                                <option value="VENDOR">VENDOR</option>
+                            </select>
                         </label>
                     </div>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Jabatan</span>
-                        <input name="jabatan" id="field-jabatan" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <input name="jabatan" id="field-jabatan" 
+                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                     </label>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Department</span>
-                        <input name="department" id="field-department" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <input name="department" id="field-department" 
+                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                     </label>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Perusahaan</span>
-                        <input name="perusahaan" id="field-perusahaan" placeholder="Contoh: PT. HJF" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <select name="perusahaan" id="field-perusahaan" 
+                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <option value="">Pilih Perusahaan</option>
+                            <option value="PT. HJF">PT. HJF</option>
+                            <option value="PT. INKA">PT. INKA</option>
+                            <option value="PT. KAI">PT. KAI</option>
+                            <option value="VENDOR">VENDOR LAINNYA</option>
+                        </select>
                     </label>
                 </div>
 
                 <div class="space-y-4">
                     <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Lokasi Hunian</span>
-                        <input name="lokasi_hunian" id="field-lokasi_hunian" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Lokasi Hunian *</span>
+                        <select name="lokasi_hunian" id="field-lokasi_hunian" required 
+                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <option value="">Pilih Lokasi</option>
+                            <option value="MESS A">MESS A</option>
+                            <option value="MESS B">MESS B</option>
+                            <option value="MESS C">MESS C</option>
+                            <option value="MESS D">MESS D</option>
+                            <option value="MESS EXECUTIVE">MESS EXECUTIVE</option>
+                        </select>
                     </label>
                     <div class="grid grid-cols-3 gap-3">
                         <label class="block">
                             <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Floor</span>
-                            <input name="floor" id="field-floor" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <select name="floor" id="field-floor" 
+                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                <option value="">Pilih Floor</option>
+                                <option value="LT 1">LT 1</option>
+                                <option value="LT 2">LT 2</option>
+                                <option value="LT 3">LT 3</option>
+                                <option value="LT 4">LT 4</option>
+                            </select>
                         </label>
                         <label class="block">
                             <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Block</span>
-                            <input name="block" id="field-block" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <select name="block" id="field-block" 
+                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                <option value="">Pilih Block</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                                <option value="E">E</option>
+                            </select>
                         </label>
                         <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">No Kamar</span>
-                            <input name="no_kamar" id="field-no_kamar" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">No Kamar *</span>
+                            <input name="no_kamar" id="field-no_kamar" required 
+                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                         </label>
                     </div>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Fasilitas</span>
-                        <input name="fasilitas" id="field-fasilitas" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <select name="fasilitas" id="field-fasilitas" 
+                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <option value="">Pilih Fasilitas</option>
+                            <option value="STANDARD">STANDARD</option>
+                            <option value="VIP">VIP</option>
+                            <option value="EXECUTIVE">EXECUTIVE</option>
+                            <option value="AC + TV">AC + TV</option>
+                            <option value="AC ONLY">AC ONLY</option>
+                        </select>
                     </label>
                     <label class="block">
                         <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Point of Hire</span>
-                        <input name="point_of_hire" id="field-point_of_hire" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <input name="point_of_hire" id="field-point_of_hire" 
+                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                     </label>
                     <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Kerja</span>
-                        <input type="date" name="tanggal_masuk_kerja" id="field-tanggal_masuk_kerja" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Status Kamar</span>
+                        <select name="status_kamar" id="field-status_kamar" 
+                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                            <option value="TERISI">TERISI</option>
+                            <option value="TERSEDIA">TERSEDIA</option>
+                            <option value="RUSAK">RUSAK</option>
+                            <option value="DIPERBAIKI">DIPERBAIKI</option>
+                        </select>
                     </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Mess (P2)</span>
-                        <input type="date" name="tanggal_masuk_mess_hunian_p2" id="field-tanggal_masuk_mess_hunian_p2" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                    </label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Kerja</span>
+                            <input type="date" name="tanggal_masuk_kerja" id="field-tanggal_masuk_kerja" 
+                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Mess</span>
+                            <input type="date" name="tanggal_masuk_mess_hunian_p2" id="field-tanggal_masuk_mess_hunian_p2" 
+                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                    </div>
                 </div>
 
                 <div class="md:col-span-2 pt-6 border-t border-white/5 flex gap-4">
@@ -202,6 +282,99 @@
                     <button type="button" onclick="closeModal()" class="px-8 bg-white/5 text-slate-400 font-bold rounded-2xl hover:bg-white/10 transition-all uppercase tracking-widest text-[10px]">Batal</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL LAPORAN -->
+    <div id="modal-report" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeReportModal()"></div>
+        <div class="glass-panel w-full max-w-6xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <div>
+                    <h3 class="text-xl font-black text-white">Laporan Analisis Data Hunian</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Analisis berdasarkan Golongan, Lokasi, dan Status</p>
+                </div>
+                <button onclick="closeReportModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="text-slate-400"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <div class="glass-panel p-6 rounded-3xl">
+                        <h4 class="text-lg font-black text-white mb-4">Distribusi Golongan</h4>
+                        <div id="chart-golongan" class="chart-container"></div>
+                    </div>
+                    <div class="glass-panel p-6 rounded-3xl">
+                        <h4 class="text-lg font-black text-white mb-4">Distribusi Lokasi</h4>
+                        <div id="chart-lokasi" class="chart-container"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl mb-8">
+                    <h4 class="text-lg font-black text-white mb-4">Statistik Detail</h4>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-sky-400" id="stat-gol1">0</div>
+                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 1</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-emerald-400" id="stat-gol2">0</div>
+                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 2</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-amber-400" id="stat-gol3">0</div>
+                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 3</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-3xl font-black text-purple-400" id="stat-gol4up">0</div>
+                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Gol 4 UP & M</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 rounded-3xl">
+                    <h4 class="text-lg font-black text-white mb-4">Ringkasan Kapasitas</h4>
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                <span>Kamar Terisi</span>
+                                <span id="kap-terisi">0%</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div id="bar-terisi" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                <span>Kamar Tersedia</span>
+                                <span id="kap-tersedia">0%</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div id="bar-tersedia" class="bg-sky-500 h-full w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
+                                <span>Kamar Rusak/Perbaikan</span>
+                                <span id="kap-rusak">0%</span>
+                            </div>
+                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                                <div id="bar-rusak" class="bg-rose-500 h-full w-0 transition-all duration-1000"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-4 mt-8">
+                    <button onclick="exportReport()" class="px-6 py-3 bg-emerald-500 text-white rounded-xl text-xs font-black flex items-center gap-2 hover:bg-emerald-600 transition-all">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORT LAPORAN
+                    </button>
+                    <button onclick="closeReportModal()" class="px-6 py-3 bg-white/5 text-slate-400 rounded-xl text-xs font-black hover:bg-white/10 transition-all">
+                        TUTUP
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -231,6 +404,10 @@
                 <button onclick="switchTab('all-employees')" id="nav-all-employees" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                     <i data-lucide="database" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Database Karyawan</span>
+                </button>
+                <button onclick="openReportModal()" id="nav-report" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span class="nav-text font-bold text-sm">Laporan Analisis</span>
                 </button>
             </div>
 
@@ -262,8 +439,11 @@
         </nav>
 
         <div class="p-4 sidebar-footer-content">
-            <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2">
+            <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2 mb-2">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH TEMPLATE
+            </button>
+            <button onclick="showAdvancedFilter()" class="w-full bg-sky-500/10 hover:bg-sky-500 text-sky-500 hover:text-white border border-sky-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2">
+                <i data-lucide="filter" class="w-4 h-4"></i> FILTER LANJUTAN
             </button>
         </div>
     </aside>
@@ -284,7 +464,7 @@
             <div class="flex items-center gap-4">
                 <div class="relative hidden sm:block">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
-                    <input type="text" id="globalSearch" placeholder="Cari NIK atau Nama..." 
+                    <input type="text" id="globalSearch" placeholder="Cari NIK, Nama, atau No Kamar..." 
                         class="bg-[#0b253a] border border-white/5 rounded-xl pl-12 pr-6 py-2.5 text-sm w-72 focus:ring-2 focus:ring-sky-500 outline-none transition-all placeholder:text-slate-600 text-white">
                 </div>
                 <button onclick="exportData()" class="px-4 py-2.5 bg-[#0b253a] border border-white/10 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-white/5 transition-all">
@@ -316,7 +496,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <div class="bg-gradient-to-br from-sky-600 to-sky-900 p-8 rounded-[32px] relative overflow-hidden group">
                         <div class="relative z-10">
                             <h3 class="text-2xl font-black text-white mb-2">Sinkronisasi Data Excel</h3>
@@ -340,6 +520,44 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- FILTER ADVANCED SECTION -->
+                <div class="glass-panel p-6 rounded-3xl mb-8">
+                    <h3 class="text-lg font-black text-white mb-4">Filter Data Lanjutan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Lokasi Hunian</label>
+                            <select id="filterDashboardLokasi" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
+                                <option value="">Semua Lokasi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Block</label>
+                            <select id="filterDashboardBlock" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
+                                <option value="">Semua Block</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">No Kamar</label>
+                            <input type="text" id="filterDashboardKamar" placeholder="Cari no kamar..." 
+                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Golongan</label>
+                            <select id="filterDashboardGolongan" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
+                                <option value="">Semua Golongan</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex justify-end gap-3 mt-4">
+                        <button onclick="applyDashboardFilter()" class="px-6 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition-all">
+                            Terapkan Filter
+                        </button>
+                        <button onclick="resetDashboardFilter()" class="px-6 py-2 bg-white/5 text-slate-400 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
+                            Reset Filter
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- VIEW TABEL DATABASE -->
@@ -359,6 +577,16 @@
                         </button>
                         <select id="filterLokasi" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
                             <option value="">Semua Lokasi Mess</option>
+                        </select>
+                        <select id="filterBlock" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
+                            <option value="">Semua Block</option>
+                        </select>
+                        <select id="filterStatusKamar" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
+                            <option value="">Semua Status</option>
+                            <option value="TERISI">TERISI</option>
+                            <option value="TERSEDIA">TERSEDIA</option>
+                            <option value="RUSAK">RUSAK</option>
+                            <option value="DIPERBAIKI">DIPERBAIKI</option>
                         </select>
                     </div>
                 </div>
@@ -415,6 +643,7 @@
             if (!error) {
                 employees = data || [];
                 updateUI();
+                populateFilterOptions();
             } else {
                 showToast("Gagal memuat data", "error");
             }
@@ -485,26 +714,59 @@
             if(catMap[currentFilter] && activeTab === 'category') document.getElementById(catMap[currentFilter]).classList.add('active');
         }
 
+        function populateFilterOptions() {
+            // Populate Lokasi options
+            const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
+            const lokasiSelect = document.getElementById('filterLokasi');
+            const lokasiDashboard = document.getElementById('filterDashboardLokasi');
+            const html = '<option value="">Semua Lokasi Mess</option>' + 
+                uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
+            
+            lokasiSelect.innerHTML = html;
+            if (lokasiDashboard) lokasiDashboard.innerHTML = html;
+
+            // Populate Block options
+            const uniqueBlocks = [...new Set(employees.map(e => e.block))].filter(Boolean).sort();
+            const blockSelect = document.getElementById('filterBlock');
+            const blockDashboard = document.getElementById('filterDashboardBlock');
+            const blockHtml = '<option value="">Semua Block</option>' + 
+                uniqueBlocks.map(b => `<option value="${b}">${b}</option>`).join('');
+            
+            if (blockSelect) blockSelect.innerHTML = blockHtml;
+            if (blockDashboard) blockDashboard.innerHTML = blockHtml;
+
+            // Populate Golongan options
+            const uniqueGol = [...new Set(employees.map(e => e.gol))].filter(Boolean).sort();
+            const golSelect = document.getElementById('filterDashboardGolongan');
+            const golHtml = '<option value="">Semua Golongan</option>' + 
+                uniqueGol.map(g => `<option value="${g}">${g}</option>`).join('');
+            
+            if (golSelect) golSelect.innerHTML = golHtml;
+        }
+
         function updateUI() {
             document.getElementById('stat-total').innerText = employees.length.toLocaleString();
-            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
-            document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
-            document.getElementById('stat-avail').innerText = (20000 - terisi).toLocaleString();
-            document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
-            const perc = (terisi / 20000) * 100;
-            document.getElementById('capacity-bar').style.width = perc + "%";
-            document.getElementById('capacity-text').innerText = perc.toFixed(1) + "% TERPAKAI";
             
-            const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
-            document.getElementById('filterLokasi').innerHTML = '<option value="">Semua Lokasi Mess</option>' + 
-                uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
+            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
+            const tersedia = employees.filter(e => e.status_kamar === 'TERSEDIA').length;
+            const rusak = employees.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
+            
+            document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
+            document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
+            document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
+            
+            const totalKamar = terisi + tersedia + rusak;
+            const percTerisi = totalKamar > 0 ? (terisi / totalKamar) * 100 : 0;
+            document.getElementById('capacity-bar').style.width = percTerisi + "%";
+            document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
+            
             if(activeTab !== 'dashboard') renderTable();
         }
 
         function getCategory(e) {
             const comp = String(e.perusahaan || "").toUpperCase();
             const gol = String(e.gol || "").toUpperCase();
-            if (comp !== "PT. HJF" && comp !== "" && comp !== "NULL") return 'VENDOR';
+            if (comp !== "PT. HJF" && comp !== "" && comp !== "NULL" && comp !== "PT. HJF") return 'VENDOR';
             if (gol.includes('1')) return 'GOL 1';
             if (gol.includes('2')) return 'GOL 2';
             if (gol.includes('3')) return 'GOL 3';
@@ -515,11 +777,18 @@
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
+            const filterBlock = document.getElementById('filterBlock').value;
+            const filterStatus = document.getElementById('filterStatusKamar').value;
+
             const filtered = employees.filter(e => {
-                const matchesSearch = (e.nama || "").toLowerCase().includes(search) || (e.nik || "").toLowerCase().includes(search);
+                const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
+                                     (e.nik || "").toLowerCase().includes(search) ||
+                                     (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
+                const matchesBlock = !filterBlock || e.block === filterBlock;
+                const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesCat = currentFilter === 'ALL' || getCategory(e) === currentFilter;
-                return matchesSearch && matchesLok && matchesCat;
+                return matchesSearch && matchesLok && matchesBlock && matchesStatus && matchesCat;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
@@ -540,7 +809,7 @@
                     <td class="text-slate-400">${e.floor || '-'}</td>
                     <td class="text-slate-300 font-bold">${e.block || '-'}</td>
                     <td class="text-emerald-400 font-black">${e.no_kamar || '-'}</td>
-                    <td class="font-black ${e.status_kamar === 'TERISI' ? 'text-emerald-500' : 'text-rose-500'}">${e.status_kamar || 'TERISI'}</td>
+                    <td><span class="px-3 py-1 rounded-full text-[9px] font-bold ${getStatusClass(e.status_kamar)}">${e.status_kamar || 'TERISI'}</span></td>
                     <td class="text-amber-400 font-bold">${e.tanggal_masuk_mess_hunian_p2 || '-'}</td>
                     <td class="sticky-col-right text-center">
                         <div class="flex items-center justify-center gap-2">
@@ -557,22 +826,35 @@
             lucide.createIcons();
         }
 
+        function getStatusClass(status) {
+            switch(status) {
+                case 'TERISI': return 'bg-emerald-500/10 text-emerald-500';
+                case 'TERSEDIA': return 'bg-sky-500/10 text-sky-500';
+                case 'RUSAK': return 'bg-rose-500/10 text-rose-500';
+                case 'DIPERBAIKI': return 'bg-amber-500/10 text-amber-500';
+                default: return 'bg-slate-500/10 text-slate-500';
+            }
+        }
+
         async function saveData(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
             const raw = Object.fromEntries(formData.entries());
             const id = raw.id;
-            delete raw.id; // Jangan kirim ID sebagai data update
+            delete raw.id;
+
+            // Validasi NIK harus angka
+            if (!/^\d+$/.test(raw.nik)) {
+                showToast("NIK harus berupa angka", "error");
+                return;
+            }
 
             showToast("Menyimpan data...", "success");
             
             let result;
             if(id) {
-                // Update
                 result = await supabaseClient.from('karyawan_mess').update(raw).eq('id', id);
             } else {
-                // Insert
-                raw.status_kamar = "TERISI";
                 result = await supabaseClient.from('karyawan_mess').insert([raw]);
             }
 
@@ -601,31 +883,46 @@
                         const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s+/g, '') === t);
                         return key ? obj[key] : "";
                     };
-                    const formatDate = (v) => v instanceof Date ? v.toISOString().split('T')[0] : (v || null);
+                    const formatDate = (v) => {
+                        if (!v) return null;
+                        if (v instanceof Date) return v.toISOString().split('T')[0];
+                        // Coba parsing format Excel serial number
+                        if (typeof v === 'number') {
+                            const excelEpoch = new Date(1899, 11, 30);
+                            return new Date(excelEpoch.getTime() + v * 86400000).toISOString().split('T')[0];
+                        }
+                        return v;
+                    };
 
                     const toUpload = json.map(row => ({
-                        nik: String(findKey(row, "NIK") || ""),
-                        nama: String(findKey(row, "NAMA") || ""),
-                        gender: String(findKey(row, "GENDER") || ""),
-                        department: String(findKey(row, "DEPARTMENT") || ""),
-                        gol: String(findKey(row, "GOL") || ""),
-                        jabatan: String(findKey(row, "JABATAN") || ""),
-                        fasilitas: String(findKey(row, "FASILITAS") || ""),
-                        point_of_hire: String(findKey(row, "Point of Hire") || ""),
+                        nik: String(findKey(row, "NIK") || "").trim(),
+                        nama: String(findKey(row, "NAMA") || "").trim(),
+                        gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
+                        department: String(findKey(row, "DEPARTMENT") || "").trim(),
+                        gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
+                        jabatan: String(findKey(row, "JABATAN") || "").trim(),
+                        fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
+                        point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
                         tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
-                        perusahaan: String(findKey(row, "PERUSAHAAN") || ""),
-                        lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || ""),
-                        floor: String(findKey(row, "FLOOR") || ""),
-                        block: String(findKey(row, "BLOCK") || ""),
-                        no_kamar: String(findKey(row, "NO KAMAR") || ""),
-                        status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI"),
+                        perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
+                        lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
+                        floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
+                        block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
+                        no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
+                        status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
                         tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2"))
                     })).filter(i => i.nik !== "");
 
                     const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
-                    if(!error) { showToast(`Impor ${toUpload.length} data sukses!`); fetchAllData(); }
-                    else { showToast("Gagal update database", "error"); }
-                } catch (err) { showToast("Gagal memproses file", "error"); }
+                    if(!error) { 
+                        showToast(`Impor ${toUpload.length} data sukses!`); 
+                        fetchAllData(); 
+                    } else { 
+                        showToast("Gagal update database: " + error.message, "error"); 
+                    }
+                } catch (err) { 
+                    showToast("Gagal memproses file: " + err.message, "error"); 
+                }
                 finally { event.target.value = ""; }
             };
             reader.readAsArrayBuffer(file);
@@ -635,6 +932,180 @@
             if(!confirm("Hapus data karyawan ini secara permanen?")) return;
             const { error } = await supabaseClient.from('karyawan_mess').delete().eq('id', id);
             if(!error) { showToast("Data terhapus"); fetchAllData(); }
+        }
+
+        // FITUR LAPORAN
+        function openReportModal() {
+            document.getElementById('modal-report').classList.remove('hidden');
+            generateReport();
+        }
+
+        function closeReportModal() {
+            document.getElementById('modal-report').classList.add('hidden');
+        }
+
+        function generateReport() {
+            // Analisis berdasarkan Golongan
+            const golonganStats = {};
+            const lokasiStats = {};
+            
+            employees.forEach(emp => {
+                const gol = getCategory(emp);
+                golonganStats[gol] = (golonganStats[gol] || 0) + 1;
+                
+                const lokasi = emp.lokasi_hunian || 'TIDAK DIISI';
+                lokasiStats[lokasi] = (lokasiStats[lokasi] || 0) + 1;
+            });
+
+            // Update statistik angka
+            document.getElementById('stat-gol1').textContent = golonganStats['GOL 1'] || 0;
+            document.getElementById('stat-gol2').textContent = golonganStats['GOL 2'] || 0;
+            document.getElementById('stat-gol3').textContent = golonganStats['GOL 3'] || 0;
+            document.getElementById('stat-gol4up').textContent = (golonganStats['GOL 4 UP'] || 0) + (golonganStats['LAINNYA'] || 0);
+
+            // Analisis Status Kamar
+            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
+            const tersedia = employees.filter(e => e.status_kamar === 'TERSEDIA').length;
+            const rusak = employees.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
+            const total = terisi + tersedia + rusak;
+
+            const persenTerisi = total > 0 ? ((terisi / total) * 100).toFixed(1) : 0;
+            const persenTersedia = total > 0 ? ((tersedia / total) * 100).toFixed(1) : 0;
+            const persenRusak = total > 0 ? ((rusak / total) * 100).toFixed(1) : 0;
+
+            document.getElementById('kap-terisi').textContent = `${persenTerisi}% (${terisi})`;
+            document.getElementById('kap-tersedia').textContent = `${persenTersedia}% (${tersedia})`;
+            document.getElementById('kap-rusak').textContent = `${persenRusak}% (${rusak})`;
+
+            // Update progress bars
+            setTimeout(() => {
+                document.getElementById('bar-terisi').style.width = `${persenTerisi}%`;
+                document.getElementById('bar-tersedia').style.width = `${persenTersedia}%`;
+                document.getElementById('bar-rusak').style.width = `${persenRusak}%`;
+            }, 100);
+
+            // Generate simple charts (bisa dikembangkan dengan library chart seperti Chart.js)
+            renderSimpleChart('chart-golongan', golonganStats, 'Distribusi Golongan');
+            renderSimpleChart('chart-lokasi', lokasiStats, 'Distribusi Lokasi');
+        }
+
+        function renderSimpleChart(containerId, data, title) {
+            const container = document.getElementById(containerId);
+            const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'];
+            
+            let html = '<div class="space-y-2">';
+            const total = Object.values(data).reduce((a, b) => a + b, 0);
+            
+            Object.entries(data).forEach(([label, value], index) => {
+                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
+                const color = colors[index % colors.length];
+                
+                html += `
+                    <div>
+                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
+                            <span>${label}</span>
+                            <span>${value} (${percentage}%)</span>
+                        </div>
+                        <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
+                            <div class="h-full transition-all duration-1000" style="width: ${percentage}%; background-color: ${color};"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function exportReport() {
+            const reportData = {
+                timestamp: new Date().toISOString(),
+                totalKaryawan: employees.length,
+                golonganStats: {},
+                lokasiStats: {},
+                statusStats: {}
+            };
+
+            // Collect data
+            employees.forEach(emp => {
+                const gol = getCategory(emp);
+                reportData.golonganStats[gol] = (reportData.golonganStats[gol] || 0) + 1;
+                
+                const lokasi = emp.lokasi_hunian || 'TIDAK DIISI';
+                reportData.lokasiStats[lokasi] = (reportData.lokasiStats[lokasi] || 0) + 1;
+                
+                const status = emp.status_kamar || 'TERISI';
+                reportData.statusStats[status] = (reportData.statusStats[status] || 0) + 1;
+            });
+
+            // Create worksheet
+            const ws1 = XLSX.utils.json_to_sheet([
+                { METRIC: 'Total Karyawan', VALUE: employees.length },
+                { METRIC: 'Kamar Terisi', VALUE: reportData.statusStats['TERISI'] || 0 },
+                { METRIC: 'Kamar Tersedia', VALUE: reportData.statusStats['TERSEDIA'] || 0 },
+                { METRIC: 'Kamar Rusak/Perbaikan', VALUE: (reportData.statusStats['RUSAK'] || 0) + (reportData.statusStats['DIPERBAIKI'] || 0) }
+            ]);
+
+            const ws2 = XLSX.utils.json_to_sheet(
+                Object.entries(reportData.golonganStats).map(([gol, count]) => ({ GOLONGAN: gol, JUMLAH: count }))
+            );
+
+            const ws3 = XLSX.utils.json_to_sheet(
+                Object.entries(reportData.lokasiStats).map(([lokasi, count]) => ({ LOKASI: lokasi, JUMLAH: count }))
+            );
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws1, "Ringkasan");
+            XLSX.utils.book_append_sheet(wb, ws2, "Golongan");
+            XLSX.utils.book_append_sheet(wb, ws3, "Lokasi");
+
+            XLSX.writeFile(wb, `Laporan_Analisis_Mess_${new Date().toISOString().split('T')[0]}.xlsx`);
+            showToast("Laporan berhasil diexport");
+        }
+
+        // FITUR FILTER LANJUTAN
+        function showAdvancedFilter() {
+            // Show filter options in dashboard
+            const filterSection = document.querySelector('.glass-panel.p-6.rounded-3xl.mb-8');
+            if (filterSection) {
+                filterSection.scrollIntoView({ behavior: 'smooth' });
+            }
+            switchTab('dashboard');
+        }
+
+        function applyDashboardFilter() {
+            const lokasi = document.getElementById('filterDashboardLokasi').value;
+            const block = document.getElementById('filterDashboardBlock').value;
+            const kamar = document.getElementById('filterDashboardKamar').value;
+            const golongan = document.getElementById('filterDashboardGolongan').value;
+
+            // Filter data
+            const filtered = employees.filter(e => {
+                const matchesLok = !lokasi || e.lokasi_hunian === lokasi;
+                const matchesBlock = !block || e.block === block;
+                const matchesKamar = !kamar || (e.no_kamar && e.no_kamar.includes(kamar));
+                const matchesGol = !golongan || e.gol === golongan;
+                return matchesLok && matchesBlock && matchesKamar && matchesGol;
+            });
+
+            // Update dashboard stats with filtered data
+            document.getElementById('stat-total').innerText = filtered.length.toLocaleString();
+            const terisi = filtered.filter(e => e.status_kamar === 'TERISI').length;
+            const tersedia = filtered.filter(e => e.status_kamar === 'TERSEDIA').length;
+            document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
+            document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
+            document.getElementById('stat-mess').innerText = [...new Set(filtered.map(e => e.lokasi_hunian))].filter(Boolean).length;
+
+            showToast(`Filter diterapkan: ${filtered.length} data ditemukan`);
+        }
+
+        function resetDashboardFilter() {
+            document.getElementById('filterDashboardLokasi').value = '';
+            document.getElementById('filterDashboardBlock').value = '';
+            document.getElementById('filterDashboardKamar').value = '';
+            document.getElementById('filterDashboardGolongan').value = '';
+            updateUI();
+            showToast("Filter direset");
         }
 
         function showToast(msg, type = 'success') {
@@ -649,9 +1120,31 @@
 
         function downloadTemplate() {
             const h = [["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"]];
+            
+            // Add sample data
+            h.push(["123456", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"]);
+            h.push(["123457", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"]);
+            
             const ws = XLSX.utils.aoa_to_sheet(h);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
+            
+            // Add instruction sheet
+            const instructions = [
+                ["PETUNJUK PENGISIAN TEMPLATE"],
+                [""],
+                ["1. NIK: Wajib diisi, hanya angka"],
+                ["2. NAMA: Wajib diisi"],
+                ["3. GENDER: Pilih LAKI-LAKI atau PEREMPUAN"],
+                ["4. GOL: Contoh: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["5. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
+                ["6. Tanggal: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["7. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
+                ["8. Pastikan format kolom sesuai dengan contoh"]
+            ];
+            const ws2 = XLSX.utils.aoa_to_sheet(instructions);
+            XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk");
+            
             XLSX.writeFile(wb, "Template_Import_OceanMess.xlsx");
         }
 
@@ -659,11 +1152,16 @@
             const ws = XLSX.utils.json_to_sheet(employees);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Database");
-            XLSX.writeFile(wb, "Database_Mess_Full_Export.xlsx");
+            XLSX.writeFile(wb, `Database_Mess_Full_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
         }
 
+        // Event Listeners
         document.getElementById('globalSearch').addEventListener('input', renderTable);
-        window.onload = () => { lucide.createIcons(); fetchAllData(); };
+        
+        window.onload = () => { 
+            lucide.createIcons(); 
+            fetchAllData(); 
+        };
     </script>
 </body>
 </html>
