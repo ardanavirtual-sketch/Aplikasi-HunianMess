@@ -106,6 +106,21 @@
         .status-available { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
         .status-occupied { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
         .status-reserved { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+
+        .preview-table th {
+            background: #0b253a;
+            font-size: 10px;
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .preview-table td {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .preview-table tr:nth-child(even) {
+            background: rgba(255,255,255,0.02);
+        }
     </style>
 </head>
 <body class="flex h-screen">
@@ -113,7 +128,65 @@
     <div id="toast-container" class="fixed top-6 right-6 z-[110] flex flex-col gap-3"></div>
 
     <!-- Hidden Input for Import -->
-    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleImport(event)">
+    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
+
+    <!-- MODAL PREVIEW IMPORT -->
+    <div id="modal-preview" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closePreviewModal()"></div>
+        <div class="glass-panel w-full max-w-6xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <div>
+                    <h3 class="text-xl font-black text-white">Preview Data Import</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Review data sebelum diupload ke database</p>
+                    <div id="preview-stats" class="mt-2">
+                        <span class="bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">0 Data Valid</span>
+                        <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">0 Baru</span>
+                        <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold">0 Update</span>
+                    </div>
+                </div>
+                <button onclick="closePreviewModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="text-slate-400"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 custom-scrollbar">
+                <div class="mb-4">
+                    <div class="flex items-center gap-4 mb-4">
+                        <h4 class="text-sm font-black text-white">Data yang akan diimport</h4>
+                        <div class="flex-1"></div>
+                        <button onclick="processImport()" id="btn-process-import" class="px-6 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT
+                        </button>
+                    </div>
+                    
+                    <div class="overflow-auto custom-scrollbar max-h-[400px] bg-[#071927] rounded-lg border border-white/10">
+                        <table class="preview-table w-full">
+                            <thead>
+                                <tr class="text-slate-400">
+                                    <th>NIK</th>
+                                    <th>NAMA</th>
+                                    <th>GENDER</th>
+                                    <th>GOL</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>LOKASI</th>
+                                    <th>BLOCK</th>
+                                    <th>NO KAMAR</th>
+                                    <th>STATUS</th>
+                                    <th>ACTION</th>
+                                </tr>
+                            </thead>
+                            <tbody id="preview-table-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="preview-errors" class="mt-4 hidden">
+                        <h5 class="text-xs font-bold text-rose-400 mb-2">Data yang akan diabaikan:</h5>
+                        <div class="text-[10px] text-slate-400" id="error-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL FORM (TAMBAH & EDIT) -->
     <div id="modal-form" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -241,8 +314,11 @@
                         <select name="fasilitas" id="field-fasilitas" 
                                 class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
                             <option value="">Pilih Fasilitas</option>
-                            <option value="STANDARD">NR</option>
-                            <option value="VIP">CR</option>
+                            <option value="STANDARD">STANDARD</option>
+                            <option value="VIP">VIP</option>
+                            <option value="EXECUTIVE">EXECUTIVE</option>
+                            <option value="AC + TV">AC + TV</option>
+                            <option value="AC ONLY">AC ONLY</option>
                         </select>
                     </label>
                     <label class="block">
@@ -439,9 +515,6 @@
             <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2 mb-2">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH TEMPLATE
             </button>
-            <button onclick="showAdvancedFilter()" class="w-full bg-sky-500/10 hover:bg-sky-500 text-sky-500 hover:text-white border border-sky-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2">
-                <i data-lucide="filter" class="w-4 h-4"></i> FILTER LANJUTAN
-            </button>
         </div>
     </aside>
 
@@ -540,9 +613,13 @@
                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Golongan</label>
-                            <select id="filterDashboardGolongan" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
-                                <option value="">Semua Golongan</option>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Status Kamar</label>
+                            <select id="filterDashboardStatus" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
+                                <option value="">Semua Status</option>
+                                <option value="TERISI">TERISI</option>
+                                <option value="TERSEDIA">TERSEDIA</option>
+                                <option value="RUSAK">RUSAK</option>
+                                <option value="DIPERBAIKI">DIPERBAIKI</option>
                             </select>
                         </div>
                     </div>
@@ -569,22 +646,44 @@
                         <button onclick="openModal()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-[11px] font-black flex items-center gap-2 hover:bg-emerald-600 transition-all">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> TAMBAH MANUAL
                         </button>
-                        <button onclick="triggerImport()" class="px-4 py-2 bg-sky-500 text-white rounded-lg text-[11px] font-black flex items-center gap-2 hover:bg-sky-600 transition-all">
-                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i> IMPORT EXCEL
+                    </div>
+                </div>
+
+                <!-- FILTER BAR UNTUK DATABASE -->
+                <div class="px-8 py-3 bg-[#0b253a]/20 border-b border-white/5 flex items-center gap-4 shrink-0">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Lokasi Hunian</label>
+                            <select id="filterLokasi" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                                <option value="">Semua Lokasi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Block</label>
+                            <select id="filterBlock" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                                <option value="">Semua Block</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">No Kamar</label>
+                            <input type="text" id="filterKamar" oninput="renderTable()" placeholder="Cari no kamar..." 
+                                   class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Status Kamar</label>
+                            <select id="filterStatusKamar" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                                <option value="">Semua Status</option>
+                                <option value="TERISI">TERISI</option>
+                                <option value="TERSEDIA">TERSEDIA</option>
+                                <option value="RUSAK">RUSAK</option>
+                                <option value="DIPERBAIKI">DIPERBAIKI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="resetTableFilters()" class="px-4 py-1.5 bg-white/5 text-slate-400 rounded-lg text-[10px] font-bold hover:bg-white/10 transition-all">
+                            Reset
                         </button>
-                        <select id="filterLokasi" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
-                            <option value="">Semua Lokasi Mess</option>
-                        </select>
-                        <select id="filterBlock" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
-                            <option value="">Semua Block</option>
-                        </select>
-                        <select id="filterStatusKamar" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
-                            <option value="">Semua Status</option>
-                            <option value="TERISI">TERISI</option>
-                            <option value="TERSEDIA">TERSEDIA</option>
-                            <option value="RUSAK">RUSAK</option>
-                            <option value="DIPERBAIKI">DIPERBAIKI</option>
-                        </select>
                     </div>
                 </div>
 
@@ -625,6 +724,8 @@
         let activeTab = 'dashboard';
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
+        let importPreviewData = [];
+        let importFile = null;
 
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
@@ -712,33 +813,28 @@
         }
 
         function populateFilterOptions() {
-            // Populate Lokasi options
+            // Populate Lokasi options for all filter locations
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
-            const lokasiSelect = document.getElementById('filterLokasi');
-            const lokasiDashboard = document.getElementById('filterDashboardLokasi');
-            const html = '<option value="">Semua Lokasi Mess</option>' + 
+            const html = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             
-            lokasiSelect.innerHTML = html;
-            if (lokasiDashboard) lokasiDashboard.innerHTML = html;
+            // Apply to all lokasi filters
+            const lokasiFilters = ['filterLokasi', 'filterDashboardLokasi'];
+            lokasiFilters.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.innerHTML = html;
+            });
 
             // Populate Block options
             const uniqueBlocks = [...new Set(employees.map(e => e.block))].filter(Boolean).sort();
-            const blockSelect = document.getElementById('filterBlock');
-            const blockDashboard = document.getElementById('filterDashboardBlock');
             const blockHtml = '<option value="">Semua Block</option>' + 
                 uniqueBlocks.map(b => `<option value="${b}">${b}</option>`).join('');
             
-            if (blockSelect) blockSelect.innerHTML = blockHtml;
-            if (blockDashboard) blockDashboard.innerHTML = blockHtml;
-
-            // Populate Golongan options
-            const uniqueGol = [...new Set(employees.map(e => e.gol))].filter(Boolean).sort();
-            const golSelect = document.getElementById('filterDashboardGolongan');
-            const golHtml = '<option value="">Semua Golongan</option>' + 
-                uniqueGol.map(g => `<option value="${g}">${g}</option>`).join('');
-            
-            if (golSelect) golSelect.innerHTML = golHtml;
+            const blockFilters = ['filterBlock', 'filterDashboardBlock'];
+            blockFilters.forEach(id => {
+                const element = document.getElementById(id);
+                if (element) element.innerHTML = blockHtml;
+            });
         }
 
         function updateUI() {
@@ -775,6 +871,7 @@
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
             const filterBlock = document.getElementById('filterBlock').value;
+            const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
 
             const filtered = employees.filter(e => {
@@ -783,9 +880,10 @@
                                      (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
                 const matchesBlock = !filterBlock || e.block === filterBlock;
+                const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesCat = currentFilter === 'ALL' || getCategory(e) === currentFilter;
-                return matchesSearch && matchesLok && matchesBlock && matchesStatus && matchesCat;
+                return matchesSearch && matchesLok && matchesBlock && matchesKamar && matchesStatus && matchesCat;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
@@ -821,6 +919,16 @@
                 </tr>
             `).join('');
             lucide.createIcons();
+        }
+
+        function resetTableFilters() {
+            document.getElementById('filterLokasi').value = '';
+            document.getElementById('filterBlock').value = '';
+            document.getElementById('filterKamar').value = '';
+            document.getElementById('filterStatusKamar').value = '';
+            document.getElementById('globalSearch').value = '';
+            renderTable();
+            showToast("Filter telah direset");
         }
 
         function getStatusClass(status) {
@@ -864,10 +972,14 @@
             }
         }
 
-        async function handleImport(event) {
+        // FITUR PREVIEW IMPORT
+        async function handleFileSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
-            showToast("Memproses Excel...", "success");
+            
+            importFile = file;
+            showToast("Membaca file Excel...", "success");
+            
             const reader = new FileReader();
             reader.onload = async (e) => {
                 try {
@@ -883,7 +995,6 @@
                     const formatDate = (v) => {
                         if (!v) return null;
                         if (v instanceof Date) return v.toISOString().split('T')[0];
-                        // Coba parsing format Excel serial number
                         if (typeof v === 'number') {
                             const excelEpoch = new Date(1899, 11, 30);
                             return new Date(excelEpoch.getTime() + v * 86400000).toISOString().split('T')[0];
@@ -891,38 +1002,153 @@
                         return v;
                     };
 
-                    const toUpload = json.map(row => ({
-                        nik: String(findKey(row, "NIK") || "").trim(),
-                        nama: String(findKey(row, "NAMA") || "").trim(),
-                        gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
-                        department: String(findKey(row, "DEPARTMENT") || "").trim(),
-                        gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
-                        jabatan: String(findKey(row, "JABATAN") || "").trim(),
-                        fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
-                        point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
-                        tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
-                        perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
-                        lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
-                        floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
-                        block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
-                        no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
-                        status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
-                        tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2"))
-                    })).filter(i => i.nik !== "");
+                    // Process data untuk preview
+                    importPreviewData = json.map((row, index) => {
+                        const processed = {
+                            id: `preview-${index}`,
+                            nik: String(findKey(row, "NIK") || "").trim(),
+                            nama: String(findKey(row, "NAMA") || "").trim(),
+                            gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
+                            department: String(findKey(row, "DEPARTMENT") || "").trim(),
+                            gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
+                            jabatan: String(findKey(row, "JABATAN") || "").trim(),
+                            fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
+                            point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
+                            tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
+                            perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
+                            lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
+                            floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
+                            block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
+                            no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
+                            status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
+                            tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2")),
+                            isValid: true,
+                            errors: []
+                        };
 
-                    const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
-                    if(!error) { 
-                        showToast(`Impor ${toUpload.length} data sukses!`); 
-                        fetchAllData(); 
-                    } else { 
-                        showToast("Gagal update database: " + error.message, "error"); 
-                    }
+                        // Validasi data
+                        if (!processed.nik || !/^\d+$/.test(processed.nik)) {
+                            processed.isValid = false;
+                            processed.errors.push("NIK tidak valid");
+                        }
+                        if (!processed.nama) {
+                            processed.isValid = false;
+                            processed.errors.push("Nama harus diisi");
+                        }
+                        if (!processed.no_kamar) {
+                            processed.isValid = false;
+                            processed.errors.push("No Kamar harus diisi");
+                        }
+
+                        return processed;
+                    });
+
+                    // Filter data yang valid
+                    const validData = importPreviewData.filter(item => item.isValid);
+                    const existingNik = employees.map(e => e.nik);
+                    const newData = validData.filter(item => !existingNik.includes(item.nik));
+                    const updateData = validData.filter(item => existingNik.includes(item.nik));
+
+                    // Show preview modal
+                    showPreviewModal(validData, newData, updateData);
+
                 } catch (err) { 
                     showToast("Gagal memproses file: " + err.message, "error"); 
                 }
                 finally { event.target.value = ""; }
             };
             reader.readAsArrayBuffer(file);
+        }
+
+        function showPreviewModal(validData, newData, updateData) {
+            document.getElementById('modal-preview').classList.remove('hidden');
+            
+            // Update stats
+            document.getElementById('preview-stats').innerHTML = `
+                <span class="bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${validData.length} Data Valid</span>
+                <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${newData.length} Baru</span>
+                <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold">${updateData.length} Update</span>
+            `;
+
+            // Render preview table
+            const tbody = document.getElementById('preview-table-body');
+            tbody.innerHTML = validData.map(item => `
+                <tr class="${!item.isValid ? 'bg-rose-500/10' : ''}">
+                    <td class="font-mono text-sky-400">${item.nik || '-'}</td>
+                    <td class="font-medium">${item.nama || '-'}</td>
+                    <td class="text-slate-400">${item.gender || '-'}</td>
+                    <td class="text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
+                    <td class="text-slate-400">${item.department || '-'}</td>
+                    <td class="font-medium">${item.lokasi_hunian || '-'}</td>
+                    <td class="font-bold">${item.block || '-'}</td>
+                    <td class="font-black text-emerald-400">${item.no_kamar || '-'}</td>
+                    <td><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
+                    <td class="text-center">
+                        ${employees.map(e => e.nik).includes(item.nik) ? 
+                            '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
+                            '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
+                    </td>
+                </tr>
+            `).join('');
+
+            // Enable/disable process button
+            const processBtn = document.getElementById('btn-process-import');
+            if (validData.length > 0) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = '<i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT (' + validData.length + ' DATA)';
+            } else {
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<i data-lucide="upload" class="w-4 h-4"></i> TIDAK ADA DATA VALID';
+            }
+
+            // Show errors if any
+            const invalidData = importPreviewData.filter(item => !item.isValid);
+            const errorSection = document.getElementById('preview-errors');
+            const errorList = document.getElementById('error-list');
+            
+            if (invalidData.length > 0) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = invalidData.map(item => 
+                    `<div class="mb-1">Baris ${item.id.replace('preview-', '')}: ${item.errors.join(', ')} - NIK: ${item.nik || 'TIDAK ADA'}</div>`
+                ).join('');
+            } else {
+                errorSection.classList.add('hidden');
+            }
+
+            lucide.createIcons();
+        }
+
+        function closePreviewModal() {
+            document.getElementById('modal-preview').classList.add('hidden');
+            importPreviewData = [];
+            importFile = null;
+        }
+
+        async function processImport() {
+            const validData = importPreviewData.filter(item => item.isValid);
+            
+            if (validData.length === 0) {
+                showToast("Tidak ada data valid untuk diimport", "error");
+                return;
+            }
+
+            showToast(`Memproses ${validData.length} data...`, "success");
+
+            // Prepare data for upload (remove preview-specific fields)
+            const toUpload = validData.map(item => {
+                const { id, isValid, errors, ...cleanData } = item;
+                return cleanData;
+            });
+
+            const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
+            
+            if(!error) { 
+                showToast(`Import ${validData.length} data berhasil!`); 
+                closePreviewModal();
+                fetchAllData();
+            } else { 
+                showToast("Gagal mengimport data: " + error.message, "error"); 
+            }
         }
 
         async function deleteEmployee(id) {
@@ -981,7 +1207,7 @@
                 document.getElementById('bar-rusak').style.width = `${persenRusak}%`;
             }, 100);
 
-            // Generate simple charts (bisa dikembangkan dengan library chart seperti Chart.js)
+            // Generate simple charts
             renderSimpleChart('chart-golongan', golonganStats, 'Distribusi Golongan');
             renderSimpleChart('chart-lokasi', lokasiStats, 'Distribusi Lokasi');
         }
@@ -1060,35 +1286,27 @@
             showToast("Laporan berhasil diexport");
         }
 
-        // FITUR FILTER LANJUTAN
-        function showAdvancedFilter() {
-            // Show filter options in dashboard
-            const filterSection = document.querySelector('.glass-panel.p-6.rounded-3xl.mb-8');
-            if (filterSection) {
-                filterSection.scrollIntoView({ behavior: 'smooth' });
-            }
-            switchTab('dashboard');
-        }
-
+        // FILTER DASHBOARD
         function applyDashboardFilter() {
             const lokasi = document.getElementById('filterDashboardLokasi').value;
             const block = document.getElementById('filterDashboardBlock').value;
             const kamar = document.getElementById('filterDashboardKamar').value;
-            const golongan = document.getElementById('filterDashboardGolongan').value;
+            const status = document.getElementById('filterDashboardStatus').value;
 
             // Filter data
             const filtered = employees.filter(e => {
                 const matchesLok = !lokasi || e.lokasi_hunian === lokasi;
                 const matchesBlock = !block || e.block === block;
                 const matchesKamar = !kamar || (e.no_kamar && e.no_kamar.includes(kamar));
-                const matchesGol = !golongan || e.gol === golongan;
-                return matchesLok && matchesBlock && matchesKamar && matchesGol;
+                const matchesStatus = !status || e.status_kamar === status;
+                return matchesLok && matchesBlock && matchesKamar && matchesStatus;
             });
 
             // Update dashboard stats with filtered data
             document.getElementById('stat-total').innerText = filtered.length.toLocaleString();
             const terisi = filtered.filter(e => e.status_kamar === 'TERISI').length;
             const tersedia = filtered.filter(e => e.status_kamar === 'TERSEDIA').length;
+            const rusak = filtered.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
             document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
             document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
             document.getElementById('stat-mess').innerText = [...new Set(filtered.map(e => e.lokasi_hunian))].filter(Boolean).length;
@@ -1100,7 +1318,7 @@
             document.getElementById('filterDashboardLokasi').value = '';
             document.getElementById('filterDashboardBlock').value = '';
             document.getElementById('filterDashboardKamar').value = '';
-            document.getElementById('filterDashboardGolongan').value = '';
+            document.getElementById('filterDashboardStatus').value = '';
             updateUI();
             showToast("Filter direset");
         }
