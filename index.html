@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ocean Mess - Ultra Wide Database</title>
+    <title>Ocean Mess - Sistem Manajemen Hunian</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -23,8 +23,7 @@
             background-color: var(--ocean-dark);
             color: #e2e8f0;
             margin: 0;
-            overflow: hidden;
-            scroll-behavior: smooth;
+            overflow-x: hidden;
         }
 
         .glass-panel {
@@ -110,46 +109,6 @@
         .modal-overlay {
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(8px);
-        }
-
-        .chart-container {
-            height: 300px;
-        }
-
-        .status-available { background-color: rgba(34, 197, 94, 0.1); color: #22c55e; }
-        .status-occupied { background-color: rgba(239, 68, 68, 0.1); color: #ef4444; }
-        .status-reserved { background-color: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-
-        .preview-table th {
-            background: #0b253a;
-            font-size: 10px;
-            padding: 8px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .preview-table td {
-            padding: 6px 12px;
-            font-size: 11px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .preview-table tr:nth-child(even) {
-            background: rgba(255,255,255,0.02);
-        }
-        
-        .valid-nik { border-left: 3px solid #10b981; }
-        .invalid-nik { border-left: 3px solid #ef4444; }
-        
-        .loading-spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid #0ea5e9;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
         }
 
         .input-field {
@@ -264,19 +223,38 @@
             transform: scale(1.02);
         }
 
-        .import-progress-bar {
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            overflow: hidden;
-            margin-top: 10px;
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #0ea5e9;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        .import-progress-fill {
-            height: 100%;
-            background: var(--ocean-gradient);
-            border-radius: 3px;
-            transition: width 0.3s;
+        .toast-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 4px solid #10b981;
+        }
+
+        .toast-error {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+        }
+
+        .toast-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 4px solid #f59e0b;
+        }
+
+        .toast-info {
+            background: rgba(14, 165, 233, 0.1);
+            border-left: 4px solid #0ea5e9;
         }
     </style>
 </head>
@@ -294,7 +272,7 @@
     </div>
 
     <!-- Hidden Input for Import -->
-    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleFileSelect(event)">
+    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls, .csv">
 
     <!-- MODAL PREVIEW IMPORT -->
     <div id="modal-preview" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -326,21 +304,18 @@
                     </div>
                     
                     <div class="overflow-auto custom-scrollbar max-h-[400px] bg-[#071927] rounded-lg border border-white/10">
-                        <table class="preview-table w-full">
+                        <table class="w-full text-xs">
                             <thead>
-                                <tr class="text-slate-400">
-                                    <th>#</th>
-                                    <th>NIK</th>
-                                    <th>NAMA</th>
-                                    <th>GENDER</th>
-                                    <th>GOL</th>
-                                    <th>DEPARTMENT</th>
-                                    <th>LOKASI</th>
-                                    <th>BLOCK</th>
-                                    <th>NO KAMAR</th>
-                                    <th>STATUS</th>
-                                    <th>ACTION</th>
-                                    <th>VALIDASI</th>
+                                <tr class="text-slate-400 bg-[#0b253a]">
+                                    <th class="py-3 px-4 text-left">#</th>
+                                    <th class="py-3 px-4 text-left">NIK</th>
+                                    <th class="py-3 px-4 text-left">NAMA</th>
+                                    <th class="py-3 px-4 text-left">GENDER</th>
+                                    <th class="py-3 px-4 text-left">GOL</th>
+                                    <th class="py-3 px-4 text-left">NO KAMAR</th>
+                                    <th class="py-3 px-4 text-left">STATUS</th>
+                                    <th class="py-3 px-4 text-left">ACTION</th>
+                                    <th class="py-3 px-4 text-left">VALIDASI</th>
                                 </tr>
                             </thead>
                             <tbody id="preview-table-body"></tbody>
@@ -377,7 +352,7 @@
         <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
             <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                 <div>
-                    <h3 id="modal-title" class="text-xl font-black text-white">Tambah Karyawan</h3>
+                    <h3 id="modal-title" class="text-xl font-black text-white">Tambah Data Karyawan</h3>
                     <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Lengkapi data penghuni mess</p>
                 </div>
                 <button onclick="closeModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
@@ -511,9 +486,7 @@
                         <div class="form-group">
                             <label class="form-label required-field">No Kamar</label>
                             <input type="text" name="no_kamar" id="field-no_kamar" required 
-                                   class="input-field w-full"
-                                   oninput="validateRoomNumber(this)">
-                            <div id="room-error" class="text-[10px] text-rose-500 mt-1 hidden"></div>
+                                   class="input-field w-full">
                         </div>
                     </div>
                     
@@ -570,14 +543,14 @@
                         <i data-lucide="save" class="w-4 h-4 inline mr-2"></i> SIMPAN DATA
                     </button>
                     <button type="button" onclick="closeModal()" class="btn-secondary">
-                        BATAL
+                        <i data-lucide="x" class="w-4 h-4 inline mr-2"></i> BATAL
                     </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- MODAL IMPORT DRAG & DROP -->
+    <!-- MODAL IMPORT -->
     <div id="modal-import" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
         <div class="modal-overlay absolute inset-0" onclick="closeImportModal()"></div>
         <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
@@ -592,17 +565,17 @@
             </div>
             
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <div id="drag-drop-area" class="drag-drop-area cursor-pointer" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('importFile').click()">
+                <div id="drag-drop-area" class="drag-drop-area cursor-pointer mb-6">
                     <i data-lucide="upload-cloud" class="w-16 h-16 text-sky-400 mb-4"></i>
-                    <h4 class="text-lg font-bold text-white mb-2">Drag & Drop File Excel</h4>
+                    <h4 class="text-lg font-bold text-white mb-2">Klik untuk memilih file Excel</h4>
                     <p class="text-slate-400 text-sm mb-4">Unggah file Excel (.xlsx, .xls, .csv) dengan format template yang sesuai</p>
-                    <button class="btn-secondary inline-flex items-center gap-2">
+                    <button onclick="document.getElementById('importFile').click()" class="btn-secondary inline-flex items-center gap-2">
                         <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> PILIH FILE
                     </button>
                     <p class="text-[10px] text-slate-500 mt-4">Maksimal ukuran file: 10MB</p>
                 </div>
                 
-                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                     <div class="glass-card p-6 rounded-2xl">
                         <h5 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
                             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Template Format
@@ -623,12 +596,11 @@
                             <li>• Data duplikat berdasarkan NIK akan diupdate</li>
                             <li>• Data akan divalidasi sebelum diimport</li>
                             <li>• Backup disarankan sebelum import massal</li>
-                            <li>• Proses import dapat dibatalkan kapan saja</li>
                         </ul>
                     </div>
                 </div>
                 
-                <div class="mt-8">
+                <div>
                     <button onclick="downloadTemplate()" class="btn-secondary w-full flex items-center justify-center gap-2">
                         <i data-lucide="download" class="w-4 h-4"></i> UNDUH TEMPLATE EXCEL
                     </button>
@@ -660,13 +632,13 @@
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Dashboard</span>
                 </button>
-                <button onclick="switchTab('all-employees')" id="nav-all-employees" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                <button onclick="switchTab('data-karyawan')" id="nav-data-karyawan" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                     <i data-lucide="database" class="w-5 h-5"></i>
-                    <span class="nav-text font-bold text-sm">Database Karyawan</span>
+                    <span class="nav-text font-bold text-sm">Data Karyawan</span>
                 </button>
-                <button onclick="openImportModal()" id="nav-import" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i data-lucide="upload" class="w-5 h-5"></i>
-                    <span class="nav-text font-bold text-sm">Import Excel</span>
+                <button onclick="switchTab('manajemen-data')" id="nav-manajemen-data" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span class="nav-text font-bold text-sm">Manajemen Data</span>
                 </button>
             </div>
 
@@ -703,9 +675,10 @@
         </nav>
 
         <div class="p-4 sidebar-footer-content">
-            <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2 mb-2">
-                <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH TEMPLATE
-            </button>
+            <div class="text-[10px] text-slate-500 text-center">
+                <p>© 2024 OceanMess</p>
+                <p>v2.0.0</p>
+            </div>
         </div>
     </aside>
 
@@ -728,12 +701,6 @@
                     <input type="text" id="globalSearch" placeholder="Cari NIK, Nama, atau No Kamar..." 
                         class="input-field pl-12 w-72 placeholder:text-slate-600">
                 </div>
-                <button onclick="exportData()" class="btn-secondary flex items-center gap-2">
-                    <i data-lucide="download" class="w-4 h-4"></i> EXPORT
-                </button>
-                <button onclick="openModal()" class="btn-primary flex items-center gap-2">
-                    <i data-lucide="plus" class="w-4 h-4"></i> TAMBAH DATA
-                </button>
             </div>
         </header>
 
@@ -781,11 +748,12 @@
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <div class="bg-gradient-to-br from-sky-600 to-sky-900 p-8 rounded-[32px] relative overflow-hidden group">
                         <div class="relative z-10">
-                            <h3 class="text-2xl font-black text-white mb-2">Sinkronisasi Data Excel</h3>
-                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Perbarui database karyawan massal menggunakan template Excel yang disediakan. Sistem akan memvalidasi data sebelum diimport.</p>
-                            <button onclick="openImportModal()" class="bg-white text-sky-900 px-8 py-3 rounded-xl font-black text-xs hover:scale-105 transition-transform flex items-center gap-2">
-                                <i data-lucide="upload" class="w-4 h-4"></i> UNGGAH EXCEL BARU
-                            </button>
+                            <h3 class="text-2xl font-black text-white mb-2">Ringkasan Database</h3>
+                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Sistem manajemen hunian mess dengan kapasitas 20.000 karyawan. Data terupdate secara real-time.</p>
+                            <div class="flex items-center gap-2 text-sm">
+                                <i data-lucide="database" class="w-4 h-4 text-sky-300"></i>
+                                <span class="text-sky-300">Status: <span id="db-status" class="font-bold">Connected</span></span>
+                            </div>
                         </div>
                         <i data-lucide="database" class="absolute right-[-20px] bottom-[-20px] w-48 h-48 text-white/10 rotate-12 group-hover:scale-110 transition-transform duration-700"></i>
                     </div>
@@ -799,20 +767,6 @@
                             <span>0 PENGHUNI</span>
                             <span id="capacity-text">0% TERPAKAI</span>
                             <span>20.000 KAPASITAS</span>
-                        </div>
-                        <div class="mt-6 flex items-center gap-4">
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-emerald-500/20 rounded-full border border-emerald-500"></div>
-                                <span class="text-[10px] text-slate-400">Terisi</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-amber-500/20 rounded-full border border-amber-500"></div>
-                                <span class="text-[10px] text-slate-400">Tersedia</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <div class="w-3 h-3 bg-rose-500/20 rounded-full border border-rose-500"></div>
-                                <span class="text-[10px] text-slate-400">Rusak</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -845,25 +799,17 @@
                 </div>
             </div>
 
-            <!-- VIEW TABEL DATABASE -->
-            <div id="tab-data" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
+            <!-- TAB DATA KARYAWAN -->
+            <div id="tab-data-karyawan" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
                 <!-- Sub-Header Bar -->
                 <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-4">
                         <span id="data-count-badge" class="bg-gradient-to-r from-sky-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
-                        <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="openModal()" class="btn-primary flex items-center gap-2">
-                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> TAMBAH MANUAL
-                        </button>
-                        <button onclick="openImportModal()" class="btn-secondary flex items-center gap-2">
-                            <i data-lucide="upload" class="w-3.5 h-3.5"></i> IMPORT EXCEL
-                        </button>
+                        <h4 class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
                     </div>
                 </div>
 
-                <!-- FILTER BAR UNTUK DATABASE -->
+                <!-- FILTER BAR -->
                 <div class="px-8 py-3 bg-[#0b253a]/20 border-b border-white/5 flex items-center gap-4 shrink-0">
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
                         <div>
@@ -928,7 +874,7 @@
                                 <th class="text-emerald-400">NO KAMAR</th>
                                 <th>STATUS KAMAR</th>
                                 <th class="text-amber-400">TGL MASUK MESS</th>
-                                <th class="sticky-col-right text-center">AKSI & MENU</th>
+                                <th class="sticky-col-right text-center">AKSI</th>
                             </tr>
                         </thead>
                         <tbody id="table-body"></tbody>
@@ -936,47 +882,151 @@
                 </div>
             </div>
 
+            <!-- TAB MANAJEMEN DATA -->
+            <div id="tab-manajemen-data" class="hidden absolute inset-0 p-8 overflow-y-auto custom-scrollbar animate-in fade-in duration-500">
+                <div class="max-w-6xl mx-auto">
+                    <h3 class="text-2xl font-black text-white mb-2">Manajemen Data Karyawan</h3>
+                    <p class="text-slate-400 text-sm mb-8">Kelola data karyawan hunian mess dengan fitur lengkap</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Tambah Data Manual -->
+                        <div class="glass-panel p-8 rounded-3xl border-l-4 border-emerald-500">
+                            <div class="w-12 h-12 bg-emerald-500/20 text-emerald-500 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="user-plus" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-lg font-black text-white mb-3">Tambah Data Manual</h4>
+                            <p class="text-slate-400 text-sm mb-6">Tambahkan data karyawan satu per satu melalui form input yang lengkap.</p>
+                            <button onclick="openModal()" class="btn-primary w-full">
+                                <i data-lucide="plus" class="w-4 h-4 mr-2"></i> TAMBAH DATA
+                            </button>
+                        </div>
+                        
+                        <!-- Import Data Excel -->
+                        <div class="glass-panel p-8 rounded-3xl border-l-4 border-sky-500">
+                            <div class="w-12 h-12 bg-sky-500/20 text-sky-500 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="upload" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-lg font-black text-white mb-3">Import Data Excel</h4>
+                            <p class="text-slate-400 text-sm mb-6">Import data karyawan massal menggunakan file Excel dengan format template.</p>
+                            <button onclick="openImportModal()" class="btn-primary w-full">
+                                <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-2"></i> IMPORT EXCEL
+                            </button>
+                        </div>
+                        
+                        <!-- Export Data -->
+                        <div class="glass-panel p-8 rounded-3xl border-l-4 border-amber-500">
+                            <div class="w-12 h-12 bg-amber-500/20 text-amber-500 rounded-xl flex items-center justify-center mb-4">
+                                <i data-lucide="download" class="w-6 h-6"></i>
+                            </div>
+                            <h4 class="text-lg font-black text-white mb-3">Export Data</h4>
+                            <p class="text-slate-400 text-sm mb-6">Export seluruh data karyawan ke file Excel untuk backup atau analisis.</p>
+                            <button onclick="exportData()" class="btn-primary w-full">
+                                <i data-lucide="file-spreadsheet" class="w-4 h-4 mr-2"></i> EXPORT DATA
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Template Download Section -->
+                    <div class="glass-panel p-8 rounded-3xl mb-8">
+                        <h4 class="text-lg font-black text-white mb-4">Download Template Import</h4>
+                        <p class="text-slate-400 text-sm mb-6">Unduh template Excel untuk memudahkan pengisian data sebelum diimport ke sistem.</p>
+                        <div class="flex items-center justify-between p-4 bg-white/5 rounded-2xl">
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-emerald-500/20 text-emerald-500 rounded-xl flex items-center justify-center">
+                                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                                </div>
+                                <div>
+                                    <h5 class="text-sm font-bold text-white">Template_Import_OceanMess.xlsx</h5>
+                                    <p class="text-[10px] text-slate-400">Format Excel dengan petunjuk pengisian</p>
+                                </div>
+                            </div>
+                            <button onclick="downloadTemplate()" class="btn-secondary">
+                                <i data-lucide="download" class="w-4 h-4 mr-2"></i> UNDUH
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Database Info -->
+                    <div class="glass-panel p-8 rounded-3xl">
+                        <h4 class="text-lg font-black text-white mb-4">Informasi Database</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Status Koneksi</span>
+                                    <span id="db-connection-status" class="px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold">Connected</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Total Data</span>
+                                    <span id="db-total-data" class="text-white font-bold">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Data Terbaru</span>
+                                    <span id="db-latest-update" class="text-slate-400 text-sm">-</span>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Kapasitas Terpakai</span>
+                                    <span id="db-capacity-used" class="text-white font-bold">0%</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Lokasi Mess</span>
+                                    <span id="db-mess-count" class="text-white font-bold">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                                    <span class="text-sm text-slate-400">Versi Aplikasi</span>
+                                    <span class="text-slate-400 text-sm">v2.0.0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </main>
 
     <script>
-        // Data dan State Management
+        // ==================== KONFIGURASI SUPABASE ====================
+        const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // ==================== VARIABEL GLOBAL ====================
         let employees = [];
         let activeTab = 'dashboard';
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
 
-        // Konfigurasi Supabase
-        const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
-        const { createClient } = supabase;
-        const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
+        // ==================== FUNGSI UTAMA ====================
 
-        // Fungsi Utilitas
+        // Fungsi untuk menampilkan loading
         function showLoading(message = "Memproses data...") {
             document.getElementById('loading-overlay').classList.remove('hidden');
             document.getElementById('loading-detail').textContent = message;
         }
 
+        // Fungsi untuk menyembunyikan loading
         function hideLoading() {
             document.getElementById('loading-overlay').classList.add('hidden');
         }
 
-        // Fungsi Validasi
+        // Fungsi validasi NIK
         function isValidNIK(nik) {
             if (!nik || typeof nik !== 'string') return false;
-            
             const cleanNIK = nik.toString().trim().toUpperCase();
             const nikPattern = /^[A-Z][A-Z0-9]{1,19}$/;
-            
             return nikPattern.test(cleanNIK);
         }
 
+        // Format NIK otomatis
         function formatNIK(input) {
             input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         }
 
+        // Validasi NIK dengan feedback
         function validateNIK(input) {
             const hint = document.getElementById('nik-hint');
             const error = document.getElementById('nik-error');
@@ -985,7 +1035,6 @@
             if (value === '') {
                 hint.classList.add('hidden');
                 error.classList.add('hidden');
-                input.classList.remove('validation-success', 'validation-error');
                 return false;
             }
             
@@ -1005,47 +1054,39 @@
             }
         }
 
-        function validateRoomNumber(input) {
-            const error = document.getElementById('room-error');
-            const value = input.value.trim();
-            
-            if (value === '') {
-                error.classList.add('hidden');
-                input.classList.remove('validation-error');
-                return true;
-            }
-            
-            // Validasi format nomor kamar (contoh: 101, A-12, B2-3)
-            const roomPattern = /^[A-Z]?[0-9A-Z\-]+$/i;
-            
-            if (!roomPattern.test(value)) {
-                input.classList.add('validation-error');
-                error.textContent = 'Format nomor kamar tidak valid';
-                error.classList.remove('hidden');
-                return false;
-            } else {
-                input.classList.remove('validation-error');
-                error.classList.add('hidden');
-                return true;
-            }
-        }
+        // ==================== FUNGSI DATABASE ====================
 
-        // Fungsi Data Management
+        // Ambil semua data dari database
         async function fetchAllData() {
             showLoading("Memuat data dari database...");
             try {
                 const { data, error } = await supabaseClient
                     .from('karyawan_mess')
                     .select('*')
-                    .order('nama', { ascending: true });
+                    .order('created_at', { ascending: false });
 
                 if (error) {
                     console.error("Error fetching data:", error);
                     showToast("Gagal memuat data: " + error.message, "error");
                     employees = [];
+                    document.getElementById('db-connection-status').className = 'px-3 py-1 bg-rose-500/20 text-rose-400 rounded-full text-xs font-bold';
+                    document.getElementById('db-connection-status').textContent = 'Disconnected';
+                    document.getElementById('db-status').className = 'font-bold text-rose-400';
+                    document.getElementById('db-status').textContent = 'Disconnected';
                 } else {
                     employees = data || [];
                     showToast(`Data berhasil dimuat: ${employees.length} karyawan`, "success");
+                    document.getElementById('db-connection-status').className = 'px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold';
+                    document.getElementById('db-connection-status').textContent = 'Connected';
+                    document.getElementById('db-status').className = 'font-bold text-emerald-400';
+                    document.getElementById('db-status').textContent = 'Connected';
+                    
+                    // Update database info
+                    document.getElementById('db-total-data').textContent = employees.length;
+                    if (employees.length > 0) {
+                        const latest = new Date(employees[0].created_at);
+                        document.getElementById('db-latest-update').textContent = latest.toLocaleDateString('id-ID');
+                    }
                 }
             } catch (err) {
                 console.error("Exception fetching data:", err);
@@ -1059,6 +1100,168 @@
             }
         }
 
+        // ==================== FUNGSI MODAL ====================
+
+        // Buka modal untuk tambah/edit data
+        function openModal(editData = null) {
+            const form = document.getElementById('employeeForm');
+            const title = document.getElementById('modal-title');
+            
+            // Reset form
+            form.reset();
+            document.getElementById('edit-id').value = "";
+            document.getElementById('nik-hint').classList.add('hidden');
+            document.getElementById('nik-error').classList.add('hidden');
+            
+            // Set tanggal maksimal ke hari ini
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('field-tanggal_masuk_kerja').max = today;
+            document.getElementById('field-tanggal_masuk_mess_hunian_p2').max = today;
+
+            if (editData) {
+                title.innerText = "Edit Data Karyawan";
+                document.getElementById('edit-id').value = editData.id;
+                
+                // Isi semua field dengan data yang ada
+                const fields = [
+                    'nik', 'nama', 'gender', 'gol', 'jabatan', 'department', 'perusahaan',
+                    'lokasi_hunian', 'floor', 'block', 'no_kamar', 'fasilitas', 'point_of_hire',
+                    'status_kamar', 'tanggal_masuk_kerja', 'tanggal_masuk_mess_hunian_p2'
+                ];
+                
+                fields.forEach(field => {
+                    const element = document.getElementById(`field-${field}`);
+                    if (element && editData[field]) {
+                        element.value = editData[field];
+                    }
+                });
+                
+                // Validasi NIK
+                validateNIK(document.getElementById('field-nik'));
+            } else {
+                title.innerText = "Tambah Data Karyawan";
+                // Set tanggal default ke hari ini
+                document.getElementById('field-tanggal_masuk_kerja').value = today;
+                document.getElementById('field-tanggal_masuk_mess_hunian_p2').value = today;
+                document.getElementById('field-status_kamar').value = 'TERISI';
+            }
+            
+            document.getElementById('modal-form').classList.remove('hidden');
+        }
+
+        // Tutup modal form
+        function closeModal() { 
+            document.getElementById('modal-form').classList.add('hidden');
+            document.getElementById('nik-hint').classList.add('hidden');
+            document.getElementById('nik-error').classList.add('hidden');
+        }
+
+        // Buka modal import
+        function openImportModal() {
+            document.getElementById('modal-import').classList.remove('hidden');
+        }
+
+        // Tutup modal import
+        function closeImportModal() {
+            document.getElementById('modal-import').classList.add('hidden');
+        }
+
+        // ==================== FUNGSI NAVIGASI ====================
+
+        // Ganti tab utama
+        function switchTab(tab) {
+            activeTab = tab;
+            
+            // Sembunyikan semua tab
+            document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-data-karyawan').classList.add('hidden');
+            document.getElementById('tab-manajemen-data').classList.add('hidden');
+            
+            // Tampilkan tab yang dipilih
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            
+            // Update header
+            const titles = {
+                'dashboard': 'Dashboard',
+                'data-karyawan': 'Data Karyawan',
+                'manajemen-data': 'Manajemen Data'
+            };
+            
+            const subtitles = {
+                'dashboard': 'Sistem Manajemen Mess Terintegrasi',
+                'data-karyawan': 'Database Karyawan Mess P2',
+                'manajemen-data': 'Kelola Data Karyawan'
+            };
+            
+            const icons = {
+                'dashboard': 'layout-grid',
+                'data-karyawan': 'database',
+                'manajemen-data': 'settings'
+            };
+            
+            document.getElementById('page-title').innerText = titles[tab];
+            document.getElementById('page-subtitle').innerText = subtitles[tab];
+            document.getElementById('page-icon').innerHTML = `<i data-lucide="${icons[tab]}"></i>`;
+            
+            // Update navigation styles
+            updateNavStyles();
+            
+            // Jika tab data karyawan, render tabel
+            if (tab === 'data-karyawan') {
+                renderTable();
+            }
+            
+            // Update lucide icons
+            lucide.createIcons();
+        }
+
+        // Ganti kategori filter
+        function switchCategory(cat) {
+            activeTab = 'data-karyawan';
+            currentFilter = cat;
+            
+            // Switch ke tab data karyawan
+            switchTab('data-karyawan');
+            
+            // Update nama view
+            document.getElementById('current-view-name').innerText = `DATABASE ${cat}`;
+            
+            // Update navigation styles
+            updateNavStyles();
+            
+            // Render tabel dengan filter
+            renderTable();
+        }
+
+        // Update style navigasi
+        function updateNavStyles() {
+            // Reset semua nav link
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            
+            // Set active berdasarkan tab/kategori
+            if (activeTab === 'dashboard') {
+                document.getElementById('nav-dashboard').classList.add('active');
+            } else if (activeTab === 'data-karyawan') {
+                document.getElementById('nav-data-karyawan').classList.add('active');
+                
+                // Jika ada filter kategori, aktifkan juga
+                const catMap = {
+                    'GOL 1': 'nav-gol1',
+                    'GOL 2': 'nav-gol2', 
+                    'GOL 3': 'nav-gol3',
+                    'GOL 4 UP': 'nav-gol4',
+                    'VENDOR': 'nav-vendor'
+                };
+                
+                if (catMap[currentFilter]) {
+                    document.getElementById(catMap[currentFilter]).classList.add('active');
+                }
+            } else if (activeTab === 'manajemen-data') {
+                document.getElementById('nav-manajemen-data').classList.add('active');
+            }
+        }
+
+        // Toggle sidebar
         function toggleSidebar() {
             isSidebarCollapsed = !isSidebarCollapsed;
             const sidebar = document.getElementById('sidebar');
@@ -1068,125 +1271,32 @@
             lucide.createIcons();
         }
 
-        // Fungsi Modal Management
-        function openModal(editData = null) {
-            const form = document.getElementById('employeeForm');
-            const title = document.getElementById('modal-title');
-            form.reset();
-            document.getElementById('edit-id').value = "";
-            document.getElementById('nik-hint').classList.add('hidden');
-            document.getElementById('nik-error').classList.add('hidden');
-            document.getElementById('room-error').classList.add('hidden');
+        // ==================== FUNGSI FILTER & TABEL ====================
 
-            if(editData) {
-                title.innerText = "Edit Data Karyawan";
-                document.getElementById('edit-id').value = editData.id;
-                
-                // Isi field dengan data yang ada
-                Object.keys(editData).forEach(key => {
-                    const field = document.getElementById(`field-${key}`);
-                    if(field) {
-                        field.value = editData[key] || "";
-                        if (key === 'nik') validateNIK(field);
-                        if (key === 'no_kamar') validateRoomNumber(field);
-                    }
-                });
-            } else {
-                title.innerText = "Tambah Karyawan Baru";
-                // Set tanggal default ke hari ini
-                const today = new Date().toISOString().split('T')[0];
-                document.getElementById('field-tanggal_masuk_kerja').value = today;
-                document.getElementById('field-tanggal_masuk_mess_hunian_p2').value = today;
-            }
-            
-            document.getElementById('modal-form').classList.remove('hidden');
-        }
-
-        function closeModal() { 
-            document.getElementById('modal-form').classList.add('hidden');
-            document.getElementById('nik-hint').classList.add('hidden');
-            document.getElementById('nik-error').classList.add('hidden');
-            document.getElementById('room-error').classList.add('hidden');
-        }
-
-        function openImportModal() {
-            document.getElementById('modal-import').classList.remove('hidden');
-        }
-
-        function closeImportModal() {
-            document.getElementById('modal-import').classList.add('hidden');
-        }
-
-        // Fungsi Navigation
-        function switchTab(tab) {
-            activeTab = tab;
-            currentFilter = (tab === 'all-employees') ? 'ALL' : currentFilter;
-            const isDash = tab === 'dashboard';
-            document.getElementById('tab-dashboard').classList.toggle('hidden', !isDash);
-            document.getElementById('tab-data').classList.toggle('hidden', isDash);
-            document.getElementById('page-title').innerText = isDash ? "Dashboard" : "Database";
-            document.getElementById('page-icon').innerHTML = isDash ? '<i data-lucide="layout-grid"></i>' : '<i data-lucide="database"></i>';
-            document.getElementById('page-subtitle').innerText = isDash ? "Sistem Manajemen Mess Terintegrasi" : "Database Karyawan Mess P2";
-            updateNavStyles();
-            if(!isDash) renderTable();
-            lucide.createIcons();
-        }
-
-        function switchCategory(cat) {
-            activeTab = 'category';
-            currentFilter = cat;
-            document.getElementById('tab-dashboard').classList.add('hidden');
-            document.getElementById('tab-data').classList.remove('hidden');
-            document.getElementById('page-title').innerText = "Manajemen Hunian";
-            document.getElementById('current-view-name').innerText = `DATABASE ${cat}`;
-            document.getElementById('page-subtitle').innerText = `Filter: ${cat}`;
-            updateNavStyles();
-            renderTable();
-            lucide.createIcons();
-        }
-
-        function updateNavStyles() {
-            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
-            if(activeTab === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
-            if(activeTab === 'all-employees') document.getElementById('nav-all-employees').classList.add('active');
-            const catMap = { 'GOL 1': 'nav-gol1', 'GOL 2': 'nav-gol2', 'GOL 3': 'nav-gol3', 'GOL 4 UP': 'nav-gol4', 'VENDOR': 'nav-vendor' };
-            if(catMap[currentFilter] && activeTab === 'category') document.getElementById(catMap[currentFilter]).classList.add('active');
-        }
-
-        // Fungsi Filter dan Tabel
+        // Isi opsi filter
         function populateFilterOptions() {
-            // Populate Lokasi options
+            // Lokasi Hunian
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
             const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
-            
-            const lokasiFilters = ['filterLokasi'];
-            lokasiFilters.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) element.innerHTML = lokasiHtml;
-            });
+            document.getElementById('filterLokasi').innerHTML = lokasiHtml;
 
-            // Populate Block options
+            // Block
             const uniqueBlocks = [...new Set(employees.map(e => e.block))].filter(Boolean).sort();
             const blockHtml = '<option value="">Semua Block</option>' + 
                 uniqueBlocks.map(b => `<option value="${b}">${b}</option>`).join('');
-            
-            const blockFilters = ['filterBlock'];
-            blockFilters.forEach(id => {
-                const element = document.getElementById(id);
-                if (element) element.innerHTML = blockHtml;
-            });
+            document.getElementById('filterBlock').innerHTML = blockHtml;
 
-            // Populate Perusahaan options
+            // Perusahaan
             const uniquePerusahaan = [...new Set(employees.map(e => e.perusahaan))].filter(Boolean).sort();
             const perusahaanHtml = '<option value="">Semua Perusahaan</option>' + 
                 uniquePerusahaan.map(p => `<option value="${p}">${p}</option>`).join('');
-            
             document.getElementById('filterPerusahaan').innerHTML = perusahaanHtml;
         }
 
+        // Update UI (statistik)
         function updateUI() {
-            // Update statistics
+            // Update statistics cards
             document.getElementById('stat-total').innerText = employees.length.toLocaleString();
             
             const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
@@ -1195,20 +1305,28 @@
             
             document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
             document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
-            document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
+            
+            const uniqueMess = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean);
+            document.getElementById('stat-mess').innerText = uniqueMess.length;
+            document.getElementById('db-mess-count').textContent = uniqueMess.length;
             
             // Update capacity bar
             const totalKamar = terisi + tersedia + rusak;
             const percTerisi = totalKamar > 0 ? (terisi / totalKamar) * 100 : 0;
             document.getElementById('capacity-bar').style.width = percTerisi + "%";
             document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
+            document.getElementById('db-capacity-used').textContent = percTerisi.toFixed(1) + "%";
             
             // Update category counts
             updateCategoryCounts();
             
-            if(activeTab !== 'dashboard') renderTable();
+            // Jika di tab data karyawan, render tabel
+            if (activeTab === 'data-karyawan') {
+                renderTable();
+            }
         }
 
+        // Update jumlah per kategori
         function updateCategoryCounts() {
             const counts = {
                 'GOL 1': 0,
@@ -1240,11 +1358,12 @@
             document.getElementById('vendor-count').textContent = counts['VENDOR'];
         }
 
+        // Dapatkan kategori karyawan
         function getCategory(e) {
             const comp = String(e.perusahaan || "").toUpperCase();
             const gol = String(e.gol || "").toUpperCase();
             
-            if (comp.includes('VENDOR') || (comp !== "PT. HJF" && comp !== "PT. INKA" && comp !== "PT. KAI" && comp !== "")) {
+            if (comp.includes('VENDOR') || (comp !== "PT. HJF" && comp !== "PT. INKA" && comp !== "PT. KAI" && comp !== "" && comp !== "NULL")) {
                 return 'VENDOR';
             }
             if (gol.includes('1')) return 'GOL 1';
@@ -1254,6 +1373,7 @@
             return 'LAINNYA';
         }
 
+        // Render tabel data
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
@@ -1326,17 +1446,23 @@
             lucide.createIcons();
         }
 
+        // Format tanggal untuk display
         function formatDateForDisplay(dateString) {
             if (!dateString) return '-';
-            const date = new Date(dateString);
-            if (isNaN(date.getTime())) return dateString;
-            return date.toLocaleDateString('id-ID', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return dateString;
+                return date.toLocaleDateString('id-ID', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
+                });
+            } catch (e) {
+                return dateString;
+            }
         }
 
+        // Reset filter tabel
         function resetTableFilters() {
             document.getElementById('filterLokasi').value = '';
             document.getElementById('filterBlock').value = '';
@@ -1348,6 +1474,7 @@
             showToast("Filter telah direset", "success");
         }
 
+        // Dapatkan class untuk status kamar
         function getStatusClass(status) {
             switch(status?.toUpperCase()) {
                 case 'TERISI': return 'bg-emerald-500/10 text-emerald-500';
@@ -1358,7 +1485,9 @@
             }
         }
 
-        // Fungsi CRUD
+        // ==================== FUNGSI CRUD ====================
+
+        // Simpan data (tambah/edit)
         async function saveData(event) {
             event.preventDefault();
             
@@ -1373,15 +1502,12 @@
                 return;
             }
 
-            // Validasi nomor kamar
-            if (!validateRoomNumber({value: raw.no_kamar})) {
-                showToast("Format nomor kamar tidak valid", "error");
-                return;
-            }
-
             // Format data
             raw.nik = raw.nik.trim().toUpperCase();
             raw.nama = raw.nama.trim();
+            
+            // Set nilai default untuk field yang kosong
+            if (!raw.status_kamar) raw.status_kamar = 'TERISI';
             
             // Konversi tanggal kosong menjadi null
             if (!raw.tanggal_masuk_kerja) raw.tanggal_masuk_kerja = null;
@@ -1391,12 +1517,14 @@
             
             try {
                 let result;
-                if(id) {
+                if (id) {
+                    // Update data yang ada
                     result = await supabaseClient
                         .from('karyawan_mess')
                         .update(raw)
                         .eq('id', id);
                 } else {
+                    // Tambah data baru
                     result = await supabaseClient
                         .from('karyawan_mess')
                         .insert([raw]);
@@ -1411,14 +1539,23 @@
                 await fetchAllData();
             } catch (error) {
                 console.error("Error saving data:", error);
-                showToast("Gagal menyimpan data: " + error.message, "error");
+                
+                // Cek jika error karena duplicate NIK
+                if (error.message.includes('duplicate key') || error.message.includes('UNIQUE')) {
+                    showToast("NIK sudah terdaftar dalam database. Gunakan NIK yang berbeda.", "error");
+                } else {
+                    showToast("Gagal menyimpan data: " + error.message, "error");
+                }
             } finally {
                 hideLoading();
             }
         }
 
+        // Hapus data karyawan
         async function deleteEmployee(id) {
-            if(!confirm("Hapus data karyawan ini secara permanen? Tindakan ini tidak dapat dibatalkan.")) return;
+            if (!confirm("Apakah Anda yakin ingin menghapus data karyawan ini? Tindakan ini tidak dapat dibatalkan.")) {
+                return;
+            }
             
             showLoading("Menghapus data...");
             try {
@@ -1432,21 +1569,31 @@
                 showToast("Data berhasil dihapus", "success");
                 await fetchAllData();
             } catch (error) {
+                console.error("Error deleting data:", error);
                 showToast("Gagal menghapus data: " + error.message, "error");
             } finally {
                 hideLoading();
             }
         }
 
-        // Fungsi Import Excel
+        // ==================== FUNGSI IMPORT EXCEL ====================
+
+        // Handle file select untuk import
         async function handleFileSelect(event) {
             const file = event.target.files[0];
-            if(!file) return;
+            if (!file) return;
             
-            // Validasi ukuran file (max 10MB)
+            // Validasi ukuran file
             if (file.size > 10 * 1024 * 1024) {
                 showToast("Ukuran file terlalu besar (maksimal 10MB)", "error");
-                event.target.value = "";
+                return;
+            }
+            
+            // Validasi ekstensi file
+            const validExtensions = ['.xlsx', '.xls', '.csv'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExt)) {
+                showToast("Format file tidak didukung. Gunakan file Excel (.xlsx, .xls, .csv)", "error");
                 return;
             }
             
@@ -1454,54 +1601,31 @@
             
             try {
                 const data = await readExcelFile(file);
-                processImportData(data);
+                if (data && data.length > 0) {
+                    processImportData(data);
+                } else {
+                    throw new Error("File Excel kosong atau format tidak sesuai");
+                }
             } catch (error) {
+                console.error("Error reading Excel file:", error);
                 showToast("Gagal memproses file: " + error.message, "error");
             } finally {
                 hideLoading();
+                // Reset input file
                 event.target.value = "";
             }
         }
 
-        function handleDragOver(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('drag-drop-area').classList.add('dragover');
-        }
-
-        function handleDragLeave(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('drag-drop-area').classList.remove('dragover');
-        }
-
-        function handleDrop(event) {
-            event.preventDefault();
-            event.stopPropagation();
-            document.getElementById('drag-drop-area').classList.remove('dragover');
-            
-            const files = event.dataTransfer.files;
-            if (files.length > 0) {
-                const file = files[0];
-                if (file.name.match(/\.(xlsx|xls|csv)$/i)) {
-                    const dataTransfer = new DataTransfer();
-                    dataTransfer.items.add(file);
-                    document.getElementById('importFile').files = dataTransfer.files;
-                    document.getElementById('importFile').dispatchEvent(new Event('change'));
-                } else {
-                    showToast("Hanya file Excel (.xlsx, .xls, .csv) yang diizinkan", "error");
-                }
-            }
-        }
-
+        // Baca file Excel
         function readExcelFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
                         const dataArr = new Uint8Array(e.target.result);
-                        const wb = XLSX.read(dataArr, { type: 'array', cellDates: true });
-                        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
+                        const wb = XLSX.read(dataArr, { type: 'array', cellDates: true, cellNF: false, cellText: false });
+                        const firstSheet = wb.SheetNames[0];
+                        const json = XLSX.utils.sheet_to_json(wb.Sheets[firstSheet], { defval: "", raw: false });
                         resolve(json);
                     } catch (error) {
                         reject(error);
@@ -1512,58 +1636,108 @@
             });
         }
 
+        // Proses data import
         function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
                 return;
             }
 
+            // Mapping kolom Excel ke field database
             const findKey = (obj, target) => {
-                const t = target.toLowerCase().replace(/[_\s]+/g, '');
-                const key = Object.keys(obj).find(k => 
-                    k.toLowerCase().replace(/[_\s]+/g, '') === t
-                );
-                return key ? obj[key] : "";
+                const targetLower = target.toLowerCase().replace(/[_\s]+/g, '');
+                for (const key in obj) {
+                    if (key.toLowerCase().replace(/[_\s]+/g, '') === targetLower) {
+                        return obj[key];
+                    }
+                }
+                return "";
             };
 
-            const formatDate = (v) => {
-                if (!v) return null;
-                if (v instanceof Date) return v.toISOString().split('T')[0];
-                if (typeof v === 'number') {
-                    const excelEpoch = new Date(1899, 11, 30);
-                    const date = new Date(excelEpoch.getTime() + v * 86400000);
-                    return date.toISOString().split('T')[0];
+            // Format tanggal dari Excel
+            const formatDate = (value) => {
+                if (!value) return null;
+                
+                // Jika sudah berupa Date object
+                if (value instanceof Date) {
+                    return value.toISOString().split('T')[0];
                 }
-                // Coba parse format tanggal lainnya
-                const parsed = new Date(v);
-                if (!isNaN(parsed.getTime())) {
-                    return parsed.toISOString().split('T')[0];
+                
+                // Jika angka (format Excel)
+                if (typeof value === 'number') {
+                    try {
+                        const excelEpoch = new Date(1899, 11, 30);
+                        const date = new Date(excelEpoch.getTime() + value * 86400000);
+                        return date.toISOString().split('T')[0];
+                    } catch (e) {
+                        return null;
+                    }
                 }
-                return v;
+                
+                // Jika string, coba parse
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    if (!trimmed) return null;
+                    
+                    // Coba berbagai format tanggal
+                    const formats = [
+                        /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, // YYYY-MM-DD
+                        /(\d{1,2})[-/](\d{1,2})[-/](\d{4})/, // DD-MM-YYYY
+                    ];
+                    
+                    for (const format of formats) {
+                        const match = trimmed.match(format);
+                        if (match) {
+                            try {
+                                let year, month, day;
+                                
+                                if (match[1].length === 4) {
+                                    // YYYY-MM-DD
+                                    year = parseInt(match[1]);
+                                    month = parseInt(match[2]) - 1;
+                                    day = parseInt(match[3]);
+                                } else {
+                                    // DD-MM-YYYY
+                                    year = parseInt(match[3]);
+                                    month = parseInt(match[2]) - 1;
+                                    day = parseInt(match[1]);
+                                }
+                                
+                                const date = new Date(year, month, day);
+                                if (!isNaN(date.getTime())) {
+                                    return date.toISOString().split('T')[0];
+                                }
+                            } catch (e) {
+                                // Continue to next format
+                            }
+                        }
+                    }
+                }
+                
+                return null;
             };
 
             // Process data untuk preview
             importPreviewData = json.map((row, index) => {
-                const rawNik = String(findKey(row, "NIK") || "").trim();
                 const processed = {
-                    id: `preview-${index + 2}`,
-                    rowNumber: index + 2,
-                    nik: rawNik,
-                    nama: String(findKey(row, "NAMA") || "").trim(),
-                    gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
-                    department: String(findKey(row, "DEPARTMENT") || "").trim(),
-                    gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
-                    jabatan: String(findKey(row, "JABATAN") || "").trim(),
-                    fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
-                    point_of_hire: String(findKey(row, "Point of Hire") || findKey(row, "POINT OF HIRE") || "").trim(),
-                    tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
-                    perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
-                    lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
-                    floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
-                    block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
-                    no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
-                    status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
-                    tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2")),
+                    id: `preview-${index}`,
+                    rowNumber: index + 2, // +2 karena header + 1-based index
+                    nik: String(findKey(row, "NIK") || "").trim(),
+                    nama: String(findKey(row, "NAMA") || findKey(row, "Nama") || "").trim(),
+                    gender: String(findKey(row, "GENDER") || findKey(row, "Gender") || "").toUpperCase().trim(),
+                    department: String(findKey(row, "DEPARTMENT") || findKey(row, "Department") || "").trim(),
+                    gol: String(findKey(row, "GOL") || findKey(row, "Golongan") || "").toUpperCase().trim(),
+                    jabatan: String(findKey(row, "JABATAN") || findKey(row, "Jabatan") || "").trim(),
+                    fasilitas: String(findKey(row, "FASILITAS") || findKey(row, "Fasilitas") || "").toUpperCase().trim(),
+                    point_of_hire: String(findKey(row, "Point of Hire") || findKey(row, "POINT OF HIRE") || findKey(row, "Point") || "").trim(),
+                    tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA") || findKey(row, "Tanggal Masuk Kerja")),
+                    perusahaan: String(findKey(row, "PERUSAHAAN") || findKey(row, "Perusahaan") || "").trim(),
+                    lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || findKey(row, "Lokasi Hunian") || "").toUpperCase().trim(),
+                    floor: String(findKey(row, "FLOOR") || findKey(row, "Floor") || "").toUpperCase().trim(),
+                    block: String(findKey(row, "BLOCK") || findKey(row, "Block") || "").toUpperCase().trim(),
+                    no_kamar: String(findKey(row, "NO KAMAR") || findKey(row, "No Kamar") || "").trim(),
+                    status_kamar: String(findKey(row, "STATUS KAMAR") || findKey(row, "Status Kamar") || "TERISI").toUpperCase().trim(),
+                    tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2") || findKey(row, "Tanggal Masuk Mess")),
                     isValid: true,
                     errors: [],
                     isNew: true
@@ -1580,11 +1754,12 @@
                     processed.nik = processed.nik.toUpperCase();
                 }
 
-                // Validasi data required lainnya
+                // Validasi field required lainnya
                 if (!processed.nama) {
                     processed.isValid = false;
                     processed.errors.push("Nama harus diisi");
                 }
+                
                 if (!processed.no_kamar) {
                     processed.isValid = false;
                     processed.errors.push("No Kamar harus diisi");
@@ -1592,8 +1767,7 @@
 
                 // Validasi gender
                 if (processed.gender && !['LAKI-LAKI', 'PEREMPUAN'].includes(processed.gender)) {
-                    processed.isValid = false;
-                    processed.errors.push("Gender harus LAKI-LAKI atau PEREMPUAN");
+                    processed.gender = ''; // Reset jika tidak valid
                 }
 
                 // Cek apakah NIK sudah ada di database
@@ -1610,11 +1784,12 @@
             const newData = validData.filter(item => item.isNew);
             const updateData = validData.filter(item => !item.isNew);
 
-            // Show preview modal
+            // Tampilkan preview modal
             closeImportModal();
             showPreviewModal(validData, newData, updateData);
         }
 
+        // Tampilkan modal preview import
         function showPreviewModal(validData, newData, updateData) {
             document.getElementById('modal-preview').classList.remove('hidden');
             
@@ -1628,23 +1803,20 @@
             // Render preview table
             const tbody = document.getElementById('preview-table-body');
             tbody.innerHTML = validData.map(item => `
-                <tr class="${item.isValid ? 'valid-nik' : 'invalid-nik'}">
-                    <td class="text-slate-500 text-[10px]">${item.rowNumber}</td>
-                    <td class="font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
-                    <td class="font-medium">${item.nama || '-'}</td>
-                    <td class="text-slate-400">${item.gender || '-'}</td>
-                    <td class="text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
-                    <td class="text-slate-400">${item.department || '-'}</td>
-                    <td class="font-medium">${item.lokasi_hunian || '-'}</td>
-                    <td class="font-bold">${item.block || '-'}</td>
-                    <td class="font-black text-emerald-400">${item.no_kamar || '-'}</td>
-                    <td><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
-                    <td class="text-center">
+                <tr class="${item.isValid ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500'}">
+                    <td class="py-3 px-4 text-slate-500 text-[10px]">${item.rowNumber}</td>
+                    <td class="py-3 px-4 font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
+                    <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
+                    <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
+                    <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
+                    <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
+                    <td class="py-3 px-4 text-center">
                         ${!item.isNew ? 
                             '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
                             '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
                     </td>
-                    <td class="text-center">
+                    <td class="py-3 px-4 text-center">
                         ${item.isValid ? 
                             '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : 
                             '<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>'}
@@ -1682,11 +1854,13 @@
             lucide.createIcons();
         }
 
+        // Tutup modal preview
         function closePreviewModal() {
             document.getElementById('modal-preview').classList.add('hidden');
             importPreviewData = [];
         }
 
+        // Proses import data ke database
         async function processImport() {
             const validData = importPreviewData.filter(item => item.isValid);
             
@@ -1697,45 +1871,33 @@
 
             showLoading(`Mengimport ${validData.length} data ke database...`);
 
-            // Prepare data for upload
+            // Prepare data untuk upload
             const toUpload = validData.map(item => {
                 const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
                 return cleanData;
             });
 
             try {
-                // Coba insert data dalam batch
-                const batchSize = 100;
                 let successCount = 0;
                 let errorCount = 0;
-                let errors = [];
+                const errors = [];
 
-                for (let i = 0; i < toUpload.length; i += batchSize) {
-                    const batch = toUpload.slice(i, i + batchSize);
-                    
-                    // Update loading detail
-                    document.getElementById('loading-detail').textContent = 
-                        `Memproses batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(toUpload.length/batchSize)}...`;
-                    
-                    const { data, error } = await supabaseClient
-                        .from('karyawan_mess')
-                        .upsert(batch, { 
-                            onConflict: 'nik',
-                            ignoreDuplicates: false 
-                        });
+                // Gunakan upsert untuk handle insert dan update
+                const { data, error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .upsert(toUpload, {
+                        onConflict: 'nik',
+                        ignoreDuplicates: false
+                    });
 
-                    if (error) {
-                        console.error("Batch error:", error);
-                        errorCount += batch.length;
-                        errors.push(`Batch ${Math.floor(i/batchSize) + 1}: ${error.message}`);
-                    } else {
-                        successCount += batch.length;
-                    }
+                if (error) {
+                    throw new Error(error.message);
                 }
+
+                successCount = toUpload.length;
 
                 if (errorCount > 0) {
                     showToast(`Import sebagian berhasil: ${successCount} data berhasil, ${errorCount} gagal`, "warning");
-                    console.error("Import errors:", errors);
                 } else {
                     showToast(`Import ${successCount} data berhasil!`, "success");
                 }
@@ -1750,20 +1912,26 @@
             }
         }
 
-        // Fungsi Export dan Template
+        // ==================== FUNGSI EXPORT & TEMPLATE ====================
+
+        // Download template Excel
         function downloadTemplate() {
+            // Header untuk template
             const headers = [
                 ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
                 ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"],
                 ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"],
-                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"],
-                ["A12345", "Sarah Johnson", "PEREMPUAN", "FINANCE", "4A", "Manager", "EXECUTIVE", "Medan", "2023-04-01", "PT. HJF", "MESS EXECUTIVE", "LT 1", "A", "101", "TERISI", "2023-04-05"]
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]
             ];
             
+            // Buat worksheet
             const ws = XLSX.utils.aoa_to_sheet(headers);
+            
+            // Buat workbook
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template Import");
             
+            // Sheet petunjuk
             const instructions = [
                 ["PETUNJUK PENGISIAN TEMPLATE IMPORT OCEAN MESS"],
                 [""],
@@ -1792,13 +1960,16 @@
                 ["• Pastikan format kolom sesuai dengan contoh"],
                 ["• Simpan file dalam format .xlsx sebelum diupload"]
             ];
+            
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
             XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk Pengisian");
             
+            // Download file
             XLSX.writeFile(wb, "Template_Import_OceanMess.xlsx");
             showToast("Template berhasil diunduh", "success");
         }
 
+        // Export data ke Excel
         function exportData() {
             if (employees.length === 0) {
                 showToast("Tidak ada data untuk diexport", "warning");
@@ -1809,108 +1980,140 @@
             try {
                 // Format data untuk export
                 const exportData = employees.map(emp => ({
-                    NIK: emp.nik,
-                    NAMA: emp.nama,
-                    GENDER: emp.gender,
-                    DEPARTMENT: emp.department,
-                    GOL: emp.gol,
-                    JABATAN: emp.jabatan,
-                    FASILITAS: emp.fasilitas,
-                    "Point of Hire": emp.point_of_hire,
-                    "TANGGAL MASUK KERJA": emp.tanggal_masuk_kerja,
-                    PERUSAHAAN: emp.perusahaan,
-                    "LOKASI HUNIAN": emp.lokasi_hunian,
-                    FLOOR: emp.floor,
-                    BLOCK: emp.block,
-                    "NO KAMAR": emp.no_kamar,
-                    "STATUS KAMAR": emp.status_kamar,
-                    "TANGGAL MASUK MESS HUNIAN P2": emp.tanggal_masuk_mess_hunian_p2
+                    NIK: emp.nik || '',
+                    NAMA: emp.nama || '',
+                    GENDER: emp.gender || '',
+                    DEPARTMENT: emp.department || '',
+                    GOL: emp.gol || '',
+                    JABATAN: emp.jabatan || '',
+                    FASILITAS: emp.fasilitas || '',
+                    "Point of Hire": emp.point_of_hire || '',
+                    "TANGGAL MASUK KERJA": emp.tanggal_masuk_kerja || '',
+                    PERUSAHAAN: emp.perusahaan || '',
+                    "LOKASI HUNIAN": emp.lokasi_hunian || '',
+                    FLOOR: emp.floor || '',
+                    BLOCK: emp.block || '',
+                    "NO KAMAR": emp.no_kamar || '',
+                    "STATUS KAMAR": emp.status_kamar || '',
+                    "TANGGAL MASUK MESS HUNIAN P2": emp.tanggal_masuk_mess_hunian_p2 || ''
                 }));
 
+                // Buat worksheet
                 const ws = XLSX.utils.json_to_sheet(exportData);
+                
+                // Buat workbook
                 const wb = XLSX.utils.book_new();
                 XLSX.utils.book_append_sheet(wb, ws, "Database Mess");
                 
+                // Download file
                 const today = new Date().toISOString().split('T')[0];
                 XLSX.writeFile(wb, `Database_Mess_Export_${today}.xlsx`);
+                
                 showToast(`Export ${employees.length} data berhasil`, "success");
             } catch (error) {
+                console.error("Export error:", error);
                 showToast("Gagal mengexport data: " + error.message, "error");
             } finally {
                 hideLoading();
             }
         }
 
-        // Fungsi Notifikasi
-        function showToast(msg, type = 'success') {
+        // ==================== FUNGSI NOTIFIKASI ====================
+
+        // Tampilkan toast notification
+        function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             
-            const typeConfig = {
-                success: { icon: 'check-circle', color: 'emerald', border: 'border-emerald-500' },
-                error: { icon: 'alert-circle', color: 'rose', border: 'border-rose-500' },
-                warning: { icon: 'alert-triangle', color: 'amber', border: 'border-amber-500' },
-                info: { icon: 'info', color: 'sky', border: 'border-sky-500' }
-            };
+            // Konfigurasi berdasarkan type
+            const config = {
+                success: { icon: 'check-circle', color: 'emerald', class: 'toast-success' },
+                error: { icon: 'alert-circle', color: 'rose', class: 'toast-error' },
+                warning: { icon: 'alert-triangle', color: 'amber', class: 'toast-warning' },
+                info: { icon: 'info', color: 'sky', class: 'toast-info' }
+            }[type] || config.success;
             
-            const config = typeConfig[type] || typeConfig.success;
+            // Buat elemen toast
+            toast.className = `glass-panel px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5 ${config.class}`;
+            toast.innerHTML = `<i data-lucide="${config.icon}" class="w-4 h-4"></i> ${message}`;
             
-            toast.className = `glass-panel border-l-4 ${config.border} text-white px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5`;
-            toast.innerHTML = `<i data-lucide="${config.icon}" class="w-4 h-4"></i> ${msg}`;
-            
+            // Tambahkan ke container
             container.appendChild(toast);
+            
+            // Update icons
             lucide.createIcons();
             
+            // Hapus toast setelah 3 detik
             setTimeout(() => {
-                toast.classList.add('fade-out');
+                toast.classList.add('opacity-0', 'transition-opacity', 'duration-300');
                 setTimeout(() => toast.remove(), 300);
             }, 3000);
         }
 
-        // Event Listeners
-        document.getElementById('globalSearch').addEventListener('input', renderTable);
-        
-        // Initialize NIK validation
-        document.getElementById('field-nik').addEventListener('focus', function() {
-            document.getElementById('nik-hint').classList.remove('hidden');
-        });
-        
-        document.getElementById('field-nik').addEventListener('blur', function() {
-            validateNIK(this);
-        });
+        // ==================== INISIALISASI APLIKASI ====================
 
-        // Initialize app
-        window.onload = () => { 
-            lucide.createIcons(); 
+        // Setup event listeners saat halaman dimuat
+        window.onload = function() {
+            // Inisialisasi lucide icons
+            lucide.createIcons();
+            
+            // Setup event listener untuk import file
+            document.getElementById('importFile').addEventListener('change', handleFileSelect);
+            
+            // Setup event listener untuk search
+            document.getElementById('globalSearch').addEventListener('input', function() {
+                if (activeTab === 'data-karyawan') {
+                    renderTable();
+                }
+            });
+            
+            // Setup event listener untuk NIK validation
+            const nikField = document.getElementById('field-nik');
+            if (nikField) {
+                nikField.addEventListener('focus', function() {
+                    document.getElementById('nik-hint').classList.remove('hidden');
+                });
+                
+                nikField.addEventListener('blur', function() {
+                    validateNIK(this);
+                });
+            }
+            
+            // Load data awal
             fetchAllData();
             
             // Set tanggal maksimal untuk input tanggal
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('field-tanggal_masuk_kerja').max = today;
-            document.getElementById('field-tanggal_masuk_mess_hunian_p2').max = today;
+            const dateFields = ['field-tanggal_masuk_kerja', 'field-tanggal_masuk_mess_hunian_p2'];
+            dateFields.forEach(id => {
+                const field = document.getElementById(id);
+                if (field) {
+                    field.max = today;
+                }
+            });
         };
 
         // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            // Ctrl + N untuk tambah data
-            if (e.ctrlKey && e.key === 'n') {
+        document.addEventListener('keydown', function(e) {
+            // Ctrl + N untuk tambah data (hanya di tab manajemen data)
+            if (e.ctrlKey && e.key === 'n' && activeTab === 'manajemen-data') {
                 e.preventDefault();
                 openModal();
             }
             
-            // Ctrl + F untuk fokus pencarian
+            // Ctrl + F untuk fokus search
             if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
                 document.getElementById('globalSearch').focus();
             }
             
-            // Ctrl + E untuk export
-            if (e.ctrlKey && e.key === 'e') {
+            // Ctrl + E untuk export (hanya di tab manajemen data)
+            if (e.ctrlKey && e.key === 'e' && activeTab === 'manajemen-data') {
                 e.preventDefault();
                 exportData();
             }
             
-            // Esc untuk menutup modal
+            // Esc untuk tutup modal
             if (e.key === 'Escape') {
                 if (!document.getElementById('modal-form').classList.contains('hidden')) {
                     closeModal();
