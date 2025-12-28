@@ -31,30 +31,20 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        /* Scrollbar Styling */
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
 
-        /* Sidebar Transition */
         #sidebar {
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             width: 280px;
         }
-        #sidebar.collapsed {
-            width: 80px;
-        }
+        #sidebar.collapsed { width: 80px; }
         #sidebar.collapsed .nav-text, 
         #sidebar.collapsed .sidebar-header-text,
-        #sidebar.collapsed .sidebar-footer-content {
-            display: none;
-        }
-        #sidebar.collapsed .nav-link {
-            justify-content: center;
-            padding-left: 0;
-            padding-right: 0;
-        }
+        #sidebar.collapsed .sidebar-footer-content { display: none; }
+        #sidebar.collapsed .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
 
         .nav-link.active {
             background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
@@ -62,7 +52,6 @@
             box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
         }
 
-        /* Table Styling for 16 Columns */
         .database-table {
             border-collapse: separate;
             border-spacing: 0;
@@ -80,6 +69,7 @@
             font-size: 10px;
             font-weight: 800;
             border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding: 16px 24px;
         }
         .database-table td {
             white-space: nowrap;
@@ -88,27 +78,139 @@
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         
-        .sticky-col {
+        .sticky-col-left {
             position: sticky;
             left: 0;
             z-index: 5;
             background: #071927;
         }
+        
+        .sticky-col-right {
+            position: sticky;
+            right: 0;
+            z-index: 5;
+            background: #071927;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            box-shadow: -4px 0 10px rgba(0,0,0,0.2);
+        }
+
+        .modal-overlay {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+        }
     </style>
 </head>
 <body class="flex h-screen">
 
-    <!-- Toast Container -->
-    <div id="toast-container" class="fixed top-6 right-6 z-[100] flex flex-col gap-3"></div>
+    <div id="toast-container" class="fixed top-6 right-6 z-[110] flex flex-col gap-3"></div>
+
+    <!-- Hidden Input for Import -->
+    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleImport(event)">
+
+    <!-- MODAL FORM (TAMBAH & EDIT) -->
+    <div id="modal-form" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeModal()"></div>
+        <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <div>
+                    <h3 id="modal-title" class="text-xl font-black text-white">Tambah Karyawan</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Lengkapi data penghuni mess</p>
+                </div>
+                <button onclick="closeModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="text-slate-400"></i>
+                </button>
+            </div>
+            
+            <form id="employeeForm" class="flex-1 overflow-y-auto p-8 custom-scrollbar grid grid-cols-1 md:grid-cols-2 gap-6" onsubmit="saveData(event)">
+                <input type="hidden" name="id" id="edit-id">
+                
+                <div class="space-y-4">
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">NIK</span>
+                        <input name="nik" id="field-nik" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Nama Lengkap</span>
+                        <input name="nama" id="field-nama" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Gender</span>
+                            <select name="gender" id="field-gender" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                <option value="LAKI-LAKI">LAKI-LAKI</option>
+                                <option value="PEREMPUAN">PEREMPUAN</option>
+                            </select>
+                        </label>
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Golongan</span>
+                            <input name="gol" id="field-gol" placeholder="Contoh: 1, 2, 4A" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                    </div>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Jabatan</span>
+                        <input name="jabatan" id="field-jabatan" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Department</span>
+                        <input name="department" id="field-department" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Perusahaan</span>
+                        <input name="perusahaan" id="field-perusahaan" placeholder="Contoh: PT. HJF" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                </div>
+
+                <div class="space-y-4">
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Lokasi Hunian</span>
+                        <input name="lokasi_hunian" id="field-lokasi_hunian" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <div class="grid grid-cols-3 gap-3">
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Floor</span>
+                            <input name="floor" id="field-floor" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Block</span>
+                            <input name="block" id="field-block" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                        <label class="block">
+                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">No Kamar</span>
+                            <input name="no_kamar" id="field-no_kamar" required class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                        </label>
+                    </div>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Fasilitas</span>
+                        <input name="fasilitas" id="field-fasilitas" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Point of Hire</span>
+                        <input name="point_of_hire" id="field-point_of_hire" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Kerja</span>
+                        <input type="date" name="tanggal_masuk_kerja" id="field-tanggal_masuk_kerja" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                    <label class="block">
+                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Mess (P2)</span>
+                        <input type="date" name="tanggal_masuk_mess_hunian_p2" id="field-tanggal_masuk_mess_hunian_p2" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                    </label>
+                </div>
+
+                <div class="md:col-span-2 pt-6 border-t border-white/5 flex gap-4">
+                    <button type="submit" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-sky-900/40 uppercase tracking-widest text-xs">Simpan Data</button>
+                    <button type="button" onclick="closeModal()" class="px-8 bg-white/5 text-slate-400 font-bold rounded-2xl hover:bg-white/10 transition-all uppercase tracking-widest text-[10px]">Batal</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <!-- Sidebar -->
     <aside id="sidebar" class="bg-[#091f30] border-r border-white/5 flex flex-col shrink-0 relative">
-        <!-- Toggle Button -->
         <button onclick="toggleSidebar()" class="absolute -right-3 top-10 bg-sky-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-50 hover:scale-110 transition-transform">
             <i id="toggle-icon" data-lucide="chevron-left" class="w-4 h-4"></i>
         </button>
 
-        <!-- Logo Area -->
         <div class="p-6 mb-4 flex items-center gap-4">
             <div class="bg-sky-500 min-w-[48px] h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-900/40">
                 <i data-lucide="waves" class="text-white w-7 h-7"></i>
@@ -119,7 +221,6 @@
             </div>
         </div>
 
-        <!-- Navigation -->
         <nav class="flex-1 px-4 space-y-1 overflow-y-auto custom-scrollbar">
             <div class="mb-6">
                 <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Menu Utama</p>
@@ -160,7 +261,6 @@
             </div>
         </nav>
 
-        <!-- Sidebar Footer -->
         <div class="p-4 sidebar-footer-content">
             <button onclick="downloadTemplate()" class="w-full bg-emerald-500/10 hover:bg-emerald-500 text-emerald-500 hover:text-white border border-emerald-500/20 py-3 rounded-xl transition-all text-[10px] font-black tracking-widest flex items-center justify-center gap-2">
                 <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> UNDUH TEMPLATE
@@ -168,9 +268,8 @@
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="flex-1 flex flex-col min-w-0 bg-[#071927]">
-        <!-- Top Header -->
+        <!-- Header Utama -->
         <header class="h-20 border-b border-white/5 flex items-center justify-between px-8 shrink-0">
             <div class="flex items-center gap-4">
                 <div id="page-icon" class="w-10 h-10 bg-sky-500/10 text-sky-500 rounded-xl flex items-center justify-center">
@@ -185,19 +284,18 @@
             <div class="flex items-center gap-4">
                 <div class="relative hidden sm:block">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
-                    <input type="text" id="globalSearch" placeholder="Cari NIK, Nama, Lokasi..." 
+                    <input type="text" id="globalSearch" placeholder="Cari NIK atau Nama..." 
                         class="bg-[#0b253a] border border-white/5 rounded-xl pl-12 pr-6 py-2.5 text-sm w-72 focus:ring-2 focus:ring-sky-500 outline-none transition-all placeholder:text-slate-600 text-white">
                 </div>
-                <button onclick="exportData()" class="px-4 py-2.5 bg-sky-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-sky-600 transition-all">
+                <button onclick="exportData()" class="px-4 py-2.5 bg-[#0b253a] border border-white/10 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-white/5 transition-all">
                     <i data-lucide="download" class="w-4 h-4"></i> EXPORT
                 </button>
             </div>
         </header>
 
-        <!-- Content Area -->
         <div id="content-area" class="flex-1 overflow-hidden relative">
             
-            <!-- DASHBOARD TAB -->
+            <!-- TAB DASHBOARD -->
             <div id="tab-dashboard" class="absolute inset-0 p-8 overflow-y-auto custom-scrollbar animate-in fade-in duration-500">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     <div class="glass-panel p-6 rounded-3xl border-l-4 border-sky-500">
@@ -219,22 +317,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-gradient-to-br from-sky-600 to-sky-900 p-8 rounded-[32px] relative overflow-hidden">
+                    <div class="bg-gradient-to-br from-sky-600 to-sky-900 p-8 rounded-[32px] relative overflow-hidden group">
                         <div class="relative z-10">
                             <h3 class="text-2xl font-black text-white mb-2">Sinkronisasi Data Excel</h3>
-                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Perbarui database karyawan massal menggunakan template Excel yang disediakan. Pastikan format kolom sesuai dengan database pusat.</p>
-                            <button onclick="document.getElementById('importFile').click()" class="bg-white text-sky-900 px-8 py-3 rounded-xl font-black text-xs hover:scale-105 transition-transform flex items-center gap-2">
-                                <i data-lucide="upload" class="w-4 h-4"></i> UNGGAH DATABASE BARU
+                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Perbarui database karyawan massal menggunakan template Excel yang disediakan.</p>
+                            <button onclick="triggerImport()" class="bg-white text-sky-900 px-8 py-3 rounded-xl font-black text-xs hover:scale-105 transition-transform flex items-center gap-2">
+                                <i data-lucide="upload" class="w-4 h-4"></i> UNGGAH EXCEL BARU
                             </button>
-                            <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleImport(event)">
                         </div>
-                        <i data-lucide="database" class="absolute right-[-20px] bottom-[-20px] w-48 h-48 text-white/10 rotate-12"></i>
+                        <i data-lucide="database" class="absolute right-[-20px] bottom-[-20px] w-48 h-48 text-white/10 rotate-12 group-hover:scale-110 transition-transform duration-700"></i>
                     </div>
                     <div class="glass-panel p-8 rounded-[32px] flex flex-col justify-center border-dashed border-2 border-white/10">
                         <h3 class="text-xl font-black text-white mb-2">Informasi Kapasitas</h3>
-                        <p class="text-slate-400 text-xs mb-4">Ringkasan kapasitas hunian Mess P2 secara keseluruhan.</p>
+                        <p class="text-slate-400 text-xs mb-4">Ringkasan hunian Mess P2.</p>
                         <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden">
-                            <div id="capacity-bar" class="bg-sky-500 h-full w-[45%] transition-all duration-1000"></div>
+                            <div id="capacity-bar" class="bg-sky-500 h-full w-[0%] transition-all duration-1000"></div>
                         </div>
                         <div class="flex justify-between mt-3 text-[10px] font-bold text-slate-500">
                             <span>0 PENGHUNI</span>
@@ -245,48 +342,52 @@
                 </div>
             </div>
 
-            <!-- DATABASE TABLE VIEW -->
+            <!-- VIEW TABEL DATABASE -->
             <div id="tab-data" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
-                <!-- Table Filters -->
+                <!-- Sub-Header Bar -->
                 <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-4">
                         <span id="data-count-badge" class="bg-sky-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
-                        <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN LENGKAP</h4>
+                        <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
                     </div>
                     <div class="flex gap-2">
+                        <button onclick="openModal()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-[11px] font-black flex items-center gap-2 hover:bg-emerald-600 transition-all">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i> TAMBAH MANUAL
+                        </button>
+                        <button onclick="triggerImport()" class="px-4 py-2 bg-sky-500 text-white rounded-lg text-[11px] font-black flex items-center gap-2 hover:bg-sky-600 transition-all">
+                            <i data-lucide="upload-cloud" class="w-3.5 h-3.5"></i> IMPORT EXCEL
+                        </button>
                         <select id="filterLokasi" onchange="renderTable()" class="bg-[#071927] border border-white/10 rounded-lg px-4 py-2 text-[11px] text-slate-300 outline-none">
                             <option value="">Semua Lokasi Mess</option>
                         </select>
                     </div>
                 </div>
 
-                <!-- Scrollable Container for Table -->
+                <!-- Table Container -->
                 <div class="flex-1 overflow-auto custom-scrollbar bg-[#071927]">
                     <table class="database-table">
                         <thead class="text-slate-400">
                             <tr>
-                                <th class="px-8 py-4 text-center">AKSI</th>
-                                <th class="px-8 py-4 sticky-col">NIK</th>
-                                <th class="px-8 py-4">NAMA</th>
-                                <th class="px-8 py-4">GENDER</th>
-                                <th class="px-8 py-4">DEPARTMENT</th>
-                                <th class="px-8 py-4">GOL</th>
-                                <th class="px-8 py-4">JABATAN</th>
-                                <th class="px-8 py-4">FASILITAS</th>
-                                <th class="px-8 py-4 text-sky-400">POINT OF HIRE</th>
-                                <th class="px-8 py-4">TGL MASUK KERJA</th>
-                                <th class="px-8 py-4">PERUSAHAAN</th>
-                                <th class="px-8 py-4">LOKASI HUNIAN</th>
-                                <th class="px-8 py-4">FLOOR</th>
-                                <th class="px-8 py-4">BLOCK</th>
-                                <th class="px-8 py-4 text-emerald-400">NO KAMAR</th>
-                                <th class="px-8 py-4">STATUS KAMAR</th>
-                                <th class="px-8 py-4 text-amber-400">TGL MASUK MESS (P2)</th>
+                                <th class="sticky-col-left">NIK</th>
+                                <th>NAMA</th>
+                                <th>GENDER</th>
+                                <th>DEPARTMENT</th>
+                                <th>GOL</th>
+                                <th>JABATAN</th>
+                                <th>FASILITAS</th>
+                                <th class="text-sky-400">POINT OF HIRE</th>
+                                <th>TGL MASUK KERJA</th>
+                                <th>PERUSAHAAN</th>
+                                <th>LOKASI HUNIAN</th>
+                                <th>FLOOR</th>
+                                <th>BLOCK</th>
+                                <th class="text-emerald-400">NO KAMAR</th>
+                                <th>STATUS KAMAR</th>
+                                <th class="text-amber-400">TGL MASUK MESS</th>
+                                <th class="sticky-col-right text-center">AKSI & MENU</th>
                             </tr>
                         </thead>
-                        <tbody id="table-body">
-                            <!-- Rows dynamic -->
-                        </tbody>
+                        <tbody id="table-body"></tbody>
                     </table>
                 </div>
             </div>
@@ -295,21 +396,17 @@
     </main>
 
     <script>
-        // --- State Management ---
         let employees = [];
         let activeTab = 'dashboard';
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
 
-        // --- Supabase Config (Dummy/Placeholder) ---
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- Initial Load ---
         async function fetchAllData() {
-            // Simulasi fetch data
             const { data, error } = await supabaseClient
                 .from('karyawan_mess')
                 .select('*')
@@ -319,55 +416,62 @@
                 employees = data || [];
                 updateUI();
             } else {
-                console.error("Database Error:", error);
+                showToast("Gagal memuat data", "error");
             }
         }
 
-        // --- UI Logic ---
         function toggleSidebar() {
             isSidebarCollapsed = !isSidebarCollapsed;
             const sidebar = document.getElementById('sidebar');
             const icon = document.getElementById('toggle-icon');
-            
-            if (isSidebarCollapsed) {
-                sidebar.classList.add('collapsed');
-                icon.setAttribute('data-lucide', 'chevron-right');
-            } else {
-                sidebar.classList.remove('collapsed');
-                icon.setAttribute('data-lucide', 'chevron-left');
-            }
+            sidebar.classList.toggle('collapsed', isSidebarCollapsed);
+            icon.setAttribute('data-lucide', isSidebarCollapsed ? 'chevron-right' : 'chevron-left');
             lucide.createIcons();
         }
+
+        function openModal(editData = null) {
+            const form = document.getElementById('employeeForm');
+            const title = document.getElementById('modal-title');
+            form.reset();
+            document.getElementById('edit-id').value = "";
+
+            if(editData) {
+                title.innerText = "Edit Data Karyawan";
+                document.getElementById('edit-id').value = editData.id;
+                // Isi field
+                Object.keys(editData).forEach(key => {
+                    const field = document.getElementById(`field-${key}`);
+                    if(field) field.value = editData[key] || "";
+                });
+            } else {
+                title.innerText = "Tambah Karyawan Manual";
+            }
+            document.getElementById('modal-form').classList.remove('hidden');
+        }
+
+        function closeModal() { document.getElementById('modal-form').classList.add('hidden'); }
+        function triggerImport() { document.getElementById('importFile').click(); }
 
         function switchTab(tab) {
             activeTab = tab;
             currentFilter = (tab === 'all-employees') ? 'ALL' : currentFilter;
-            
-            const isDashboard = tab === 'dashboard';
-            document.getElementById('tab-dashboard').classList.toggle('hidden', !isDashboard);
-            document.getElementById('tab-data').classList.toggle('hidden', isDashboard);
-            
-            // Header Update
-            document.getElementById('page-title').innerText = isDashboard ? "Dashboard" : "Database";
-            document.getElementById('page-icon').innerHTML = isDashboard ? '<i data-lucide="layout-grid"></i>' : '<i data-lucide="database"></i>';
-            document.getElementById('current-view-name').innerText = isDashboard ? "" : "DATABASE KARYAWAN LENGKAP";
-
+            const isDash = tab === 'dashboard';
+            document.getElementById('tab-dashboard').classList.toggle('hidden', !isDash);
+            document.getElementById('tab-data').classList.toggle('hidden', isDash);
+            document.getElementById('page-title').innerText = isDash ? "Dashboard" : "Database";
+            document.getElementById('page-icon').innerHTML = isDash ? '<i data-lucide="layout-grid"></i>' : '<i data-lucide="database"></i>';
             updateNavStyles();
-            if(!isDashboard) renderTable();
+            if(!isDash) renderTable();
             lucide.createIcons();
         }
 
         function switchCategory(cat) {
             activeTab = 'category';
             currentFilter = cat;
-            
             document.getElementById('tab-dashboard').classList.add('hidden');
             document.getElementById('tab-data').classList.remove('hidden');
-            
             document.getElementById('page-title').innerText = "Manajemen Hunian";
-            document.getElementById('current-view-name').innerText = `DATA ${cat}`;
-            document.getElementById('page-icon').innerHTML = '<i data-lucide="filter"></i>';
-
+            document.getElementById('current-view-name').innerText = `DATABASE ${cat}`;
             updateNavStyles();
             renderTable();
             lucide.createIcons();
@@ -377,29 +481,23 @@
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             if(activeTab === 'dashboard') document.getElementById('nav-dashboard').classList.add('active');
             if(activeTab === 'all-employees') document.getElementById('nav-all-employees').classList.add('active');
-            
             const catMap = { 'GOL 1': 'nav-gol1', 'GOL 2': 'nav-gol2', 'GOL 3': 'nav-gol3', 'GOL 4 UP': 'nav-gol4', 'VENDOR': 'nav-vendor' };
             if(catMap[currentFilter] && activeTab === 'category') document.getElementById(catMap[currentFilter]).classList.add('active');
         }
 
         function updateUI() {
-            // Stats Update
             document.getElementById('stat-total').innerText = employees.length.toLocaleString();
             const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
             document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
             document.getElementById('stat-avail').innerText = (20000 - terisi).toLocaleString();
             document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
-
-            // Capacity Bar
             const perc = (terisi / 20000) * 100;
             document.getElementById('capacity-bar').style.width = perc + "%";
             document.getElementById('capacity-text').innerText = perc.toFixed(1) + "% TERPAKAI";
-
-            // Location Filter
+            
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
             document.getElementById('filterLokasi').innerHTML = '<option value="">Semua Lokasi Mess</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
-
             if(activeTab !== 'dashboard') renderTable();
         }
 
@@ -414,42 +512,25 @@
             return 'LAINNYA';
         }
 
-        // --- Core Table Rendering ---
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
-
             const filtered = employees.filter(e => {
-                const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
-                                      (e.nik || "").toLowerCase().includes(search) ||
-                                      (e.lokasi_hunian || "").toLowerCase().includes(search);
+                const matchesSearch = (e.nama || "").toLowerCase().includes(search) || (e.nik || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
                 const matchesCat = currentFilter === 'ALL' || getCategory(e) === currentFilter;
                 return matchesSearch && matchesLok && matchesCat;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
-
             const tbody = document.getElementById('table-body');
-            if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" class="p-20 text-center text-slate-600 font-bold uppercase tracking-widest">Tidak ada data ditemukan</td></tr>`;
-                return;
-            }
-
             tbody.innerHTML = filtered.map(e => `
                 <tr class="hover:bg-white/5 transition-colors">
-                    <td class="text-center">
-                        <button onclick="deleteEmployee('${e.id}')" class="p-1.5 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
-                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-                        </button>
-                    </td>
-                    <td class="sticky-col font-mono text-sky-400 font-bold">${e.nik || '-'}</td>
+                    <td class="sticky-col-left font-mono text-sky-400 font-bold">${e.nik || '-'}</td>
                     <td class="text-white font-bold">${e.nama || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.gender || '-'}</td>
                     <td class="text-slate-300 font-medium">${e.department || '-'}</td>
-                    <td class="font-bold text-center">
-                        <span class="bg-white/5 px-2 py-1 rounded border border-white/5">${e.gol || '-'}</span>
-                    </td>
+                    <td class="font-bold text-center"><span class="bg-white/5 px-2 py-1 rounded border border-white/5">${e.gol || '-'}</span></td>
                     <td class="text-slate-400">${e.jabatan || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.fasilitas || '-'}</td>
                     <td class="text-sky-300 font-medium italic">${e.point_of_hire || '-'}</td>
@@ -459,69 +540,101 @@
                     <td class="text-slate-400">${e.floor || '-'}</td>
                     <td class="text-slate-300 font-bold">${e.block || '-'}</td>
                     <td class="text-emerald-400 font-black">${e.no_kamar || '-'}</td>
-                    <td class="font-black ${e.status_kamar === 'TERISI' ? 'text-emerald-500' : 'text-rose-500'}">
-                        ${e.status_kamar || 'TERISI'}
-                    </td>
+                    <td class="font-black ${e.status_kamar === 'TERISI' ? 'text-emerald-500' : 'text-rose-500'}">${e.status_kamar || 'TERISI'}</td>
                     <td class="text-amber-400 font-bold">${e.tanggal_masuk_mess_hunian_p2 || '-'}</td>
+                    <td class="sticky-col-right text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick='openModal(${JSON.stringify(e).replace(/'/g, "&apos;")})' class="p-2 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white rounded-lg transition-all">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                            </button>
+                            <button onclick="deleteEmployee('${e.id}')" class="p-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
             `).join('');
             lucide.createIcons();
         }
 
-        // --- Handlers ---
+        async function saveData(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const raw = Object.fromEntries(formData.entries());
+            const id = raw.id;
+            delete raw.id; // Jangan kirim ID sebagai data update
+
+            showToast("Menyimpan data...", "success");
+            
+            let result;
+            if(id) {
+                // Update
+                result = await supabaseClient.from('karyawan_mess').update(raw).eq('id', id);
+            } else {
+                // Insert
+                raw.status_kamar = "TERISI";
+                result = await supabaseClient.from('karyawan_mess').insert([raw]);
+            }
+
+            if (!result.error) {
+                showToast("Data tersimpan!");
+                closeModal();
+                fetchAllData();
+            } else {
+                showToast("Gagal menyimpan data", "error");
+            }
+        }
+
         async function handleImport(event) {
             const file = event.target.files[0];
             if(!file) return;
-            showToast("Membaca file Excel...");
-            
+            showToast("Memproses Excel...", "success");
             const reader = new FileReader();
             reader.onload = async (e) => {
-                const workbook = XLSX.read(new Uint8Array(e.target.result), { type: 'array' });
-                const json = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                
-                const toUpload = json.map(row => ({
-                    nik: String(row["NIK"] || ""),
-                    nama: String(row["NAMA"] || ""),
-                    gender: String(row["GENDER"] || ""),
-                    department: String(row["DEPARTMENT"] || ""),
-                    gol: String(row["GOL"] || ""),
-                    jabatan: String(row["JABATAN"] || ""),
-                    fasilitas: String(row["FASILITAS"] || ""),
-                    point_of_hire: String(row["Point of Hire"] || ""),
-                    tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || null,
-                    perusahaan: String(row["PERUSAHAAN"] || ""),
-                    lokasi_hunian: String(row["LOKASI HUNIAN"] || ""),
-                    floor: String(row["FLOOR"] || ""),
-                    block: String(row["BLOCK"] || ""),
-                    no_kamar: String(row["NO KAMAR"] || ""),
-                    status_kamar: String(row["STATUS KAMAR"] || "TERISI"),
-                    tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || null
-                })).filter(i => i.nik !== "");
+                try {
+                    const dataArr = new Uint8Array(e.target.result);
+                    const wb = XLSX.read(dataArr, { type: 'array', cellDates: true });
+                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
+                    
+                    const findKey = (obj, target) => {
+                        const t = target.toLowerCase().replace(/\s+/g, '');
+                        const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s+/g, '') === t);
+                        return key ? obj[key] : "";
+                    };
+                    const formatDate = (v) => v instanceof Date ? v.toISOString().split('T')[0] : (v || null);
 
-                const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
-                if(!error) {
-                    showToast("Database Sinkron!");
-                    fetchAllData();
-                } else {
-                    showToast("Gagal upload ke server", "error");
-                }
+                    const toUpload = json.map(row => ({
+                        nik: String(findKey(row, "NIK") || ""),
+                        nama: String(findKey(row, "NAMA") || ""),
+                        gender: String(findKey(row, "GENDER") || ""),
+                        department: String(findKey(row, "DEPARTMENT") || ""),
+                        gol: String(findKey(row, "GOL") || ""),
+                        jabatan: String(findKey(row, "JABATAN") || ""),
+                        fasilitas: String(findKey(row, "FASILITAS") || ""),
+                        point_of_hire: String(findKey(row, "Point of Hire") || ""),
+                        tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
+                        perusahaan: String(findKey(row, "PERUSAHAAN") || ""),
+                        lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || ""),
+                        floor: String(findKey(row, "FLOOR") || ""),
+                        block: String(findKey(row, "BLOCK") || ""),
+                        no_kamar: String(findKey(row, "NO KAMAR") || ""),
+                        status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI"),
+                        tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2"))
+                    })).filter(i => i.nik !== "");
+
+                    const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
+                    if(!error) { showToast(`Impor ${toUpload.length} data sukses!`); fetchAllData(); }
+                    else { showToast("Gagal update database", "error"); }
+                } catch (err) { showToast("Gagal memproses file", "error"); }
+                finally { event.target.value = ""; }
             };
             reader.readAsArrayBuffer(file);
         }
 
-        function downloadTemplate() {
-            const headers = [["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"]];
-            const ws = XLSX.utils.aoa_to_sheet(headers);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Master_Template");
-            XLSX.writeFile(wb, "Template_Mess_P2_Lengkap.xlsx");
-        }
-
-        function exportData() {
-            const ws = XLSX.utils.json_to_sheet(employees);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Database_Mess_P2");
-            XLSX.writeFile(wb, "Data_Mess_Export.xlsx");
+        async function deleteEmployee(id) {
+            if(!confirm("Hapus data karyawan ini secara permanen?")) return;
+            const { error } = await supabaseClient.from('karyawan_mess').delete().eq('id', id);
+            if(!error) { showToast("Data terhapus"); fetchAllData(); }
         }
 
         function showToast(msg, type = 'success') {
@@ -532,6 +645,21 @@
             container.appendChild(toast);
             lucide.createIcons();
             setTimeout(() => toast.remove(), 3000);
+        }
+
+        function downloadTemplate() {
+            const h = [["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"]];
+            const ws = XLSX.utils.aoa_to_sheet(h);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.writeFile(wb, "Template_Import_OceanMess.xlsx");
+        }
+
+        function exportData() {
+            const ws = XLSX.utils.json_to_sheet(employees);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Database");
+            XLSX.writeFile(wb, "Database_Mess_Full_Export.xlsx");
         }
 
         document.getElementById('globalSearch').addEventListener('input', renderTable);
