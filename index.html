@@ -124,11 +124,34 @@
         
         .valid-nik { border-left: 3px solid #10b981; }
         .invalid-nik { border-left: 3px solid #ef4444; }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top: 3px solid #0ea5e9;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body class="flex h-screen">
 
     <div id="toast-container" class="fixed top-6 right-6 z-[110] flex flex-col gap-3"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="hidden fixed inset-0 bg-black/70 z-[120] flex items-center justify-center">
+        <div class="text-center">
+            <div class="loading-spinner mb-4 mx-auto"></div>
+            <p class="text-white font-bold">Memproses data...</p>
+            <p class="text-slate-400 text-sm mt-2" id="loading-detail">Harap tunggu</p>
+        </div>
+    </div>
 
     <!-- Hidden Input for Import -->
     <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
@@ -382,99 +405,6 @@
         </div>
     </div>
 
-    <!-- MODAL LAPORAN -->
-    <div id="modal-report" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeReportModal()"></div>
-        <div class="glass-panel w-full max-w-6xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
-            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
-                <div>
-                    <h3 class="text-xl font-black text-white">Laporan Analisis Data Hunian</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Analisis berdasarkan Golongan, Lokasi, dan Status</p>
-                </div>
-                <button onclick="closeReportModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
-                    <i data-lucide="x" class="text-slate-400"></i>
-                </button>
-            </div>
-            
-            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    <div class="glass-panel p-6 rounded-3xl">
-                        <h4 class="text-lg font-black text-white mb-4">Distribusi Golongan</h4>
-                        <div id="chart-golongan" class="chart-container"></div>
-                    </div>
-                    <div class="glass-panel p-6 rounded-3xl">
-                        <h4 class="text-lg font-black text-white mb-4">Distribusi Lokasi</h4>
-                        <div id="chart-lokasi" class="chart-container"></div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-3xl mb-8">
-                    <h4 class="text-lg font-black text-white mb-4">Statistik Detail</h4>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="text-center">
-                            <div class="text-3xl font-black text-sky-400" id="stat-gol1">0</div>
-                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 1</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-black text-emerald-400" id="stat-gol2">0</div>
-                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 2</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-black text-amber-400" id="stat-gol3">0</div>
-                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Golongan 3</div>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-3xl font-black text-purple-400" id="stat-gol4up">0</div>
-                            <div class="text-[10px] font-bold text-slate-500 uppercase mt-1">Gol 4 UP & M</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="glass-panel p-6 rounded-3xl">
-                    <h4 class="text-lg font-black text-white mb-4">Ringkasan Kapasitas</h4>
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                                <span>Kamar Terisi</span>
-                                <span id="kap-terisi">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                                <div id="bar-terisi" class="bg-emerald-500 h-full w-0 transition-all duration-1000"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                                <span>Kamar Tersedia</span>
-                                <span id="kap-tersedia">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                                <div id="bar-tersedia" class="bg-sky-500 h-full w-0 transition-all duration-1000"></div>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-[10px] font-bold text-slate-500 mb-1">
-                                <span>Kamar Rusak/Perbaikan</span>
-                                <span id="kap-rusak">0%</span>
-                            </div>
-                            <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                                <div id="bar-rusak" class="bg-rose-500 h-full w-0 transition-all duration-1000"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flex justify-end gap-4 mt-8">
-                    <button onclick="exportReport()" class="px-6 py-3 bg-emerald-500 text-white rounded-xl text-xs font-black flex items-center gap-2 hover:bg-emerald-600 transition-all">
-                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> EXPORT LAPORAN
-                    </button>
-                    <button onclick="closeReportModal()" class="px-6 py-3 bg-white/5 text-slate-400 rounded-xl text-xs font-black hover:bg-white/10 transition-all">
-                        TUTUP
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Sidebar -->
     <aside id="sidebar" class="bg-[#091f30] border-r border-white/5 flex flex-col shrink-0 relative">
         <button onclick="toggleSidebar()" class="absolute -right-3 top-10 bg-sky-500 text-white w-6 h-6 rounded-full flex items-center justify-center shadow-lg z-50 hover:scale-110 transition-transform">
@@ -501,10 +431,6 @@
                 <button onclick="switchTab('all-employees')" id="nav-all-employees" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                     <i data-lucide="database" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Database Karyawan</span>
-                </button>
-                <button onclick="openReportModal()" id="nav-report" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
-                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
-                    <span class="nav-text font-bold text-sm">Laporan Analisis</span>
                 </button>
             </div>
 
@@ -614,48 +540,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- FILTER ADVANCED SECTION -->
-                <div class="glass-panel p-6 rounded-3xl mb-8">
-                    <h3 class="text-lg font-black text-white mb-4">Filter Data Lanjutan</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Lokasi Hunian</label>
-                            <select id="filterDashboardLokasi" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
-                                <option value="">Semua Lokasi</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Block</label>
-                            <select id="filterDashboardBlock" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
-                                <option value="">Semua Block</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">No Kamar</label>
-                            <input type="text" id="filterDashboardKamar" placeholder="Cari no kamar..." 
-                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
-                        </div>
-                        <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-2">Status Kamar</label>
-                            <select id="filterDashboardStatus" class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-2 text-sm text-white outline-none">
-                                <option value="">Semua Status</option>
-                                <option value="TERISI">TERISI</option>
-                                <option value="TERSEDIA">TERSEDIA</option>
-                                <option value="RUSAK">RUSAK</option>
-                                <option value="DIPERBAIKI">DIPERBAIKI</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="flex justify-end gap-3 mt-4">
-                        <button onclick="applyDashboardFilter()" class="px-6 py-2 bg-sky-500 text-white rounded-xl text-xs font-bold hover:bg-sky-600 transition-all">
-                            Terapkan Filter
-                        </button>
-                        <button onclick="resetDashboardFilter()" class="px-6 py-2 bg-white/5 text-slate-400 rounded-xl text-xs font-bold hover:bg-white/10 transition-all">
-                            Reset Filter
-                        </button>
-                    </div>
-                </div>
             </div>
 
             <!-- VIEW TABEL DATABASE -->
@@ -749,24 +633,30 @@
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
-        let importFile = null;
 
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Fungsi untuk menampilkan loading
+        function showLoading(message = "Memproses data...") {
+            document.getElementById('loading-overlay').classList.remove('hidden');
+            document.getElementById('loading-detail').textContent = message;
+        }
+
+        // Fungsi untuk menyembunyikan loading
+        function hideLoading() {
+            document.getElementById('loading-overlay').classList.add('hidden');
+        }
+
         // Fungsi validasi NIK
         function isValidNIK(nik) {
             if (!nik || typeof nik !== 'string') return false;
             
-            // Hilangkan spasi di awal dan akhir, konversi ke uppercase
             const cleanNIK = nik.toString().trim().toUpperCase();
-            
-            // Validasi: harus dimulai dengan huruf, bisa diikuti kombinasi huruf dan angka
             const nikPattern = /^[A-Z][A-Z0-9]*$/;
             
-            // Minimal 2 karakter
             if (cleanNIK.length < 2) return false;
             
             return nikPattern.test(cleanNIK);
@@ -799,17 +689,29 @@
         }
 
         async function fetchAllData() {
-            const { data, error } = await supabaseClient
-                .from('karyawan_mess')
-                .select('*')
-                .order('nama', { ascending: true });
+            showLoading("Memuat data dari database...");
+            try {
+                const { data, error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .select('*')
+                    .order('nama', { ascending: true });
 
-            if (!error) {
-                employees = data || [];
+                if (error) {
+                    console.error("Error fetching data:", error);
+                    showToast("Gagal memuat data: " + error.message, "error");
+                    employees = [];
+                } else {
+                    employees = data || [];
+                    showToast(`Data berhasil dimuat: ${employees.length} karyawan`, "success");
+                }
+            } catch (err) {
+                console.error("Exception fetching data:", err);
+                showToast("Gagal memuat data: " + err.message, "error");
+                employees = [];
+            } finally {
+                hideLoading();
                 updateUI();
                 populateFilterOptions();
-            } else {
-                showToast("Gagal memuat data", "error");
             }
         }
 
@@ -851,7 +753,9 @@
             document.getElementById('nik-hint').classList.add('hidden');
         }
         
-        function triggerImport() { document.getElementById('importFile').click(); }
+        function triggerImport() { 
+            document.getElementById('importFile').click(); 
+        }
 
         function switchTab(tab) {
             activeTab = tab;
@@ -887,13 +791,12 @@
         }
 
         function populateFilterOptions() {
-            // Populate Lokasi options for all filter locations
+            // Populate Lokasi options
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
             const html = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             
-            // Apply to all lokasi filters
-            const lokasiFilters = ['filterLokasi', 'filterDashboardLokasi'];
+            const lokasiFilters = ['filterLokasi'];
             lokasiFilters.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.innerHTML = html;
@@ -904,7 +807,7 @@
             const blockHtml = '<option value="">Semua Block</option>' + 
                 uniqueBlocks.map(b => `<option value="${b}">${b}</option>`).join('');
             
-            const blockFilters = ['filterBlock', 'filterDashboardBlock'];
+            const blockFilters = ['filterBlock'];
             blockFilters.forEach(id => {
                 const element = document.getElementById(id);
                 if (element) element.innerHTML = blockHtml;
@@ -1031,126 +934,153 @@
             // Konversi NIK ke uppercase
             raw.nik = raw.nik.trim().toUpperCase();
 
-            showToast("Menyimpan data...", "success");
+            showLoading("Menyimpan data...");
             
-            let result;
-            if(id) {
-                result = await supabaseClient.from('karyawan_mess').update(raw).eq('id', id);
-            } else {
-                result = await supabaseClient.from('karyawan_mess').insert([raw]);
-            }
+            try {
+                let result;
+                if(id) {
+                    result = await supabaseClient
+                        .from('karyawan_mess')
+                        .update(raw)
+                        .eq('id', id);
+                } else {
+                    result = await supabaseClient
+                        .from('karyawan_mess')
+                        .insert([raw]);
+                }
 
-            if (!result.error) {
-                showToast("Data tersimpan!");
+                if (result.error) {
+                    throw new Error(result.error.message);
+                }
+
+                showToast("Data tersimpan!", "success");
                 closeModal();
-                fetchAllData();
-            } else {
-                showToast("Gagal menyimpan data", "error");
+                await fetchAllData();
+            } catch (error) {
+                console.error("Error saving data:", error);
+                showToast("Gagal menyimpan data: " + error.message, "error");
+            } finally {
+                hideLoading();
             }
         }
 
-        // FITUR PREVIEW IMPORT dengan validasi NIK kombinasi huruf dan angka
+        // FITUR PREVIEW IMPORT
         async function handleFileSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
             
-            importFile = file;
-            showToast("Membaca file Excel...", "success");
+            showLoading("Membaca file Excel...");
             
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                try {
-                    const dataArr = new Uint8Array(e.target.result);
-                    const wb = XLSX.read(dataArr, { type: 'array', cellDates: true });
-                    const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
-                    
-                    const findKey = (obj, target) => {
-                        const t = target.toLowerCase().replace(/\s+/g, '');
-                        const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s+/g, '') === t);
-                        return key ? obj[key] : "";
-                    };
-                    const formatDate = (v) => {
-                        if (!v) return null;
-                        if (v instanceof Date) return v.toISOString().split('T')[0];
-                        if (typeof v === 'number') {
-                            const excelEpoch = new Date(1899, 11, 30);
-                            return new Date(excelEpoch.getTime() + v * 86400000).toISOString().split('T')[0];
-                        }
-                        return v;
-                    };
+            try {
+                const data = await readExcelFile(file);
+                processImportData(data);
+            } catch (error) {
+                showToast("Gagal memproses file: " + error.message, "error");
+            } finally {
+                hideLoading();
+                event.target.value = "";
+            }
+        }
 
-                    // Process data untuk preview
-                    importPreviewData = json.map((row, index) => {
-                        const rawNik = String(findKey(row, "NIK") || "").trim();
-                        const processed = {
-                            id: `preview-${index + 2}`, // +2 karena excel row mulai dari 2
-                            rowNumber: index + 2,
-                            nik: rawNik,
-                            nama: String(findKey(row, "NAMA") || "").trim(),
-                            gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
-                            department: String(findKey(row, "DEPARTMENT") || "").trim(),
-                            gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
-                            jabatan: String(findKey(row, "JABATAN") || "").trim(),
-                            fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
-                            point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
-                            tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
-                            perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
-                            lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
-                            floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
-                            block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
-                            no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
-                            status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
-                            tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2")),
-                            isValid: true,
-                            errors: [],
-                            isNew: true
-                        };
+        function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const dataArr = new Uint8Array(e.target.result);
+                        const wb = XLSX.read(dataArr, { type: 'array', cellDates: true });
+                        const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { defval: "" });
+                        resolve(json);
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = (error) => reject(error);
+                reader.readAsArrayBuffer(file);
+            });
+        }
 
-                        // Validasi NIK (harus dimulai dengan huruf)
-                        if (!processed.nik) {
-                            processed.isValid = false;
-                            processed.errors.push("NIK tidak boleh kosong");
-                        } else if (!isValidNIK(processed.nik)) {
-                            processed.isValid = false;
-                            processed.errors.push(`Format NIK tidak valid: "${processed.nik}". Harus dimulai dengan huruf`);
-                        } else {
-                            // Konversi NIK ke uppercase untuk konsistensi
-                            processed.nik = processed.nik.toUpperCase();
-                        }
-
-                        // Validasi data required lainnya
-                        if (!processed.nama) {
-                            processed.isValid = false;
-                            processed.errors.push("Nama harus diisi");
-                        }
-                        if (!processed.no_kamar) {
-                            processed.isValid = false;
-                            processed.errors.push("No Kamar harus diisi");
-                        }
-
-                        // Cek apakah NIK sudah ada di database
-                        const existingNik = employees.map(e => e.nik);
-                        if (existingNik.includes(processed.nik)) {
-                            processed.isNew = false;
-                        }
-
-                        return processed;
-                    });
-
-                    // Filter data yang valid
-                    const validData = importPreviewData.filter(item => item.isValid);
-                    const newData = validData.filter(item => item.isNew);
-                    const updateData = validData.filter(item => !item.isNew);
-
-                    // Show preview modal
-                    showPreviewModal(validData, newData, updateData);
-
-                } catch (err) { 
-                    showToast("Gagal memproses file: " + err.message, "error"); 
-                }
-                finally { event.target.value = ""; }
+        function processImportData(json) {
+            const findKey = (obj, target) => {
+                const t = target.toLowerCase().replace(/\s+/g, '');
+                const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s+/g, '') === t);
+                return key ? obj[key] : "";
             };
-            reader.readAsArrayBuffer(file);
+
+            const formatDate = (v) => {
+                if (!v) return null;
+                if (v instanceof Date) return v.toISOString().split('T')[0];
+                if (typeof v === 'number') {
+                    const excelEpoch = new Date(1899, 11, 30);
+                    return new Date(excelEpoch.getTime() + v * 86400000).toISOString().split('T')[0];
+                }
+                return v;
+            };
+
+            // Process data untuk preview
+            importPreviewData = json.map((row, index) => {
+                const rawNik = String(findKey(row, "NIK") || "").trim();
+                const processed = {
+                    id: `preview-${index + 2}`,
+                    rowNumber: index + 2,
+                    nik: rawNik,
+                    nama: String(findKey(row, "NAMA") || "").trim(),
+                    gender: String(findKey(row, "GENDER") || "").toUpperCase().trim(),
+                    department: String(findKey(row, "DEPARTMENT") || "").trim(),
+                    gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
+                    jabatan: String(findKey(row, "JABATAN") || "").trim(),
+                    fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
+                    point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
+                    tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
+                    perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
+                    lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
+                    floor: String(findKey(row, "FLOOR") || "").toUpperCase().trim(),
+                    block: String(findKey(row, "BLOCK") || "").toUpperCase().trim(),
+                    no_kamar: String(findKey(row, "NO KAMAR") || "").trim(),
+                    status_kamar: String(findKey(row, "STATUS KAMAR") || "TERISI").toUpperCase().trim(),
+                    tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2")),
+                    isValid: true,
+                    errors: [],
+                    isNew: true
+                };
+
+                // Validasi NIK
+                if (!processed.nik) {
+                    processed.isValid = false;
+                    processed.errors.push("NIK tidak boleh kosong");
+                } else if (!isValidNIK(processed.nik)) {
+                    processed.isValid = false;
+                    processed.errors.push(`Format NIK tidak valid: "${processed.nik}". Harus dimulai dengan huruf`);
+                } else {
+                    processed.nik = processed.nik.toUpperCase();
+                }
+
+                // Validasi data required lainnya
+                if (!processed.nama) {
+                    processed.isValid = false;
+                    processed.errors.push("Nama harus diisi");
+                }
+                if (!processed.no_kamar) {
+                    processed.isValid = false;
+                    processed.errors.push("No Kamar harus diisi");
+                }
+
+                // Cek apakah NIK sudah ada di database
+                const existingNik = employees.map(e => e.nik);
+                if (existingNik.includes(processed.nik)) {
+                    processed.isNew = false;
+                }
+
+                return processed;
+            });
+
+            // Filter data yang valid
+            const validData = importPreviewData.filter(item => item.isValid);
+            const newData = validData.filter(item => item.isNew);
+            const updateData = validData.filter(item => !item.isNew);
+
+            // Show preview modal
+            showPreviewModal(validData, newData, updateData);
         }
 
         function showPreviewModal(validData, newData, updateData) {
@@ -1194,7 +1124,7 @@
             const processBtn = document.getElementById('btn-process-import');
             if (validData.length > 0) {
                 processBtn.disabled = false;
-                processBtn.innerHTML = '<i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT (' + validData.length + ' DATA)';
+                processBtn.innerHTML = `<i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT (${validData.length} DATA)`;
             } else {
                 processBtn.disabled = true;
                 processBtn.innerHTML = '<i data-lucide="upload" class="w-4 h-4"></i> TIDAK ADA DATA VALID';
@@ -1223,7 +1153,6 @@
         function closePreviewModal() {
             document.getElementById('modal-preview').classList.add('hidden');
             importPreviewData = [];
-            importFile = null;
         }
 
         async function processImport() {
@@ -1234,222 +1163,104 @@
                 return;
             }
 
-            showToast(`Memproses ${validData.length} data...`, "success");
+            showLoading(`Mengimport ${validData.length} data ke database...`);
 
-            // Prepare data for upload (remove preview-specific fields)
+            // Prepare data for upload
             const toUpload = validData.map(item => {
                 const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
-                // Pastikan NIK dalam uppercase
-                cleanData.nik = cleanData.nik.toUpperCase();
                 return cleanData;
             });
 
-            const { error } = await supabaseClient.from('karyawan_mess').upsert(toUpload, { onConflict: 'nik' });
-            
-            if(!error) { 
-                showToast(`Import ${validData.length} data berhasil! ${validData.filter(d => d.isNew).length} data baru, ${validData.filter(d => !d.isNew).length} data diperbarui`); 
+            try {
+                // Coba insert data dalam batch
+                const batchSize = 50;
+                let successCount = 0;
+                let errorCount = 0;
+                let errors = [];
+
+                for (let i = 0; i < toUpload.length; i += batchSize) {
+                    const batch = toUpload.slice(i, i + batchSize);
+                    
+                    // Update loading detail
+                    document.getElementById('loading-detail').textContent = 
+                        `Memproses batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(toUpload.length/batchSize)}...`;
+                    
+                    const { data, error } = await supabaseClient
+                        .from('karyawan_mess')
+                        .upsert(batch, { 
+                            onConflict: 'nik',
+                            ignoreDuplicates: false 
+                        });
+
+                    if (error) {
+                        console.error("Batch error:", error);
+                        errorCount += batch.length;
+                        errors.push(`Batch ${Math.floor(i/batchSize) + 1}: ${error.message}`);
+                    } else {
+                        successCount += batch.length;
+                    }
+                }
+
+                if (errorCount > 0) {
+                    showToast(`Import sebagian berhasil: ${successCount} data berhasil, ${errorCount} gagal`, "warning");
+                    console.error("Import errors:", errors);
+                } else {
+                    showToast(`Import ${successCount} data berhasil!`, "success");
+                }
+
                 closePreviewModal();
-                fetchAllData();
-            } else { 
-                showToast("Gagal mengimport data: " + error.message, "error"); 
+                await fetchAllData();
+            } catch (error) {
+                console.error("Import error:", error);
+                showToast("Gagal mengimport data: " + error.message, "error");
+            } finally {
+                hideLoading();
             }
         }
 
         async function deleteEmployee(id) {
             if(!confirm("Hapus data karyawan ini secara permanen?")) return;
-            const { error } = await supabaseClient.from('karyawan_mess').delete().eq('id', id);
-            if(!error) { showToast("Data terhapus"); fetchAllData(); }
-        }
-
-        // FITUR LAPORAN
-        function openReportModal() {
-            document.getElementById('modal-report').classList.remove('hidden');
-            generateReport();
-        }
-
-        function closeReportModal() {
-            document.getElementById('modal-report').classList.add('hidden');
-        }
-
-        function generateReport() {
-            // Analisis berdasarkan Golongan
-            const golonganStats = {};
-            const lokasiStats = {};
             
-            employees.forEach(emp => {
-                const gol = getCategory(emp);
-                golonganStats[gol] = (golonganStats[gol] || 0) + 1;
-                
-                const lokasi = emp.lokasi_hunian || 'TIDAK DIISI';
-                lokasiStats[lokasi] = (lokasiStats[lokasi] || 0) + 1;
-            });
+            showLoading("Menghapus data...");
+            try {
+                const { error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .delete()
+                    .eq('id', id);
 
-            // Update statistik angka
-            document.getElementById('stat-gol1').textContent = golonganStats['GOL 1'] || 0;
-            document.getElementById('stat-gol2').textContent = golonganStats['GOL 2'] || 0;
-            document.getElementById('stat-gol3').textContent = golonganStats['GOL 3'] || 0;
-            document.getElementById('stat-gol4up').textContent = (golonganStats['GOL 4 UP'] || 0) + (golonganStats['LAINNYA'] || 0);
+                if (error) throw error;
 
-            // Analisis Status Kamar
-            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
-            const tersedia = employees.filter(e => e.status_kamar === 'TERSEDIA').length;
-            const rusak = employees.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
-            const total = terisi + tersedia + rusak;
-
-            const persenTerisi = total > 0 ? ((terisi / total) * 100).toFixed(1) : 0;
-            const persenTersedia = total > 0 ? ((tersedia / total) * 100).toFixed(1) : 0;
-            const persenRusak = total > 0 ? ((rusak / total) * 100).toFixed(1) : 0;
-
-            document.getElementById('kap-terisi').textContent = `${persenTerisi}% (${terisi})`;
-            document.getElementById('kap-tersedia').textContent = `${persenTersedia}% (${tersedia})`;
-            document.getElementById('kap-rusak').textContent = `${persenRusak}% (${rusak})`;
-
-            // Update progress bars
-            setTimeout(() => {
-                document.getElementById('bar-terisi').style.width = `${persenTerisi}%`;
-                document.getElementById('bar-tersedia').style.width = `${persenTersedia}%`;
-                document.getElementById('bar-rusak').style.width = `${persenRusak}%`;
-            }, 100);
-
-            // Generate simple charts
-            renderSimpleChart('chart-golongan', golonganStats, 'Distribusi Golongan');
-            renderSimpleChart('chart-lokasi', lokasiStats, 'Distribusi Lokasi');
-        }
-
-        function renderSimpleChart(containerId, data, title) {
-            const container = document.getElementById(containerId);
-            const colors = ['#0ea5e9', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4'];
-            
-            let html = '<div class="space-y-2">';
-            const total = Object.values(data).reduce((a, b) => a + b, 0);
-            
-            Object.entries(data).forEach(([label, value], index) => {
-                const percentage = total > 0 ? ((value / total) * 100).toFixed(1) : 0;
-                const color = colors[index % colors.length];
-                
-                html += `
-                    <div>
-                        <div class="flex justify-between text-[10px] font-bold text-slate-400 mb-1">
-                            <span>${label}</span>
-                            <span>${value} (${percentage}%)</span>
-                        </div>
-                        <div class="w-full bg-white/5 h-2 rounded-full overflow-hidden">
-                            <div class="h-full transition-all duration-1000" style="width: ${percentage}%; background-color: ${color};"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-        }
-
-        function exportReport() {
-            const reportData = {
-                timestamp: new Date().toISOString(),
-                totalKaryawan: employees.length,
-                golonganStats: {},
-                lokasiStats: {},
-                statusStats: {}
-            };
-
-            // Collect data
-            employees.forEach(emp => {
-                const gol = getCategory(emp);
-                reportData.golonganStats[gol] = (reportData.golonganStats[gol] || 0) + 1;
-                
-                const lokasi = emp.lokasi_hunian || 'TIDAK DIISI';
-                reportData.lokasiStats[lokasi] = (reportData.lokasiStats[lokasi] || 0) + 1;
-                
-                const status = emp.status_kamar || 'TERISI';
-                reportData.statusStats[status] = (reportData.statusStats[status] || 0) + 1;
-            });
-
-            // Create worksheet
-            const ws1 = XLSX.utils.json_to_sheet([
-                { METRIC: 'Total Karyawan', VALUE: employees.length },
-                { METRIC: 'Kamar Terisi', VALUE: reportData.statusStats['TERISI'] || 0 },
-                { METRIC: 'Kamar Tersedia', VALUE: reportData.statusStats['TERSEDIA'] || 0 },
-                { METRIC: 'Kamar Rusak/Perbaikan', VALUE: (reportData.statusStats['RUSAK'] || 0) + (reportData.statusStats['DIPERBAIKI'] || 0) }
-            ]);
-
-            const ws2 = XLSX.utils.json_to_sheet(
-                Object.entries(reportData.golonganStats).map(([gol, count]) => ({ GOLONGAN: gol, JUMLAH: count }))
-            );
-
-            const ws3 = XLSX.utils.json_to_sheet(
-                Object.entries(reportData.lokasiStats).map(([lokasi, count]) => ({ LOKASI: lokasi, JUMLAH: count }))
-            );
-
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws1, "Ringkasan");
-            XLSX.utils.book_append_sheet(wb, ws2, "Golongan");
-            XLSX.utils.book_append_sheet(wb, ws3, "Lokasi");
-
-            XLSX.writeFile(wb, `Laporan_Analisis_Mess_${new Date().toISOString().split('T')[0]}.xlsx`);
-            showToast("Laporan berhasil diexport");
-        }
-
-        // FILTER DASHBOARD
-        function applyDashboardFilter() {
-            const lokasi = document.getElementById('filterDashboardLokasi').value;
-            const block = document.getElementById('filterDashboardBlock').value;
-            const kamar = document.getElementById('filterDashboardKamar').value;
-            const status = document.getElementById('filterDashboardStatus').value;
-
-            // Filter data
-            const filtered = employees.filter(e => {
-                const matchesLok = !lokasi || e.lokasi_hunian === lokasi;
-                const matchesBlock = !block || e.block === block;
-                const matchesKamar = !kamar || (e.no_kamar && e.no_kamar.includes(kamar));
-                const matchesStatus = !status || e.status_kamar === status;
-                return matchesLok && matchesBlock && matchesKamar && matchesStatus;
-            });
-
-            // Update dashboard stats with filtered data
-            document.getElementById('stat-total').innerText = filtered.length.toLocaleString();
-            const terisi = filtered.filter(e => e.status_kamar === 'TERISI').length;
-            const tersedia = filtered.filter(e => e.status_kamar === 'TERSEDIA').length;
-            const rusak = filtered.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
-            document.getElementById('stat-terisi').innerText = terisi.toLocaleString();
-            document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
-            document.getElementById('stat-mess').innerText = [...new Set(filtered.map(e => e.lokasi_hunian))].filter(Boolean).length;
-
-            showToast(`Filter diterapkan: ${filtered.length} data ditemukan`);
-        }
-
-        function resetDashboardFilter() {
-            document.getElementById('filterDashboardLokasi').value = '';
-            document.getElementById('filterDashboardBlock').value = '';
-            document.getElementById('filterDashboardKamar').value = '';
-            document.getElementById('filterDashboardStatus').value = '';
-            updateUI();
-            showToast("Filter direset");
+                showToast("Data terhapus", "success");
+                await fetchAllData();
+            } catch (error) {
+                showToast("Gagal menghapus data: " + error.message, "error");
+            } finally {
+                hideLoading();
+            }
         }
 
         function showToast(msg, type = 'success') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
-            toast.className = `glass-panel border-l-4 ${type === 'success' ? 'border-emerald-500' : 'border-rose-500'} text-white px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5`;
-            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check' : 'alert-circle'}" class="w-4 h-4"></i> ${msg}`;
+            toast.className = `glass-panel border-l-4 ${type === 'success' ? 'border-emerald-500' : type === 'warning' ? 'border-amber-500' : 'border-rose-500'} text-white px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check' : type === 'warning' ? 'alert-triangle' : 'alert-circle'}" class="w-4 h-4"></i> ${msg}`;
             container.appendChild(toast);
             lucide.createIcons();
             setTimeout(() => toast.remove(), 3000);
         }
 
         function downloadTemplate() {
-            const h = [["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"]];
-            
-            // Add sample data dengan format NIK yang benar (dimulai huruf)
-            h.push(["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"]);
-            h.push(["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"]);
-            h.push(["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]);
+            const h = [
+                ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
+                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"],
+                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"],
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]
+            ];
             
             const ws = XLSX.utils.aoa_to_sheet(h);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Template");
             
-            // Add instruction sheet dengan petunjuk format NIK
             const instructions = [
                 ["PETUNJUK PENGISIAN TEMPLATE"],
                 [""],
@@ -1477,10 +1288,23 @@
         }
 
         function exportData() {
-            const ws = XLSX.utils.json_to_sheet(employees);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Database");
-            XLSX.writeFile(wb, `Database_Mess_Full_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+            if (employees.length === 0) {
+                showToast("Tidak ada data untuk diexport", "warning");
+                return;
+            }
+
+            showLoading("Mempersiapkan file export...");
+            try {
+                const ws = XLSX.utils.json_to_sheet(employees);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Database");
+                XLSX.writeFile(wb, `Database_Mess_Full_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+                showToast(`Export ${employees.length} data berhasil`, "success");
+            } catch (error) {
+                showToast("Gagal mengexport data: " + error.message, "error");
+            } finally {
+                hideLoading();
+            }
         }
 
         // Event Listeners
@@ -1491,6 +1315,7 @@
             document.getElementById('nik-hint').classList.remove('hidden');
         });
         
+        // Initialize app
         window.onload = () => { 
             lucide.createIcons(); 
             fetchAllData(); 
