@@ -15,6 +15,7 @@
             --ocean-dark: #071927;
             --ocean-surface: #0b253a;
             --ocean-accent: #0ea5e9;
+            --ocean-gradient: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
         }
 
         body { 
@@ -23,6 +24,7 @@
             color: #e2e8f0;
             margin: 0;
             overflow: hidden;
+            scroll-behavior: smooth;
         }
 
         .glass-panel {
@@ -31,8 +33,14 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
+        .glass-card {
+            background: rgba(11, 37, 58, 0.4);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
         .custom-scrollbar::-webkit-scrollbar { width: 8px; height: 8px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(14, 165, 233, 0.3); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(14, 165, 233, 0.5); }
 
@@ -47,9 +55,13 @@
         #sidebar.collapsed .nav-link { justify-content: center; padding-left: 0; padding-right: 0; }
 
         .nav-link.active {
-            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            background: var(--ocean-gradient);
             color: white;
             box-shadow: 0 10px 20px -5px rgba(14, 165, 233, 0.4);
+        }
+
+        .nav-link.active i {
+            color: white;
         }
 
         .database-table {
@@ -83,6 +95,7 @@
             left: 0;
             z-index: 5;
             background: #071927;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.2);
         }
         
         .sticky-col-right {
@@ -138,6 +151,133 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
+
+        .input-field {
+            background: rgba(7, 25, 39, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
+        }
+
+        .btn-primary {
+            background: var(--ocean-gradient);
+            color: white;
+            font-weight: 800;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(14, 165, 233, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            letter-spacing: 0.05em;
+        }
+
+        .animate-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .table-row-hover:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+        }
+
+        .validation-success {
+            border-color: #10b981 !important;
+            background-color: rgba(16, 185, 129, 0.05) !important;
+        }
+
+        .validation-error {
+            border-color: #ef4444 !important;
+            background-color: rgba(239, 68, 68, 0.05) !important;
+        }
+
+        .drag-drop-area {
+            border: 2px dashed rgba(14, 165, 233, 0.3);
+            border-radius: 16px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s;
+            background: rgba(14, 165, 233, 0.05);
+        }
+
+        .drag-drop-area.dragover {
+            border-color: #0ea5e9;
+            background: rgba(14, 165, 233, 0.1);
+            transform: scale(1.02);
+        }
+
+        .import-progress-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .import-progress-fill {
+            height: 100%;
+            background: var(--ocean-gradient);
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
     </style>
 </head>
 <body class="flex h-screen">
@@ -154,7 +294,7 @@
     </div>
 
     <!-- Hidden Input for Import -->
-    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls" onchange="handleFileSelect(event)">
+    <input type="file" id="importFile" class="hidden" accept=".xlsx, .xls, .csv" onchange="handleFileSelect(event)">
 
     <!-- MODAL PREVIEW IMPORT -->
     <div id="modal-preview" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -180,7 +320,7 @@
                     <div class="flex items-center gap-4 mb-4">
                         <h4 class="text-sm font-black text-white">Data yang akan diimport</h4>
                         <div class="flex-1"></div>
-                        <button onclick="processImport()" id="btn-process-import" class="px-6 py-2 bg-emerald-500 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-emerald-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                        <button onclick="processImport()" id="btn-process-import" class="btn-primary flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none">
                             <i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT
                         </button>
                     </div>
@@ -222,6 +362,7 @@
                     <div class="text-[10px] text-slate-300 space-y-1">
                         <div>• Karakter pertama harus huruf (A-Z)</div>
                         <div>• Dapat diikuti kombinasi huruf dan angka</div>
+                        <div>• Panjang minimal 2 karakter, maksimal 20 karakter</div>
                         <div>• Contoh valid: A12345, AB1234, EMP001, KRY1001</div>
                         <div>• Contoh tidak valid: 12345, 1A2345 (dimulai dengan angka)</div>
                     </div>
@@ -247,37 +388,45 @@
             <form id="employeeForm" class="flex-1 overflow-y-auto p-8 custom-scrollbar grid grid-cols-1 md:grid-cols-2 gap-6" onsubmit="saveData(event)">
                 <input type="hidden" name="id" id="edit-id">
                 
-                <div class="space-y-4">
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">NIK *</span>
-                        <input name="nik" id="field-nik" required 
-                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1"
-                               pattern="^[A-Za-z][A-Za-z0-9]*$" 
-                               title="NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka"
-                               onblur="validateNIK(this)">
+                <!-- Kolom Kiri: Data Pribadi -->
+                <div class="space-y-6">
+                    <h4 class="text-sm font-bold text-sky-400 border-b border-white/10 pb-2 mb-2">DATA PRIBADI</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label required-field">NIK</label>
+                        <input type="text" name="nik" id="field-nik" required 
+                               class="input-field w-full"
+                               pattern="^[A-Za-z][A-Za-z0-9]{1,19}$" 
+                               title="NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)"
+                               onblur="validateNIK(this)"
+                               oninput="formatNIK(this)">
                         <div id="nik-hint" class="text-[10px] text-slate-500 mt-1 hidden">
                             <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Contoh: A12345, EMP001, KRY1001
                         </div>
-                    </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Nama Lengkap *</span>
-                        <input name="nama" id="field-nama" required 
-                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                    </label>
+                        <div id="nik-error" class="text-[10px] text-rose-500 mt-1 hidden"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label required-field">Nama Lengkap</label>
+                        <input type="text" name="nama" id="field-nama" required 
+                               class="input-field w-full">
+                    </div>
+                    
                     <div class="grid grid-cols-2 gap-4">
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Gender *</span>
+                        <div class="form-group">
+                            <label class="form-label required-field">Gender</label>
                             <select name="gender" id="field-gender" required 
-                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                    class="input-field w-full">
                                 <option value="">Pilih Gender</option>
                                 <option value="LAKI-LAKI">LAKI-LAKI</option>
                                 <option value="PEREMPUAN">PEREMPUAN</option>
                             </select>
-                        </label>
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Golongan</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Golongan</label>
                             <select name="gol" id="field-gol" 
-                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                    class="input-field w-full">
                                 <option value="">Pilih Golongan</option>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -288,36 +437,42 @@
                                 <option value="M">M</option>
                                 <option value="VENDOR">VENDOR</option>
                             </select>
-                        </label>
+                        </div>
                     </div>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Jabatan</span>
-                        <input name="jabatan" id="field-jabatan" 
-                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                    </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Department</span>
-                        <input name="department" id="field-department" 
-                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                    </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Perusahaan</span>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Jabatan</label>
+                        <input type="text" name="jabatan" id="field-jabatan" 
+                               class="input-field w-full">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" name="department" id="field-department" 
+                               class="input-field w-full">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Perusahaan</label>
                         <select name="perusahaan" id="field-perusahaan" 
-                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                class="input-field w-full">
                             <option value="">Pilih Perusahaan</option>
                             <option value="PT. HJF">PT. HJF</option>
                             <option value="PT. INKA">PT. INKA</option>
                             <option value="PT. KAI">PT. KAI</option>
                             <option value="VENDOR">VENDOR LAINNYA</option>
                         </select>
-                    </label>
+                    </div>
                 </div>
 
-                <div class="space-y-4">
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Lokasi Hunian *</span>
+                <!-- Kolom Kanan: Data Hunian -->
+                <div class="space-y-6">
+                    <h4 class="text-sm font-bold text-emerald-400 border-b border-white/10 pb-2 mb-2">DATA HUNIAN</h4>
+                    
+                    <div class="form-group">
+                        <label class="form-label required-field">Lokasi Hunian</label>
                         <select name="lokasi_hunian" id="field-lokasi_hunian" required 
-                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                class="input-field w-full">
                             <option value="">Pilih Lokasi</option>
                             <option value="MESS A">MESS A</option>
                             <option value="MESS B">MESS B</option>
@@ -325,23 +480,25 @@
                             <option value="MESS D">MESS D</option>
                             <option value="MESS EXECUTIVE">MESS EXECUTIVE</option>
                         </select>
-                    </label>
+                    </div>
+                    
                     <div class="grid grid-cols-3 gap-3">
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Floor</span>
+                        <div class="form-group">
+                            <label class="form-label">Floor</label>
                             <select name="floor" id="field-floor" 
-                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                    class="input-field w-full">
                                 <option value="">Pilih Floor</option>
                                 <option value="LT 1">LT 1</option>
                                 <option value="LT 2">LT 2</option>
                                 <option value="LT 3">LT 3</option>
                                 <option value="LT 4">LT 4</option>
                             </select>
-                        </label>
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Block</span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Block</label>
                             <select name="block" id="field-block" 
-                                    class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                    class="input-field w-full">
                                 <option value="">Pilih Block</option>
                                 <option value="A">A</option>
                                 <option value="B">B</option>
@@ -349,17 +506,21 @@
                                 <option value="D">D</option>
                                 <option value="E">E</option>
                             </select>
-                        </label>
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">No Kamar *</span>
-                            <input name="no_kamar" id="field-no_kamar" required 
-                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                        </label>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label required-field">No Kamar</label>
+                            <input type="text" name="no_kamar" id="field-no_kamar" required 
+                                   class="input-field w-full"
+                                   oninput="validateRoomNumber(this)">
+                            <div id="room-error" class="text-[10px] text-rose-500 mt-1 hidden"></div>
+                        </div>
                     </div>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Fasilitas</span>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Fasilitas</label>
                         <select name="fasilitas" id="field-fasilitas" 
-                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                class="input-field w-full">
                             <option value="">Pilih Fasilitas</option>
                             <option value="STANDARD">STANDARD</option>
                             <option value="VIP">VIP</option>
@@ -367,41 +528,112 @@
                             <option value="AC + TV">AC + TV</option>
                             <option value="AC ONLY">AC ONLY</option>
                         </select>
-                    </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Point of Hire</span>
-                        <input name="point_of_hire" id="field-point_of_hire" 
-                               class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                    </label>
-                    <label class="block">
-                        <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Status Kamar</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Point of Hire</label>
+                        <input type="text" name="point_of_hire" id="field-point_of_hire" 
+                               class="input-field w-full">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Status Kamar</label>
                         <select name="status_kamar" id="field-status_kamar" 
-                                class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
+                                class="input-field w-full">
                             <option value="TERISI">TERISI</option>
                             <option value="TERSEDIA">TERSEDIA</option>
                             <option value="RUSAK">RUSAK</option>
                             <option value="DIPERBAIKI">DIPERBAIKI</option>
                         </select>
-                    </label>
+                    </div>
+                    
                     <div class="grid grid-cols-2 gap-4">
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Kerja</span>
+                        <div class="form-group">
+                            <label class="form-label">Tgl Masuk Kerja</label>
                             <input type="date" name="tanggal_masuk_kerja" id="field-tanggal_masuk_kerja" 
-                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                        </label>
-                        <label class="block">
-                            <span class="text-[10px] font-black text-slate-500 uppercase ml-1">Tgl Masuk Mess</span>
+                                   class="input-field w-full"
+                                   max="<?php echo date('Y-m-d'); ?>">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Tgl Masuk Mess</label>
                             <input type="date" name="tanggal_masuk_mess_hunian_p2" id="field-tanggal_masuk_mess_hunian_p2" 
-                                   class="w-full bg-[#071927] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:ring-2 focus:ring-sky-500 outline-none mt-1">
-                        </label>
+                                   class="input-field w-full"
+                                   max="<?php echo date('Y-m-d'); ?>">
+                        </div>
                     </div>
                 </div>
 
+                <!-- Tombol Aksi -->
                 <div class="md:col-span-2 pt-6 border-t border-white/5 flex gap-4">
-                    <button type="submit" class="flex-1 bg-sky-500 hover:bg-sky-600 text-white font-black py-4 rounded-2xl transition-all shadow-lg shadow-sky-900/40 uppercase tracking-widest text-xs">Simpan Data</button>
-                    <button type="button" onclick="closeModal()" class="px-8 bg-white/5 text-slate-400 font-bold rounded-2xl hover:bg-white/10 transition-all uppercase tracking-widest text-[10px]">Batal</button>
+                    <button type="submit" class="btn-primary flex-1">
+                        <i data-lucide="save" class="w-4 h-4 inline mr-2"></i> SIMPAN DATA
+                    </button>
+                    <button type="button" onclick="closeModal()" class="btn-secondary">
+                        BATAL
+                    </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- MODAL IMPORT DRAG & DROP -->
+    <div id="modal-import" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeImportModal()"></div>
+        <div class="glass-panel w-full max-w-4xl max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
+            <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
+                <div>
+                    <h3 class="text-xl font-black text-white">Import Data Excel</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Unggah file Excel untuk sinkronisasi massal</p>
+                </div>
+                <button onclick="closeImportModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <i data-lucide="x" class="text-slate-400"></i>
+                </button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
+                <div id="drag-drop-area" class="drag-drop-area cursor-pointer" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" onclick="document.getElementById('importFile').click()">
+                    <i data-lucide="upload-cloud" class="w-16 h-16 text-sky-400 mb-4"></i>
+                    <h4 class="text-lg font-bold text-white mb-2">Drag & Drop File Excel</h4>
+                    <p class="text-slate-400 text-sm mb-4">Unggah file Excel (.xlsx, .xls, .csv) dengan format template yang sesuai</p>
+                    <button class="btn-secondary inline-flex items-center gap-2">
+                        <i data-lucide="file-spreadsheet" class="w-4 h-4"></i> PILIH FILE
+                    </button>
+                    <p class="text-[10px] text-slate-500 mt-4">Maksimal ukuran file: 10MB</p>
+                </div>
+                
+                <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h5 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Template Format
+                        </h5>
+                        <ul class="text-[10px] text-slate-300 space-y-2">
+                            <li>• Kolom wajib: NIK, NAMA, NO KAMAR</li>
+                            <li>• Format NIK: Huruf pertama harus A-Z</li>
+                            <li>• Format tanggal: YYYY-MM-DD</li>
+                            <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="glass-card p-6 rounded-2xl">
+                        <h5 class="text-sm font-bold text-white mb-3 flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4 text-amber-400"></i> Catatan Penting
+                        </h5>
+                        <ul class="text-[10px] text-slate-300 space-y-2">
+                            <li>• Data duplikat berdasarkan NIK akan diupdate</li>
+                            <li>• Data akan divalidasi sebelum diimport</li>
+                            <li>• Backup disarankan sebelum import massal</li>
+                            <li>• Proses import dapat dibatalkan kapan saja</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8">
+                    <button onclick="downloadTemplate()" class="btn-secondary w-full flex items-center justify-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i> UNDUH TEMPLATE EXCEL
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -412,7 +644,7 @@
         </button>
 
         <div class="p-6 mb-4 flex items-center gap-4">
-            <div class="bg-sky-500 min-w-[48px] h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-900/40">
+            <div class="bg-gradient-to-br from-sky-500 to-blue-600 min-w-[48px] h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-sky-900/40">
                 <i data-lucide="waves" class="text-white w-7 h-7"></i>
             </div>
             <div class="sidebar-header-text overflow-hidden">
@@ -432,6 +664,10 @@
                     <i data-lucide="database" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Database Karyawan</span>
                 </button>
+                <button onclick="openImportModal()" id="nav-import" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i data-lucide="upload" class="w-5 h-5"></i>
+                    <span class="nav-text font-bold text-sm">Import Excel</span>
+                </button>
             </div>
 
             <div class="mb-6">
@@ -440,22 +676,27 @@
                     <button onclick="switchCategory('GOL 1')" id="nav-gol1" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 1</span>
+                        <span id="count-gol1" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                     <button onclick="switchCategory('GOL 2')" id="nav-gol2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 2</span>
+                        <span id="count-gol2" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                     <button onclick="switchCategory('GOL 3')" id="nav-gol3" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 3</span>
+                        <span id="count-gol3" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                     <button onclick="switchCategory('GOL 4 UP')" id="nav-gol4" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="shield-check" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 4 UP</span>
+                        <span id="count-gol4" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                     <button onclick="switchCategory('VENDOR')" id="nav-vendor" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="briefcase" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Vendor & Kontrak</span>
+                        <span id="count-vendor" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
             </div>
@@ -485,10 +726,13 @@
                 <div class="relative hidden sm:block">
                     <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
                     <input type="text" id="globalSearch" placeholder="Cari NIK, Nama, atau No Kamar..." 
-                        class="bg-[#0b253a] border border-white/5 rounded-xl pl-12 pr-6 py-2.5 text-sm w-72 focus:ring-2 focus:ring-sky-500 outline-none transition-all placeholder:text-slate-600 text-white">
+                        class="input-field pl-12 w-72 placeholder:text-slate-600">
                 </div>
-                <button onclick="exportData()" class="px-4 py-2.5 bg-[#0b253a] border border-white/10 text-white rounded-xl text-xs font-bold flex items-center gap-2 hover:bg-white/5 transition-all">
+                <button onclick="exportData()" class="btn-secondary flex items-center gap-2">
                     <i data-lucide="download" class="w-4 h-4"></i> EXPORT
+                </button>
+                <button onclick="openModal()" class="btn-primary flex items-center gap-2">
+                    <i data-lucide="plus" class="w-4 h-4"></i> TAMBAH DATA
                 </button>
             </div>
         </header>
@@ -497,31 +741,49 @@
             
             <!-- TAB DASHBOARD -->
             <div id="tab-dashboard" class="absolute inset-0 p-8 overflow-y-auto custom-scrollbar animate-in fade-in duration-500">
+                <!-- Statistik Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-sky-500">
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-sky-500 stat-card">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Penghuni</p>
                         <h3 id="stat-total" class="text-3xl font-black mt-2 text-white">0</h3>
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="users" class="w-4 h-4 text-sky-400 mr-2"></i>
+                            <span class="text-[10px] text-slate-500">Semua golongan</span>
+                        </div>
                     </div>
-                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-emerald-500">
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-emerald-500 stat-card">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Kamar Terisi</p>
                         <h3 id="stat-terisi" class="text-3xl font-black mt-2 text-emerald-400">0</h3>
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="home" class="w-4 h-4 text-emerald-400 mr-2"></i>
+                            <span class="text-[10px] text-slate-500">Penghuni aktif</span>
+                        </div>
                     </div>
-                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-amber-500">
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-amber-500 stat-card">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Kamar Tersedia</p>
                         <h3 id="stat-avail" class="text-3xl font-black mt-2 text-amber-400">0</h3>
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="door-open" class="w-4 h-4 text-amber-400 mr-2"></i>
+                            <span class="text-[10px] text-slate-500">Kamar kosong</span>
+                        </div>
                     </div>
-                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-purple-500">
+                    <div class="glass-panel p-6 rounded-3xl border-l-4 border-purple-500 stat-card">
                         <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Mess</p>
                         <h3 id="stat-mess" class="text-3xl font-black mt-2 text-white">0</h3>
+                        <div class="flex items-center mt-3">
+                            <i data-lucide="building" class="w-4 h-4 text-purple-400 mr-2"></i>
+                            <span class="text-[10px] text-slate-500">Lokasi hunian</span>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Aksi Cepat -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
                     <div class="bg-gradient-to-br from-sky-600 to-sky-900 p-8 rounded-[32px] relative overflow-hidden group">
                         <div class="relative z-10">
                             <h3 class="text-2xl font-black text-white mb-2">Sinkronisasi Data Excel</h3>
-                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Perbarui database karyawan massal menggunakan template Excel yang disediakan.</p>
-                            <button onclick="triggerImport()" class="bg-white text-sky-900 px-8 py-3 rounded-xl font-black text-xs hover:scale-105 transition-transform flex items-center gap-2">
+                            <p class="text-sky-100/70 text-xs mb-6 max-w-md">Perbarui database karyawan massal menggunakan template Excel yang disediakan. Sistem akan memvalidasi data sebelum diimport.</p>
+                            <button onclick="openImportModal()" class="bg-white text-sky-900 px-8 py-3 rounded-xl font-black text-xs hover:scale-105 transition-transform flex items-center gap-2">
                                 <i data-lucide="upload" class="w-4 h-4"></i> UNGGAH EXCEL BARU
                             </button>
                         </div>
@@ -531,12 +793,53 @@
                         <h3 class="text-xl font-black text-white mb-2">Informasi Kapasitas</h3>
                         <p class="text-slate-400 text-xs mb-4">Ringkasan hunian Mess P2.</p>
                         <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden">
-                            <div id="capacity-bar" class="bg-sky-500 h-full w-[0%] transition-all duration-1000"></div>
+                            <div id="capacity-bar" class="bg-gradient-to-r from-sky-500 to-blue-500 h-full w-[0%] transition-all duration-1000"></div>
                         </div>
                         <div class="flex justify-between mt-3 text-[10px] font-bold text-slate-500">
                             <span>0 PENGHUNI</span>
                             <span id="capacity-text">0% TERPAKAI</span>
                             <span>20.000 KAPASITAS</span>
+                        </div>
+                        <div class="mt-6 flex items-center gap-4">
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-emerald-500/20 rounded-full border border-emerald-500"></div>
+                                <span class="text-[10px] text-slate-400">Terisi</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-amber-500/20 rounded-full border border-amber-500"></div>
+                                <span class="text-[10px] text-slate-400">Tersedia</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <div class="w-3 h-3 bg-rose-500/20 rounded-full border border-rose-500"></div>
+                                <span class="text-[10px] text-slate-400">Rusak</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistik Golongan -->
+                <div class="glass-panel p-8 rounded-[32px] mb-8">
+                    <h3 class="text-xl font-black text-white mb-6">Distribusi Golongan</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+                        <div class="text-center p-4 bg-white/5 rounded-2xl">
+                            <div class="text-2xl font-black text-sky-400" id="gol1-count">0</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 1</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/5 rounded-2xl">
+                            <div class="text-2xl font-black text-emerald-400" id="gol2-count">0</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 2</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/5 rounded-2xl">
+                            <div class="text-2xl font-black text-amber-400" id="gol3-count">0</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 3</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/5 rounded-2xl">
+                            <div class="text-2xl font-black text-purple-400" id="gol4-count">0</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 4+</div>
+                        </div>
+                        <div class="text-center p-4 bg-white/5 rounded-2xl">
+                            <div class="text-2xl font-black text-rose-400" id="vendor-count">0</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Vendor</div>
                         </div>
                     </div>
                 </div>
@@ -547,39 +850,42 @@
                 <!-- Sub-Header Bar -->
                 <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-4">
-                        <span id="data-count-badge" class="bg-sky-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
+                        <span id="data-count-badge" class="bg-gradient-to-r from-sky-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
                         <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
                     </div>
                     <div class="flex gap-2">
-                        <button onclick="openModal()" class="px-4 py-2 bg-emerald-500 text-white rounded-lg text-[11px] font-black flex items-center gap-2 hover:bg-emerald-600 transition-all">
+                        <button onclick="openModal()" class="btn-primary flex items-center gap-2">
                             <i data-lucide="plus" class="w-3.5 h-3.5"></i> TAMBAH MANUAL
+                        </button>
+                        <button onclick="openImportModal()" class="btn-secondary flex items-center gap-2">
+                            <i data-lucide="upload" class="w-3.5 h-3.5"></i> IMPORT EXCEL
                         </button>
                     </div>
                 </div>
 
                 <!-- FILTER BAR UNTUK DATABASE -->
                 <div class="px-8 py-3 bg-[#0b253a]/20 border-b border-white/5 flex items-center gap-4 shrink-0">
-                    <div class="flex-1 grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Lokasi Hunian</label>
-                            <select id="filterLokasi" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                            <label class="form-label">Lokasi Hunian</label>
+                            <select id="filterLokasi" onchange="renderTable()" class="input-field text-[11px] py-1.5">
                                 <option value="">Semua Lokasi</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Block</label>
-                            <select id="filterBlock" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                            <label class="form-label">Block</label>
+                            <select id="filterBlock" onchange="renderTable()" class="input-field text-[11px] py-1.5">
                                 <option value="">Semua Block</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">No Kamar</label>
+                            <label class="form-label">No Kamar</label>
                             <input type="text" id="filterKamar" oninput="renderTable()" placeholder="Cari no kamar..." 
-                                   class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                                   class="input-field text-[11px] py-1.5">
                         </div>
                         <div>
-                            <label class="block text-[10px] font-black text-slate-500 uppercase mb-1">Status Kamar</label>
-                            <select id="filterStatusKamar" onchange="renderTable()" class="w-full bg-[#071927] border border-white/10 rounded-lg px-3 py-1.5 text-[11px] text-slate-300 outline-none">
+                            <label class="form-label">Status Kamar</label>
+                            <select id="filterStatusKamar" onchange="renderTable()" class="input-field text-[11px] py-1.5">
                                 <option value="">Semua Status</option>
                                 <option value="TERISI">TERISI</option>
                                 <option value="TERSEDIA">TERSEDIA</option>
@@ -587,9 +893,15 @@
                                 <option value="DIPERBAIKI">DIPERBAIKI</option>
                             </select>
                         </div>
+                        <div>
+                            <label class="form-label">Perusahaan</label>
+                            <select id="filterPerusahaan" onchange="renderTable()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua Perusahaan</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
-                        <button onclick="resetTableFilters()" class="px-4 py-1.5 bg-white/5 text-slate-400 rounded-lg text-[10px] font-bold hover:bg-white/10 transition-all">
+                        <button onclick="resetTableFilters()" class="btn-secondary text-[10px]">
                             Reset
                         </button>
                     </div>
@@ -628,66 +940,97 @@
     </main>
 
     <script>
+        // Data dan State Management
         let employees = [];
         let activeTab = 'dashboard';
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
 
+        // Konfigurasi Supabase
         const SUPABASE_URL = 'https://ahzfpguvgdjytshlgjfv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFoemZwZ3V2Z2RqeXRzaGxnamZ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY2OTYwOTYsImV4cCI6MjA4MjI3MjA5Nn0.sMgxg6MaWTii-i6Pf84JzM-p2ut__yHG0v0bhurnt74';
         const { createClient } = supabase;
         const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Fungsi untuk menampilkan loading
+        // Fungsi Utilitas
         function showLoading(message = "Memproses data...") {
             document.getElementById('loading-overlay').classList.remove('hidden');
             document.getElementById('loading-detail').textContent = message;
         }
 
-        // Fungsi untuk menyembunyikan loading
         function hideLoading() {
             document.getElementById('loading-overlay').classList.add('hidden');
         }
 
-        // Fungsi validasi NIK
+        // Fungsi Validasi
         function isValidNIK(nik) {
             if (!nik || typeof nik !== 'string') return false;
             
             const cleanNIK = nik.toString().trim().toUpperCase();
-            const nikPattern = /^[A-Z][A-Z0-9]*$/;
-            
-            if (cleanNIK.length < 2) return false;
+            const nikPattern = /^[A-Z][A-Z0-9]{1,19}$/;
             
             return nikPattern.test(cleanNIK);
         }
 
-        // Fungsi untuk menampilkan hint NIK
+        function formatNIK(input) {
+            input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        }
+
         function validateNIK(input) {
             const hint = document.getElementById('nik-hint');
-            if (input.value.trim() === '') {
+            const error = document.getElementById('nik-error');
+            const value = input.value.trim();
+            
+            if (value === '') {
                 hint.classList.add('hidden');
-                return;
+                error.classList.add('hidden');
+                input.classList.remove('validation-success', 'validation-error');
+                return false;
             }
             
             hint.classList.remove('hidden');
             
-            if (!isValidNIK(input.value)) {
-                input.classList.add('border-rose-500');
-                input.classList.remove('border-white/10');
-                hint.innerHTML = '<i data-lucide="alert-circle" class="w-3 h-3 inline mr-1 text-rose-500"></i> Format NIK tidak valid. Harus dimulai dengan huruf';
-                hint.classList.add('text-rose-500');
-                hint.classList.remove('text-slate-500');
+            if (!isValidNIK(value)) {
+                input.classList.remove('validation-success');
+                input.classList.add('validation-error');
+                error.textContent = 'NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)';
+                error.classList.remove('hidden');
+                return false;
             } else {
-                input.classList.remove('border-rose-500');
-                input.classList.add('border-white/10');
-                hint.innerHTML = '<i data-lucide="check-circle" class="w-3 h-3 inline mr-1 text-emerald-500"></i> Format NIK valid';
-                hint.classList.add('text-emerald-500');
-                hint.classList.remove('text-slate-500');
+                input.classList.remove('validation-error');
+                input.classList.add('validation-success');
+                error.classList.add('hidden');
+                return true;
             }
-            lucide.createIcons();
         }
 
+        function validateRoomNumber(input) {
+            const error = document.getElementById('room-error');
+            const value = input.value.trim();
+            
+            if (value === '') {
+                error.classList.add('hidden');
+                input.classList.remove('validation-error');
+                return true;
+            }
+            
+            // Validasi format nomor kamar (contoh: 101, A-12, B2-3)
+            const roomPattern = /^[A-Z]?[0-9A-Z\-]+$/i;
+            
+            if (!roomPattern.test(value)) {
+                input.classList.add('validation-error');
+                error.textContent = 'Format nomor kamar tidak valid';
+                error.classList.remove('hidden');
+                return false;
+            } else {
+                input.classList.remove('validation-error');
+                error.classList.add('hidden');
+                return true;
+            }
+        }
+
+        // Fungsi Data Management
         async function fetchAllData() {
             showLoading("Memuat data dari database...");
             try {
@@ -712,6 +1055,7 @@
                 hideLoading();
                 updateUI();
                 populateFilterOptions();
+                updateCategoryCounts();
             }
         }
 
@@ -724,39 +1068,56 @@
             lucide.createIcons();
         }
 
+        // Fungsi Modal Management
         function openModal(editData = null) {
             const form = document.getElementById('employeeForm');
             const title = document.getElementById('modal-title');
             form.reset();
             document.getElementById('edit-id').value = "";
             document.getElementById('nik-hint').classList.add('hidden');
+            document.getElementById('nik-error').classList.add('hidden');
+            document.getElementById('room-error').classList.add('hidden');
 
             if(editData) {
                 title.innerText = "Edit Data Karyawan";
                 document.getElementById('edit-id').value = editData.id;
-                // Isi field
+                
+                // Isi field dengan data yang ada
                 Object.keys(editData).forEach(key => {
                     const field = document.getElementById(`field-${key}`);
                     if(field) {
                         field.value = editData[key] || "";
                         if (key === 'nik') validateNIK(field);
+                        if (key === 'no_kamar') validateRoomNumber(field);
                     }
                 });
             } else {
-                title.innerText = "Tambah Karyawan Manual";
+                title.innerText = "Tambah Karyawan Baru";
+                // Set tanggal default ke hari ini
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('field-tanggal_masuk_kerja').value = today;
+                document.getElementById('field-tanggal_masuk_mess_hunian_p2').value = today;
             }
+            
             document.getElementById('modal-form').classList.remove('hidden');
         }
 
         function closeModal() { 
             document.getElementById('modal-form').classList.add('hidden');
             document.getElementById('nik-hint').classList.add('hidden');
-        }
-        
-        function triggerImport() { 
-            document.getElementById('importFile').click(); 
+            document.getElementById('nik-error').classList.add('hidden');
+            document.getElementById('room-error').classList.add('hidden');
         }
 
+        function openImportModal() {
+            document.getElementById('modal-import').classList.remove('hidden');
+        }
+
+        function closeImportModal() {
+            document.getElementById('modal-import').classList.add('hidden');
+        }
+
+        // Fungsi Navigation
         function switchTab(tab) {
             activeTab = tab;
             currentFilter = (tab === 'all-employees') ? 'ALL' : currentFilter;
@@ -765,6 +1126,7 @@
             document.getElementById('tab-data').classList.toggle('hidden', isDash);
             document.getElementById('page-title').innerText = isDash ? "Dashboard" : "Database";
             document.getElementById('page-icon').innerHTML = isDash ? '<i data-lucide="layout-grid"></i>' : '<i data-lucide="database"></i>';
+            document.getElementById('page-subtitle').innerText = isDash ? "Sistem Manajemen Mess Terintegrasi" : "Database Karyawan Mess P2";
             updateNavStyles();
             if(!isDash) renderTable();
             lucide.createIcons();
@@ -777,6 +1139,7 @@
             document.getElementById('tab-data').classList.remove('hidden');
             document.getElementById('page-title').innerText = "Manajemen Hunian";
             document.getElementById('current-view-name').innerText = `DATABASE ${cat}`;
+            document.getElementById('page-subtitle').innerText = `Filter: ${cat}`;
             updateNavStyles();
             renderTable();
             lucide.createIcons();
@@ -790,16 +1153,17 @@
             if(catMap[currentFilter] && activeTab === 'category') document.getElementById(catMap[currentFilter]).classList.add('active');
         }
 
+        // Fungsi Filter dan Tabel
         function populateFilterOptions() {
             // Populate Lokasi options
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
-            const html = '<option value="">Semua Lokasi</option>' + 
+            const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             
             const lokasiFilters = ['filterLokasi'];
             lokasiFilters.forEach(id => {
                 const element = document.getElementById(id);
-                if (element) element.innerHTML = html;
+                if (element) element.innerHTML = lokasiHtml;
             });
 
             // Populate Block options
@@ -812,9 +1176,17 @@
                 const element = document.getElementById(id);
                 if (element) element.innerHTML = blockHtml;
             });
+
+            // Populate Perusahaan options
+            const uniquePerusahaan = [...new Set(employees.map(e => e.perusahaan))].filter(Boolean).sort();
+            const perusahaanHtml = '<option value="">Semua Perusahaan</option>' + 
+                uniquePerusahaan.map(p => `<option value="${p}">${p}</option>`).join('');
+            
+            document.getElementById('filterPerusahaan').innerHTML = perusahaanHtml;
         }
 
         function updateUI() {
+            // Update statistics
             document.getElementById('stat-total').innerText = employees.length.toLocaleString();
             
             const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
@@ -825,18 +1197,56 @@
             document.getElementById('stat-avail').innerText = tersedia.toLocaleString();
             document.getElementById('stat-mess').innerText = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).length;
             
+            // Update capacity bar
             const totalKamar = terisi + tersedia + rusak;
             const percTerisi = totalKamar > 0 ? (terisi / totalKamar) * 100 : 0;
             document.getElementById('capacity-bar').style.width = percTerisi + "%";
             document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
             
+            // Update category counts
+            updateCategoryCounts();
+            
             if(activeTab !== 'dashboard') renderTable();
+        }
+
+        function updateCategoryCounts() {
+            const counts = {
+                'GOL 1': 0,
+                'GOL 2': 0,
+                'GOL 3': 0,
+                'GOL 4 UP': 0,
+                'VENDOR': 0
+            };
+
+            employees.forEach(e => {
+                const category = getCategory(e);
+                if (counts.hasOwnProperty(category)) {
+                    counts[category]++;
+                }
+            });
+
+            // Update sidebar counts
+            document.getElementById('count-gol1').textContent = counts['GOL 1'];
+            document.getElementById('count-gol2').textContent = counts['GOL 2'];
+            document.getElementById('count-gol3').textContent = counts['GOL 3'];
+            document.getElementById('count-gol4').textContent = counts['GOL 4 UP'];
+            document.getElementById('count-vendor').textContent = counts['VENDOR'];
+
+            // Update dashboard counts
+            document.getElementById('gol1-count').textContent = counts['GOL 1'];
+            document.getElementById('gol2-count').textContent = counts['GOL 2'];
+            document.getElementById('gol3-count').textContent = counts['GOL 3'];
+            document.getElementById('gol4-count').textContent = counts['GOL 4 UP'];
+            document.getElementById('vendor-count').textContent = counts['VENDOR'];
         }
 
         function getCategory(e) {
             const comp = String(e.perusahaan || "").toUpperCase();
             const gol = String(e.gol || "").toUpperCase();
-            if (comp !== "PT. HJF" && comp !== "" && comp !== "NULL" && comp !== "PT. HJF") return 'VENDOR';
+            
+            if (comp.includes('VENDOR') || (comp !== "PT. HJF" && comp !== "PT. INKA" && comp !== "PT. KAI" && comp !== "")) {
+                return 'VENDOR';
+            }
             if (gol.includes('1')) return 'GOL 1';
             if (gol.includes('2')) return 'GOL 2';
             if (gol.includes('3')) return 'GOL 3';
@@ -850,6 +1260,7 @@
             const filterBlock = document.getElementById('filterBlock').value;
             const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
+            const filterPerusahaan = document.getElementById('filterPerusahaan').value;
 
             const filtered = employees.filter(e => {
                 const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
@@ -859,15 +1270,32 @@
                 const matchesBlock = !filterBlock || e.block === filterBlock;
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
+                const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
                 const matchesCat = currentFilter === 'ALL' || getCategory(e) === currentFilter;
-                return matchesSearch && matchesLok && matchesBlock && matchesKamar && matchesStatus && matchesCat;
+                
+                return matchesSearch && matchesLok && matchesBlock && matchesKamar && matchesStatus && matchesPerusahaan && matchesCat;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
             const tbody = document.getElementById('table-body');
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="17" class="text-center py-12">
+                            <i data-lucide="database" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
+                            <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
+                            <p class="text-slate-600 text-[10px] mt-2">Coba ubah filter pencarian atau tambah data baru</p>
+                        </td>
+                    </tr>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
             tbody.innerHTML = filtered.map(e => `
-                <tr class="hover:bg-white/5 transition-colors">
-                    <td class="sticky-col-left font-mono text-sky-400 font-bold">${e.nik || '-'}</td>
+                <tr class="table-row-hover">
+                    <td class="sticky-col-left font-mono text-sky-400 font-bold border-r border-white/5">${e.nik || '-'}</td>
                     <td class="text-white font-bold">${e.nama || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.gender || '-'}</td>
                     <td class="text-slate-300 font-medium">${e.department || '-'}</td>
@@ -875,20 +1303,20 @@
                     <td class="text-slate-400">${e.jabatan || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.fasilitas || '-'}</td>
                     <td class="text-sky-300 font-medium italic">${e.point_of_hire || '-'}</td>
-                    <td class="text-slate-400">${e.tanggal_masuk_kerja || '-'}</td>
+                    <td class="text-slate-400">${formatDateForDisplay(e.tanggal_masuk_kerja) || '-'}</td>
                     <td class="text-emerald-400 font-bold">${e.perusahaan || '-'}</td>
                     <td class="text-white font-bold uppercase tracking-tighter">${e.lokasi_hunian || '-'}</td>
                     <td class="text-slate-400">${e.floor || '-'}</td>
                     <td class="text-slate-300 font-bold">${e.block || '-'}</td>
                     <td class="text-emerald-400 font-black">${e.no_kamar || '-'}</td>
                     <td><span class="px-3 py-1 rounded-full text-[9px] font-bold ${getStatusClass(e.status_kamar)}">${e.status_kamar || 'TERISI'}</span></td>
-                    <td class="text-amber-400 font-bold">${e.tanggal_masuk_mess_hunian_p2 || '-'}</td>
+                    <td class="text-amber-400 font-bold">${formatDateForDisplay(e.tanggal_masuk_mess_hunian_p2) || '-'}</td>
                     <td class="sticky-col-right text-center">
                         <div class="flex items-center justify-center gap-2">
-                            <button onclick='openModal(${JSON.stringify(e).replace(/'/g, "&apos;")})' class="p-2 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white rounded-lg transition-all">
+                            <button onclick='openModal(${JSON.stringify(e).replace(/'/g, "&apos;")})' class="p-2 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white rounded-lg transition-all" title="Edit">
                                 <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
                             </button>
-                            <button onclick="deleteEmployee('${e.id}')" class="p-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all">
+                            <button onclick="deleteEmployee('${e.id}')" class="p-2 bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white rounded-lg transition-all" title="Hapus">
                                 <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                             </button>
                         </div>
@@ -898,18 +1326,30 @@
             lucide.createIcons();
         }
 
+        function formatDateForDisplay(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            if (isNaN(date.getTime())) return dateString;
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
         function resetTableFilters() {
             document.getElementById('filterLokasi').value = '';
             document.getElementById('filterBlock').value = '';
             document.getElementById('filterKamar').value = '';
             document.getElementById('filterStatusKamar').value = '';
+            document.getElementById('filterPerusahaan').value = '';
             document.getElementById('globalSearch').value = '';
             renderTable();
-            showToast("Filter telah direset");
+            showToast("Filter telah direset", "success");
         }
 
         function getStatusClass(status) {
-            switch(status) {
+            switch(status?.toUpperCase()) {
                 case 'TERISI': return 'bg-emerald-500/10 text-emerald-500';
                 case 'TERSEDIA': return 'bg-sky-500/10 text-sky-500';
                 case 'RUSAK': return 'bg-rose-500/10 text-rose-500';
@@ -918,23 +1358,36 @@
             }
         }
 
+        // Fungsi CRUD
         async function saveData(event) {
             event.preventDefault();
+            
             const formData = new FormData(event.target);
             const raw = Object.fromEntries(formData.entries());
             const id = raw.id;
             delete raw.id;
 
-            // Validasi NIK harus dimulai dengan huruf
+            // Validasi NIK
             if (!isValidNIK(raw.nik)) {
-                showToast("NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka", "error");
+                showToast("NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)", "error");
                 return;
             }
 
-            // Konversi NIK ke uppercase
-            raw.nik = raw.nik.trim().toUpperCase();
+            // Validasi nomor kamar
+            if (!validateRoomNumber({value: raw.no_kamar})) {
+                showToast("Format nomor kamar tidak valid", "error");
+                return;
+            }
 
-            showLoading("Menyimpan data...");
+            // Format data
+            raw.nik = raw.nik.trim().toUpperCase();
+            raw.nama = raw.nama.trim();
+            
+            // Konversi tanggal kosong menjadi null
+            if (!raw.tanggal_masuk_kerja) raw.tanggal_masuk_kerja = null;
+            if (!raw.tanggal_masuk_mess_hunian_p2) raw.tanggal_masuk_mess_hunian_p2 = null;
+
+            showLoading(id ? "Mengupdate data..." : "Menyimpan data...");
             
             try {
                 let result;
@@ -953,7 +1406,7 @@
                     throw new Error(result.error.message);
                 }
 
-                showToast("Data tersimpan!", "success");
+                showToast(id ? "Data berhasil diupdate!" : "Data berhasil disimpan!", "success");
                 closeModal();
                 await fetchAllData();
             } catch (error) {
@@ -964,10 +1417,38 @@
             }
         }
 
-        // FITUR PREVIEW IMPORT
+        async function deleteEmployee(id) {
+            if(!confirm("Hapus data karyawan ini secara permanen? Tindakan ini tidak dapat dibatalkan.")) return;
+            
+            showLoading("Menghapus data...");
+            try {
+                const { error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) throw error;
+
+                showToast("Data berhasil dihapus", "success");
+                await fetchAllData();
+            } catch (error) {
+                showToast("Gagal menghapus data: " + error.message, "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Fungsi Import Excel
         async function handleFileSelect(event) {
             const file = event.target.files[0];
             if(!file) return;
+            
+            // Validasi ukuran file (max 10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showToast("Ukuran file terlalu besar (maksimal 10MB)", "error");
+                event.target.value = "";
+                return;
+            }
             
             showLoading("Membaca file Excel...");
             
@@ -979,6 +1460,37 @@
             } finally {
                 hideLoading();
                 event.target.value = "";
+            }
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('drag-drop-area').classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('drag-drop-area').classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            document.getElementById('drag-drop-area').classList.remove('dragover');
+            
+            const files = event.dataTransfer.files;
+            if (files.length > 0) {
+                const file = files[0];
+                if (file.name.match(/\.(xlsx|xls|csv)$/i)) {
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.getElementById('importFile').files = dataTransfer.files;
+                    document.getElementById('importFile').dispatchEvent(new Event('change'));
+                } else {
+                    showToast("Hanya file Excel (.xlsx, .xls, .csv) yang diizinkan", "error");
+                }
             }
         }
 
@@ -1001,9 +1513,16 @@
         }
 
         function processImportData(json) {
+            if (!Array.isArray(json) || json.length === 0) {
+                showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
+                return;
+            }
+
             const findKey = (obj, target) => {
-                const t = target.toLowerCase().replace(/\s+/g, '');
-                const key = Object.keys(obj).find(k => k.toLowerCase().replace(/\s+/g, '') === t);
+                const t = target.toLowerCase().replace(/[_\s]+/g, '');
+                const key = Object.keys(obj).find(k => 
+                    k.toLowerCase().replace(/[_\s]+/g, '') === t
+                );
                 return key ? obj[key] : "";
             };
 
@@ -1012,7 +1531,13 @@
                 if (v instanceof Date) return v.toISOString().split('T')[0];
                 if (typeof v === 'number') {
                     const excelEpoch = new Date(1899, 11, 30);
-                    return new Date(excelEpoch.getTime() + v * 86400000).toISOString().split('T')[0];
+                    const date = new Date(excelEpoch.getTime() + v * 86400000);
+                    return date.toISOString().split('T')[0];
+                }
+                // Coba parse format tanggal lainnya
+                const parsed = new Date(v);
+                if (!isNaN(parsed.getTime())) {
+                    return parsed.toISOString().split('T')[0];
                 }
                 return v;
             };
@@ -1030,7 +1555,7 @@
                     gol: String(findKey(row, "GOL") || "").toUpperCase().trim(),
                     jabatan: String(findKey(row, "JABATAN") || "").trim(),
                     fasilitas: String(findKey(row, "FASILITAS") || "").toUpperCase().trim(),
-                    point_of_hire: String(findKey(row, "Point of Hire") || "").trim(),
+                    point_of_hire: String(findKey(row, "Point of Hire") || findKey(row, "POINT OF HIRE") || "").trim(),
                     tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA")),
                     perusahaan: String(findKey(row, "PERUSAHAAN") || "").trim(),
                     lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || "").toUpperCase().trim(),
@@ -1050,7 +1575,7 @@
                     processed.errors.push("NIK tidak boleh kosong");
                 } else if (!isValidNIK(processed.nik)) {
                     processed.isValid = false;
-                    processed.errors.push(`Format NIK tidak valid: "${processed.nik}". Harus dimulai dengan huruf`);
+                    processed.errors.push(`Format NIK tidak valid: "${processed.nik}"`);
                 } else {
                     processed.nik = processed.nik.toUpperCase();
                 }
@@ -1063,6 +1588,12 @@
                 if (!processed.no_kamar) {
                     processed.isValid = false;
                     processed.errors.push("No Kamar harus diisi");
+                }
+
+                // Validasi gender
+                if (processed.gender && !['LAKI-LAKI', 'PEREMPUAN'].includes(processed.gender)) {
+                    processed.isValid = false;
+                    processed.errors.push("Gender harus LAKI-LAKI atau PEREMPUAN");
                 }
 
                 // Cek apakah NIK sudah ada di database
@@ -1080,6 +1611,7 @@
             const updateData = validData.filter(item => !item.isNew);
 
             // Show preview modal
+            closeImportModal();
             showPreviewModal(validData, newData, updateData);
         }
 
@@ -1173,7 +1705,7 @@
 
             try {
                 // Coba insert data dalam batch
-                const batchSize = 50;
+                const batchSize = 100;
                 let successCount = 0;
                 let errorCount = 0;
                 let errors = [];
@@ -1218,73 +1750,53 @@
             }
         }
 
-        async function deleteEmployee(id) {
-            if(!confirm("Hapus data karyawan ini secara permanen?")) return;
-            
-            showLoading("Menghapus data...");
-            try {
-                const { error } = await supabaseClient
-                    .from('karyawan_mess')
-                    .delete()
-                    .eq('id', id);
-
-                if (error) throw error;
-
-                showToast("Data terhapus", "success");
-                await fetchAllData();
-            } catch (error) {
-                showToast("Gagal menghapus data: " + error.message, "error");
-            } finally {
-                hideLoading();
-            }
-        }
-
-        function showToast(msg, type = 'success') {
-            const container = document.getElementById('toast-container');
-            const toast = document.createElement('div');
-            toast.className = `glass-panel border-l-4 ${type === 'success' ? 'border-emerald-500' : type === 'warning' ? 'border-amber-500' : 'border-rose-500'} text-white px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5`;
-            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check' : type === 'warning' ? 'alert-triangle' : 'alert-circle'}" class="w-4 h-4"></i> ${msg}`;
-            container.appendChild(toast);
-            lucide.createIcons();
-            setTimeout(() => toast.remove(), 3000);
-        }
-
+        // Fungsi Export dan Template
         function downloadTemplate() {
-            const h = [
+            const headers = [
                 ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
                 ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"],
                 ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"],
-                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"],
+                ["A12345", "Sarah Johnson", "PEREMPUAN", "FINANCE", "4A", "Manager", "EXECUTIVE", "Medan", "2023-04-01", "PT. HJF", "MESS EXECUTIVE", "LT 1", "A", "101", "TERISI", "2023-04-05"]
             ];
             
-            const ws = XLSX.utils.aoa_to_sheet(h);
+            const ws = XLSX.utils.aoa_to_sheet(headers);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.utils.book_append_sheet(wb, ws, "Template Import");
             
             const instructions = [
-                ["PETUNJUK PENGISIAN TEMPLATE"],
+                ["PETUNJUK PENGISIAN TEMPLATE IMPORT OCEAN MESS"],
                 [""],
                 ["FORMAT NIK (WAJIB DIPERHATIKAN):"],
                 ["• NIK harus dimulai dengan HURUF (A-Z)"],
                 ["• Dapat diikuti kombinasi huruf dan angka"],
+                ["• Panjang minimal 2 karakter, maksimal 20 karakter"],
                 ["• Contoh format NIK yang VALID:"],
                 ["  - EMP001, KRY1001, A12345, AB1234"],
                 ["• Contoh format NIK yang TIDAK VALID:"],
                 ["  - 12345, 1A2345 (dimulai dengan angka)"],
                 [""],
-                ["PETUNJUK LAINNYA:"],
-                ["1. NAMA: Wajib diisi"],
-                ["2. GENDER: Pilih LAKI-LAKI atau PEREMPUAN"],
-                ["3. GOL: Contoh: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
-                ["4. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["5. Tanggal: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["6. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
-                ["7. Pastikan format kolom sesuai dengan contoh"]
+                ["KOLOM WAJIB DIISI:"],
+                ["• NIK, NAMA, NO KAMAR"],
+                [""],
+                ["FORMAT DATA:"],
+                ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
+                ["2. GOL: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
+                ["4. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
+                ["5. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["6. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                [""],
+                ["CATATAN:"],
+                ["• Data dengan NIK yang sudah ada akan diupdate"],
+                ["• Pastikan format kolom sesuai dengan contoh"],
+                ["• Simpan file dalam format .xlsx sebelum diupload"]
             ];
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
-            XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk");
+            XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk Pengisian");
             
             XLSX.writeFile(wb, "Template_Import_OceanMess.xlsx");
+            showToast("Template berhasil diunduh", "success");
         }
 
         function exportData() {
@@ -1295,10 +1807,32 @@
 
             showLoading("Mempersiapkan file export...");
             try {
-                const ws = XLSX.utils.json_to_sheet(employees);
+                // Format data untuk export
+                const exportData = employees.map(emp => ({
+                    NIK: emp.nik,
+                    NAMA: emp.nama,
+                    GENDER: emp.gender,
+                    DEPARTMENT: emp.department,
+                    GOL: emp.gol,
+                    JABATAN: emp.jabatan,
+                    FASILITAS: emp.fasilitas,
+                    "Point of Hire": emp.point_of_hire,
+                    "TANGGAL MASUK KERJA": emp.tanggal_masuk_kerja,
+                    PERUSAHAAN: emp.perusahaan,
+                    "LOKASI HUNIAN": emp.lokasi_hunian,
+                    FLOOR: emp.floor,
+                    BLOCK: emp.block,
+                    "NO KAMAR": emp.no_kamar,
+                    "STATUS KAMAR": emp.status_kamar,
+                    "TANGGAL MASUK MESS HUNIAN P2": emp.tanggal_masuk_mess_hunian_p2
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(exportData);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Database");
-                XLSX.writeFile(wb, `Database_Mess_Full_Export_${new Date().toISOString().split('T')[0]}.xlsx`);
+                XLSX.utils.book_append_sheet(wb, ws, "Database Mess");
+                
+                const today = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Database_Mess_Export_${today}.xlsx`);
                 showToast(`Export ${employees.length} data berhasil`, "success");
             } catch (error) {
                 showToast("Gagal mengexport data: " + error.message, "error");
@@ -1307,19 +1841,88 @@
             }
         }
 
+        // Fungsi Notifikasi
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            
+            const typeConfig = {
+                success: { icon: 'check-circle', color: 'emerald', border: 'border-emerald-500' },
+                error: { icon: 'alert-circle', color: 'rose', border: 'border-rose-500' },
+                warning: { icon: 'alert-triangle', color: 'amber', border: 'border-amber-500' },
+                info: { icon: 'info', color: 'sky', border: 'border-sky-500' }
+            };
+            
+            const config = typeConfig[type] || typeConfig.success;
+            
+            toast.className = `glass-panel border-l-4 ${config.border} text-white px-6 py-4 rounded-xl shadow-2xl text-[10px] font-bold flex items-center gap-3 animate-in slide-in-from-right-5`;
+            toast.innerHTML = `<i data-lucide="${config.icon}" class="w-4 h-4"></i> ${msg}`;
+            
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.classList.add('fade-out');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
         // Event Listeners
         document.getElementById('globalSearch').addEventListener('input', renderTable);
         
-        // Initialize NIK hint
+        // Initialize NIK validation
         document.getElementById('field-nik').addEventListener('focus', function() {
             document.getElementById('nik-hint').classList.remove('hidden');
         });
         
+        document.getElementById('field-nik').addEventListener('blur', function() {
+            validateNIK(this);
+        });
+
         // Initialize app
         window.onload = () => { 
             lucide.createIcons(); 
-            fetchAllData(); 
+            fetchAllData();
+            
+            // Set tanggal maksimal untuk input tanggal
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('field-tanggal_masuk_kerja').max = today;
+            document.getElementById('field-tanggal_masuk_mess_hunian_p2').max = today;
         };
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            // Ctrl + N untuk tambah data
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                openModal();
+            }
+            
+            // Ctrl + F untuk fokus pencarian
+            if (e.ctrlKey && e.key === 'f') {
+                e.preventDefault();
+                document.getElementById('globalSearch').focus();
+            }
+            
+            // Ctrl + E untuk export
+            if (e.ctrlKey && e.key === 'e') {
+                e.preventDefault();
+                exportData();
+            }
+            
+            // Esc untuk menutup modal
+            if (e.key === 'Escape') {
+                if (!document.getElementById('modal-form').classList.contains('hidden')) {
+                    closeModal();
+                }
+                if (!document.getElementById('modal-preview').classList.contains('hidden')) {
+                    closePreviewModal();
+                }
+                if (!document.getElementById('modal-import').classList.contains('hidden')) {
+                    closeImportModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
