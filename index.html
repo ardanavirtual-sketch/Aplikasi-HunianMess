@@ -256,6 +256,20 @@
             background: rgba(14, 165, 233, 0.1);
             border-left: 4px solid #0ea5e9;
         }
+        
+        .grd-badge {
+            font-size: 9px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+        
+        .grd-1 { background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+        .grd-2 { background-color: rgba(34, 197, 94, 0.2); color: #4ade80; }
+        .grd-3 { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+        .grd-4 { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
+        .grd-vendor { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
     </style>
 </head>
 <body class="flex h-screen">
@@ -312,6 +326,7 @@
                                     <th class="py-3 px-4 text-left">NAMA</th>
                                     <th class="py-3 px-4 text-left">GENDER</th>
                                     <th class="py-3 px-4 text-left">GOL</th>
+                                    <th class="py-3 px-4 text-left">GRD</th>
                                     <th class="py-3 px-4 text-left">NO KAMAR</th>
                                     <th class="py-3 px-4 text-left">STATUS</th>
                                     <th class="py-3 px-4 text-left">ACTION</th>
@@ -399,20 +414,33 @@
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label">Golongan</label>
-                            <select name="gol" id="field-gol" 
+                            <label class="form-label required-field">GRD (Grade)</label>
+                            <select name="grd" id="field-grd" required 
                                     class="input-field w-full">
-                                <option value="">Pilih Golongan</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4A">4A</option>
-                                <option value="4B">4B</option>
-                                <option value="5">5</option>
-                                <option value="M">M</option>
-                                <option value="VENDOR">VENDOR</option>
+                                <option value="">Pilih GRD</option>
+                                <option value="1">1 - Golongan 1</option>
+                                <option value="2">2 - Golongan 2</option>
+                                <option value="3">3 - Golongan 3</option>
+                                <option value="4">4 - Golongan 4 UP</option>
+                                <option value="vendor">Vendor & Kontraktor</option>
                             </select>
                         </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Golongan Detail</label>
+                        <select name="gol" id="field-gol" 
+                                class="input-field w-full">
+                            <option value="">Pilih Golongan Detail</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4A">4A</option>
+                            <option value="4B">4B</option>
+                            <option value="5">5</option>
+                            <option value="M">M</option>
+                            <option value="VENDOR">VENDOR</option>
+                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -568,8 +596,9 @@
                             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Template Format
                         </h5>
                         <ul class="text-[10px] text-slate-300 space-y-2">
-                            <li>• Kolom wajib: NIK, NAMA, NO KAMAR</li>
+                            <li>• Kolom wajib: NIK, NAMA, GRD, NO KAMAR</li>
                             <li>• Format NIK: Huruf pertama harus A-Z</li>
+                            <li>• GRD: 1, 2, 3, 4, vendor</li>
                             <li>• Format tanggal: YYYY-MM-DD</li>
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
@@ -632,32 +661,32 @@
             </div>
 
             <div class="mb-6">
-                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Golongan</p>
+                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Golongan (GRD)</p>
                 <div class="space-y-1">
-                    <button onclick="switchCategory('GOL 1')" id="nav-gol1" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                    <button onclick="switchCategory('1')" id="nav-gol1" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 1</span>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 1 (GRD 1)</span>
                         <span id="count-gol1" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('GOL 2')" id="nav-gol2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                    <button onclick="switchCategory('2')" id="nav-gol2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 2</span>
-                        <span id="count-gol2" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 2 (GRD 2)</span>
+                        <span id="count-gol2" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('GOL 3')" id="nav-gol3" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                    <button onclick="switchCategory('3')" id="nav-gol3" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 3</span>
-                        <span id="count-gol3" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 3 (GRD 3)</span>
+                        <span id="count-gol3" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('GOL 4 UP')" id="nav-gol4" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                    <button onclick="switchCategory('4')" id="nav-gol4" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 4 UP</span>
-                        <span id="count-gol4" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 4 UP (GRD 4)</span>
+                        <span id="count-gol4" class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('VENDOR')" id="nav-vendor" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                    <button onclick="switchCategory('vendor')" id="nav-vendor" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="briefcase" class="w-4 h-4"></i>
                         <span class="nav-text font-bold text-xs flex-1 text-left">Vendor & Kontrak</span>
-                        <span id="count-vendor" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                        <span id="count-vendor" class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
             </div>
@@ -666,7 +695,7 @@
         <div class="p-4 sidebar-footer-content">
             <div class="text-[10px] text-slate-500 text-center">
                 <p>© 2024 OceanMess</p>
-                <p>v2.0.0</p>
+                <p>v2.1.0</p>
             </div>
         </div>
     </aside>
@@ -760,29 +789,34 @@
                     </div>
                 </div>
 
-                <!-- Statistik Golongan -->
+                <!-- Statistik Golongan berdasarkan GRD -->
                 <div class="glass-panel p-8 rounded-[32px] mb-8">
-                    <h3 class="text-xl font-black text-white mb-6">Distribusi Golongan</h3>
+                    <h3 class="text-xl font-black text-white mb-6">Distribusi Golongan (GRD)</h3>
                     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
                         <div class="text-center p-4 bg-white/5 rounded-2xl">
                             <div class="text-2xl font-black text-sky-400" id="gol1-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 1</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 1</div>
+                            <div class="text-[8px] text-slate-500">Golongan 1</div>
                         </div>
                         <div class="text-center p-4 bg-white/5 rounded-2xl">
                             <div class="text-2xl font-black text-emerald-400" id="gol2-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 2</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 2</div>
+                            <div class="text-[8px] text-slate-500">Golongan 2</div>
                         </div>
                         <div class="text-center p-4 bg-white/5 rounded-2xl">
                             <div class="text-2xl font-black text-amber-400" id="gol3-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 3</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 3</div>
+                            <div class="text-[8px] text-slate-500">Golongan 3</div>
                         </div>
                         <div class="text-center p-4 bg-white/5 rounded-2xl">
                             <div class="text-2xl font-black text-purple-400" id="gol4-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Gol 4+</div>
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 4</div>
+                            <div class="text-[8px] text-slate-500">Gol 4 UP</div>
                         </div>
                         <div class="text-center p-4 bg-white/5 rounded-2xl">
                             <div class="text-2xl font-black text-rose-400" id="vendor-count">0</div>
                             <div class="text-[10px] text-slate-400 font-bold uppercase">Vendor</div>
+                            <div class="text-[8px] text-slate-500">Kontraktor</div>
                         </div>
                     </div>
                 </div>
@@ -794,7 +828,7 @@
                 <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
                     <div class="flex items-center gap-4">
                         <span id="data-count-badge" class="bg-gradient-to-r from-sky-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
-                        <h4 class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
+                        <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
                     </div>
                 </div>
 
@@ -850,6 +884,7 @@
                                 <th>NAMA</th>
                                 <th>GENDER</th>
                                 <th>DEPARTMENT</th>
+                                <th>GRD</th>
                                 <th>GOL</th>
                                 <th>JABATAN</th>
                                 <th>FASILITAS</th>
@@ -963,7 +998,7 @@
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                                     <span class="text-sm text-slate-400">Versi Aplikasi</span>
-                                    <span class="text-slate-400 text-sm">v2.0.0</span>
+                                    <span class="text-slate-400 text-sm">v2.1.0</span>
                                 </div>
                             </div>
                         </div>
@@ -987,6 +1022,15 @@
         let currentFilter = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
+
+        // Mapping GRD untuk display
+        const grdMapping = {
+            '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky' },
+            '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald' },
+            '3': { name: 'Golongan 3', class: 'grd-3', color: 'amber' },
+            '4': { name: 'Golongan 4 UP', class: 'grd-4', color: 'purple' },
+            'vendor': { name: 'Vendor & Kontraktor', class: 'grd-vendor', color: 'rose' }
+        };
 
         // ==================== FUNGSI UTAMA ====================
 
@@ -1040,6 +1084,16 @@
                 error.classList.add('hidden');
                 return true;
             }
+        }
+
+        // Dapatkan nama GRD untuk display
+        function getGrdDisplay(grd) {
+            return grdMapping[grd]?.name || grd || '-';
+        }
+
+        // Dapatkan class untuk badge GRD
+        function getGrdClass(grd) {
+            return grdMapping[grd]?.class || 'bg-slate-500/10 text-slate-500';
         }
 
         // ==================== FUNGSI DATABASE ====================
@@ -1112,7 +1166,7 @@
                 
                 // Isi semua field dengan data yang ada
                 const fields = [
-                    'nik', 'nama', 'gender', 'gol', 'jabatan', 'department', 'perusahaan',
+                    'nik', 'nama', 'gender', 'grd', 'gol', 'jabatan', 'department', 'perusahaan',
                     'lokasi_hunian', 'floor', 'block', 'no_kamar', 'fasilitas', 'point_of_hire',
                     'status_kamar', 'tanggal_masuk_kerja', 'tanggal_masuk_mess_hunian_p2'
                 ];
@@ -1203,21 +1257,22 @@
             lucide.createIcons();
         }
 
-        // Ganti kategori filter
-        function switchCategory(cat) {
+        // Ganti kategori filter berdasarkan GRD
+        function switchCategory(grd) {
             activeTab = 'data-karyawan';
-            currentFilter = cat;
+            currentFilter = grd;
             
             // Switch ke tab data karyawan
             switchTab('data-karyawan');
             
-            // Update nama view
-            document.getElementById('current-view-name').innerText = `DATABASE ${cat}`;
+            // Update nama view berdasarkan GRD
+            const grdName = getGrdDisplay(grd);
+            document.getElementById('current-view-name').innerText = `DATABASE ${grdName.toUpperCase()}`;
             
             // Update navigation styles
             updateNavStyles();
             
-            // Render tabel dengan filter
+            // Render tabel dengan filter GRD
             renderTable();
         }
 
@@ -1232,17 +1287,17 @@
             } else if (activeTab === 'data-karyawan') {
                 document.getElementById('nav-data-karyawan').classList.add('active');
                 
-                // Jika ada filter kategori, aktifkan juga
-                const catMap = {
-                    'GOL 1': 'nav-gol1',
-                    'GOL 2': 'nav-gol2', 
-                    'GOL 3': 'nav-gol3',
-                    'GOL 4 UP': 'nav-gol4',
-                    'VENDOR': 'nav-vendor'
+                // Jika ada filter kategori GRD, aktifkan juga
+                const grdMap = {
+                    '1': 'nav-gol1',
+                    '2': 'nav-gol2', 
+                    '3': 'nav-gol3',
+                    '4': 'nav-gol4',
+                    'vendor': 'nav-vendor'
                 };
                 
-                if (catMap[currentFilter]) {
-                    document.getElementById(catMap[currentFilter]).classList.add('active');
+                if (grdMap[currentFilter]) {
+                    document.getElementById(grdMap[currentFilter]).classList.add('active');
                 }
             } else if (activeTab === 'manajemen-data') {
                 document.getElementById('nav-manajemen-data').classList.add('active');
@@ -1299,7 +1354,7 @@
             document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
             document.getElementById('db-capacity-used').textContent = percTerisi.toFixed(1) + "%";
             
-            // Update category counts
+            // Update category counts berdasarkan GRD
             updateCategoryCounts();
             
             // Jika di tab data karyawan, render tabel
@@ -1308,54 +1363,39 @@
             }
         }
 
-        // Update jumlah per kategori
+        // Update jumlah per kategori berdasarkan GRD
         function updateCategoryCounts() {
             const counts = {
-                'GOL 1': 0,
-                'GOL 2': 0,
-                'GOL 3': 0,
-                'GOL 4 UP': 0,
-                'VENDOR': 0
+                '1': 0,  // GRD 1
+                '2': 0,  // GRD 2
+                '3': 0,  // GRD 3
+                '4': 0,  // GRD 4
+                'vendor': 0  // Vendor
             };
 
             employees.forEach(e => {
-                const category = getCategory(e);
-                if (counts.hasOwnProperty(category)) {
-                    counts[category]++;
+                const grd = e.grd;
+                if (grd && counts.hasOwnProperty(grd)) {
+                    counts[grd]++;
                 }
             });
 
             // Update sidebar counts
-            document.getElementById('count-gol1').textContent = counts['GOL 1'];
-            document.getElementById('count-gol2').textContent = counts['GOL 2'];
-            document.getElementById('count-gol3').textContent = counts['GOL 3'];
-            document.getElementById('count-gol4').textContent = counts['GOL 4 UP'];
-            document.getElementById('count-vendor').textContent = counts['VENDOR'];
+            document.getElementById('count-gol1').textContent = counts['1'];
+            document.getElementById('count-gol2').textContent = counts['2'];
+            document.getElementById('count-gol3').textContent = counts['3'];
+            document.getElementById('count-gol4').textContent = counts['4'];
+            document.getElementById('count-vendor').textContent = counts['vendor'];
 
             // Update dashboard counts
-            document.getElementById('gol1-count').textContent = counts['GOL 1'];
-            document.getElementById('gol2-count').textContent = counts['GOL 2'];
-            document.getElementById('gol3-count').textContent = counts['GOL 3'];
-            document.getElementById('gol4-count').textContent = counts['GOL 4 UP'];
-            document.getElementById('vendor-count').textContent = counts['VENDOR'];
+            document.getElementById('gol1-count').textContent = counts['1'];
+            document.getElementById('gol2-count').textContent = counts['2'];
+            document.getElementById('gol3-count').textContent = counts['3'];
+            document.getElementById('gol4-count').textContent = counts['4'];
+            document.getElementById('vendor-count').textContent = counts['vendor'];
         }
 
-        // Dapatkan kategori karyawan
-        function getCategory(e) {
-            const comp = String(e.perusahaan || "").toUpperCase();
-            const gol = String(e.gol || "").toUpperCase();
-            
-            if (comp.includes('VENDOR') || (comp !== "PT. HJF" && comp !== "PT. INKA" && comp !== "PT. KAI" && comp !== "" && comp !== "NULL")) {
-                return 'VENDOR';
-            }
-            if (gol.includes('1')) return 'GOL 1';
-            if (gol.includes('2')) return 'GOL 2';
-            if (gol.includes('3')) return 'GOL 3';
-            if (gol.includes('4') || gol.includes('5') || gol.includes('M')) return 'GOL 4 UP';
-            return 'LAINNYA';
-        }
-
-        // Render tabel data
+        // Render tabel data dengan filter GRD
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
@@ -1373,9 +1413,10 @@
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
-                const matchesCat = currentFilter === 'ALL' || getCategory(e) === currentFilter;
+                const matchesGrd = currentFilter === 'ALL' || e.grd === currentFilter;
                 
-                return matchesSearch && matchesLok && matchesBlock && matchesKamar && matchesStatus && matchesPerusahaan && matchesCat;
+                return matchesSearch && matchesLok && matchesBlock && matchesKamar && 
+                       matchesStatus && matchesPerusahaan && matchesGrd;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
@@ -1384,7 +1425,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="17" class="text-center py-12">
+                        <td colspan="18" class="text-center py-12">
                             <i data-lucide="database" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
                             <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
                             <p class="text-slate-600 text-[10px] mt-2">Coba ubah filter pencarian atau tambah data baru</p>
@@ -1401,6 +1442,9 @@
                     <td class="text-white font-bold">${e.nama || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.gender || '-'}</td>
                     <td class="text-slate-300 font-medium">${e.department || '-'}</td>
+                    <td class="text-center">
+                        <span class="grd-badge ${getGrdClass(e.grd)}">${getGrdDisplay(e.grd)}</span>
+                    </td>
                     <td class="font-bold text-center"><span class="bg-white/5 px-2 py-1 rounded border border-white/5">${e.gol || '-'}</span></td>
                     <td class="text-slate-400">${e.jabatan || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.fasilitas || '-'}</td>
@@ -1484,10 +1528,17 @@
                 return;
             }
 
+            // Validasi GRD
+            if (!raw.grd) {
+                showToast("GRD (Grade) harus dipilih", "error");
+                return;
+            }
+
             // Format data
             raw.nik = raw.nik.trim().toUpperCase();
             raw.nama = raw.nama.trim();
             raw.block = raw.block ? raw.block.trim().toUpperCase() : '';
+            raw.grd = raw.grd.trim().toLowerCase();
             
             // Set nilai default untuk field yang kosong
             if (!raw.status_kamar) raw.status_kamar = 'TERISI';
@@ -1709,6 +1760,7 @@
                     nama: String(findKey(row, "NAMA") || findKey(row, "Nama") || "").trim(),
                     gender: String(findKey(row, "GENDER") || findKey(row, "Gender") || "").toUpperCase().trim(),
                     department: String(findKey(row, "DEPARTMENT") || findKey(row, "Department") || "").trim(),
+                    grd: String(findKey(row, "GRD") || findKey(row, "Grade") || "").toLowerCase().trim(),
                     gol: String(findKey(row, "GOL") || findKey(row, "Golongan") || "").toUpperCase().trim(),
                     jabatan: String(findKey(row, "JABATAN") || findKey(row, "Jabatan") || "").trim(),
                     fasilitas: String(findKey(row, "FASILITAS") || findKey(row, "Fasilitas") || "").toUpperCase().trim(),
@@ -1735,6 +1787,15 @@
                     processed.errors.push(`Format NIK tidak valid: "${processed.nik}"`);
                 } else {
                     processed.nik = processed.nik.toUpperCase();
+                }
+
+                // Validasi GRD
+                if (!processed.grd) {
+                    processed.isValid = false;
+                    processed.errors.push("GRD harus diisi");
+                } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
+                    processed.isValid = false;
+                    processed.errors.push(`GRD tidak valid: "${processed.grd}". Harus: 1, 2, 3, 4, atau vendor`);
                 }
 
                 // Validasi field required lainnya
@@ -1807,6 +1868,7 @@
                     <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
                     <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
                     <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
+                    <td class="py-3 px-4 text-center"><span class="grd-badge ${getGrdClass(item.grd)}">${getGrdDisplay(item.grd)}</span></td>
                     <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
                     <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
                     <td class="py-3 px-4 text-center">
@@ -1916,10 +1978,10 @@
         function downloadTemplate() {
             // Header untuk template
             const headers = [
-                ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
-                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "CR", "Jakarta", "2023-01-15", "PT. HJF", "P2 SURYA RESIDANCE", "Lantai Bawah", "B", "201", "TERISI", "2023-01-20"],
-                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "NR", "Surabaya", "2023-02-01", "PT. HJF", "MENTARI", "Lantai Atas", "A", "105", "TERISI", "2023-02-05"],
-                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "CR", "Bandung", "2023-03-10", "VENDOR LAINNYA", "PELANGI", "Lantai Bawah", "C", "305", "TERISI", "2023-03-12"]
+                ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GRD", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
+                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "1", "3", "Staff", "CR", "Jakarta", "2023-01-15", "PT. HJF", "P2 SURYA RESIDANCE", "Lantai Bawah", "B", "201", "TERISI", "2023-01-20"],
+                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "2", "Supervisor", "NR", "Surabaya", "2023-02-01", "PT. HJF", "MENTARI", "Lantai Atas", "A", "105", "TERISI", "2023-02-05"],
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "vendor", "VENDOR", "Technician", "CR", "Bandung", "2023-03-10", "VENDOR LAINNYA", "PELANGI", "Lantai Bawah", "C", "305", "TERISI", "2023-03-12"]
             ];
             
             // Buat worksheet
@@ -1943,18 +2005,24 @@
                 ["  - 12345, 1A2345 (dimulai dengan angka)"],
                 [""],
                 ["KOLOM WAJIB DIISI:"],
-                ["• NIK, NAMA, NO KAMAR"],
+                ["• NIK, NAMA, GRD, NO KAMAR"],
                 [""],
                 ["FORMAT DATA YANG DISESUAIKAN:"],
                 ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
-                ["2. GOL: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
-                ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["4. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
-                ["5. FASILITAS: CR, NR"],
-                ["6. FLOOR: Lantai Bawah, Lantai Atas"],
-                ["7. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
-                ["8. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["9. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["2. GRD (Grade): 1, 2, 3, 4, vendor"],
+                ["   • 1 = Golongan 1"],
+                ["   • 2 = Golongan 2"],
+                ["   • 3 = Golongan 3"],
+                ["   • 4 = Golongan 4 UP"],
+                ["   • vendor = Vendor & Kontraktor"],
+                ["3. GOL (Golongan Detail): 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["4. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
+                ["5. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
+                ["6. FASILITAS: CR, NR"],
+                ["7. FLOOR: Lantai Bawah, Lantai Atas"],
+                ["8. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
+                ["9. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["10. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
                 [""],
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
@@ -1985,6 +2053,7 @@
                     NAMA: emp.nama || '',
                     GENDER: emp.gender || '',
                     DEPARTMENT: emp.department || '',
+                    GRD: emp.grd || '',
                     GOL: emp.gol || '',
                     JABATAN: emp.jabatan || '',
                     FASILITAS: emp.fasilitas || '',
