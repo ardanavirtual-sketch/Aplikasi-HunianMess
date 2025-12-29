@@ -449,11 +449,9 @@
                         <select name="lokasi_hunian" id="field-lokasi_hunian" required 
                                 class="input-field w-full">
                             <option value="">Pilih Lokasi</option>
-                            <option value="MESS A">MESS A</option>
-                            <option value="MESS B">MESS B</option>
-                            <option value="MESS C">MESS C</option>
-                            <option value="MESS D">MESS D</option>
-                            <option value="MESS EXECUTIVE">MESS EXECUTIVE</option>
+                            <option value="P2 SURYA RESIDANCE">P2 SURYA RESIDANCE</option>
+                            <option value="MENTARI">MENTARI</option>
+                            <option value="PELANGI">PELANGI</option>
                         </select>
                     </div>
                     
@@ -463,24 +461,16 @@
                             <select name="floor" id="field-floor" 
                                     class="input-field w-full">
                                 <option value="">Pilih Floor</option>
-                                <option value="LT 1">LT 1</option>
-                                <option value="LT 2">LT 2</option>
-                                <option value="LT 3">LT 3</option>
-                                <option value="LT 4">LT 4</option>
+                                <option value="Lantai Bawah">Lantai Bawah</option>
+                                <option value="Lantai Atas">Lantai Atas</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
                             <label class="form-label">Block</label>
-                            <select name="block" id="field-block" 
-                                    class="input-field w-full">
-                                <option value="">Pilih Block</option>
-                                <option value="A">A</option>
-                                <option value="B">B</option>
-                                <option value="C">C</option>
-                                <option value="D">D</option>
-                                <option value="E">E</option>
-                            </select>
+                            <input type="text" name="block" id="field-block" 
+                                   class="input-field w-full"
+                                   placeholder="Masukkan Block">
                         </div>
                         
                         <div class="form-group">
@@ -495,11 +485,8 @@
                         <select name="fasilitas" id="field-fasilitas" 
                                 class="input-field w-full">
                             <option value="">Pilih Fasilitas</option>
-                            <option value="STANDARD">STANDARD</option>
-                            <option value="VIP">VIP</option>
-                            <option value="EXECUTIVE">EXECUTIVE</option>
-                            <option value="AC + TV">AC + TV</option>
-                            <option value="AC ONLY">AC ONLY</option>
+                            <option value="CR">CR</option>
+                            <option value="NR">NR</option>
                         </select>
                     </div>
                     
@@ -585,6 +572,8 @@
                             <li>• Format NIK: Huruf pertama harus A-Z</li>
                             <li>• Format tanggal: YYYY-MM-DD</li>
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
+                            <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
+                            <li>• Fasilitas: CR, NR</li>
                         </ul>
                     </div>
                     
@@ -820,9 +809,8 @@
                         </div>
                         <div>
                             <label class="form-label">Block</label>
-                            <select id="filterBlock" onchange="renderTable()" class="input-field text-[11px] py-1.5">
-                                <option value="">Semua Block</option>
-                            </select>
+                            <input type="text" id="filterBlock" oninput="renderTable()" placeholder="Cari block..." 
+                                   class="input-field text-[11px] py-1.5">
                         </div>
                         <div>
                             <label class="form-label">No Kamar</label>
@@ -1281,12 +1269,6 @@
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             document.getElementById('filterLokasi').innerHTML = lokasiHtml;
 
-            // Block
-            const uniqueBlocks = [...new Set(employees.map(e => e.block))].filter(Boolean).sort();
-            const blockHtml = '<option value="">Semua Block</option>' + 
-                uniqueBlocks.map(b => `<option value="${b}">${b}</option>`).join('');
-            document.getElementById('filterBlock').innerHTML = blockHtml;
-
             // Perusahaan
             const uniquePerusahaan = [...new Set(employees.map(e => e.perusahaan))].filter(Boolean).sort();
             const perusahaanHtml = '<option value="">Semua Perusahaan</option>' + 
@@ -1377,7 +1359,7 @@
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
-            const filterBlock = document.getElementById('filterBlock').value;
+            const filterBlock = document.getElementById('filterBlock').value.toLowerCase();
             const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
             const filterPerusahaan = document.getElementById('filterPerusahaan').value;
@@ -1387,7 +1369,7 @@
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
-                const matchesBlock = !filterBlock || e.block === filterBlock;
+                const matchesBlock = !filterBlock || (e.block && e.block.toLowerCase().includes(filterBlock));
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
@@ -1505,6 +1487,7 @@
             // Format data
             raw.nik = raw.nik.trim().toUpperCase();
             raw.nama = raw.nama.trim();
+            raw.block = raw.block ? raw.block.trim().toUpperCase() : '';
             
             // Set nilai default untuk field yang kosong
             if (!raw.status_kamar) raw.status_kamar = 'TERISI';
@@ -1770,6 +1753,21 @@
                     processed.gender = ''; // Reset jika tidak valid
                 }
 
+                // Validasi fasilitas
+                if (processed.fasilitas && !['CR', 'NR'].includes(processed.fasilitas)) {
+                    processed.fasilitas = ''; // Reset jika tidak valid
+                }
+
+                // Validasi lokasi hunian
+                if (processed.lokasi_hunian && !['P2 SURYA RESIDANCE', 'MENTARI', 'PELANGI'].includes(processed.lokasi_hunian)) {
+                    processed.lokasi_hunian = ''; // Reset jika tidak valid
+                }
+
+                // Validasi floor
+                if (processed.floor && !['Lantai Bawah', 'Lantai Atas'].includes(processed.floor)) {
+                    processed.floor = ''; // Reset jika tidak valid
+                }
+
                 // Cek apakah NIK sudah ada di database
                 const existingNik = employees.map(e => e.nik);
                 if (existingNik.includes(processed.nik)) {
@@ -1919,9 +1917,9 @@
             // Header untuk template
             const headers = [
                 ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
-                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "AC + TV", "Jakarta", "2023-01-15", "PT. HJF", "MESS A", "LT 2", "B", "201", "TERISI", "2023-01-20"],
-                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "STANDARD", "Surabaya", "2023-02-01", "PT. HJF", "MESS B", "LT 1", "A", "105", "TERISI", "2023-02-05"],
-                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "AC ONLY", "Bandung", "2023-03-10", "VENDOR LAINNYA", "MESS C", "LT 3", "C", "305", "TERISI", "2023-03-12"]
+                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "CR", "Jakarta", "2023-01-15", "PT. HJF", "P2 SURYA RESIDANCE", "Lantai Bawah", "B", "201", "TERISI", "2023-01-20"],
+                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "NR", "Surabaya", "2023-02-01", "PT. HJF", "MENTARI", "Lantai Atas", "A", "105", "TERISI", "2023-02-05"],
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "CR", "Bandung", "2023-03-10", "VENDOR LAINNYA", "PELANGI", "Lantai Bawah", "C", "305", "TERISI", "2023-03-12"]
             ];
             
             // Buat worksheet
@@ -1947,13 +1945,16 @@
                 ["KOLOM WAJIB DIISI:"],
                 ["• NIK, NAMA, NO KAMAR"],
                 [""],
-                ["FORMAT DATA:"],
+                ["FORMAT DATA YANG DISESUAIKAN:"],
                 ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
                 ["2. GOL: 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["4. LOKASI HUNIAN: MESS A, MESS B, MESS C, MESS D, MESS EXECUTIVE"],
-                ["5. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["6. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["4. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
+                ["5. FASILITAS: CR, NR"],
+                ["6. FLOOR: Lantai Bawah, Lantai Atas"],
+                ["7. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
+                ["8. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["9. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
                 [""],
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
