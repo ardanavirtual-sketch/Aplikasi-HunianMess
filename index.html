@@ -1636,7 +1636,7 @@
             try {
                 const data = await readExcelFile(file);
                 if (data && data.length > 0) {
-                    processImportData(data);
+                    await processImportData(data);
                 } else {
                     throw new Error("File Excel kosong atau format tidak sesuai");
                 }
@@ -1650,202 +1650,387 @@
             }
         }
 
-        // Baca file Excel
+        // Baca file Excel dengan error handling yang lebih baik
         function readExcelFile(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     try {
-                        const dataArr = new Uint8Array(e.target.result);
-                        const wb = XLSX.read(dataArr, { type: 'array', cellDates: true, cellNF: false, cellText: false });
-                        const firstSheet = wb.SheetNames[0];
-                        const json = XLSX.utils.sheet_to_json(wb.Sheets[firstSheet], { defval: "", raw: false });
-                        resolve(json);
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { 
+                            type: 'array', 
+                            cellDates: true, 
+                            cellNF: false, 
+                            cellText: false,
+                            raw: false,
+                            dateNF: 'yyyy-mm-dd'
+                        });
+                        
+                        // Ambil semua sheet names
+                        const sheetNames = workbook.SheetNames;
+                        if (sheetNames.length === 0) {
+                            reject(new Error("File Excel tidak memiliki sheet"));
+                            return;
+                        }
+                        
+                        // Gunakan sheet pertama
+                        const firstSheetName = sheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Convert ke JSON dengan opsi yang lebih baik
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                            defval: "",           // Nilai default untuk cell kosong
+                            raw: false,           // Convert tanggal ke string
+                            dateNF: 'yyyy-mm-dd'  // Format tanggal
+                        });
+                        
+                        resolve(jsonData);
                     } catch (error) {
-                        reject(error);
+                        reject(new Error(`Gagal membaca file Excel: ${error.message}`));
                     }
                 };
-                reader.onerror = (error) => reject(error);
+                reader.onerror = (error) => reject(new Error(`Gagal membaca file: ${error.message}`));
                 reader.readAsArrayBuffer(file);
             });
         }
 
-        // Proses data import
-        function processImportData(json) {
+        // Normalisasi nilai GRD
+        function normalizeGrd(value) {
+            if (!value) return '';
+            
+            const strValue = String(value).trim().toLowerCase();
+            
+            // Mapping berbagai format GRD
+            const grdMapping = {
+                '1': '1',
+                'gol 1': '1',
+                'golongan 1': '1',
+                'grade 1': '1',
+                'grd 1': '1',
+                '2': '2',
+                'gol 2': '2',
+                'golongan 2': '2',
+                'grade 2': '2',
+                'grd 2': '2',
+                '3': '3',
+                'gol 3': '3',
+                'golongan 3': '3',
+                'grade 3': '3',
+                'grd 3': '3',
+                '4': '4',
+                'gol 4': '4',
+                'golongan 4': '4',
+                'grade 4': '4',
+                'grd 4': '4',
+                '4 up': '4',
+                'gol 4 up': '4',
+                'golongan 4 up': '4',
+                'vendor': 'vendor',
+                'kontraktor': 'vendor',
+                'vendor & kontraktor': 'vendor',
+                'v': 'vendor'
+            };
+            
+            return grdMapping[strValue] || strValue;
+        }
+
+        // Normalisasi nilai Gender
+        function normalizeGender(value) {
+            if (!value) return '';
+            
+            const strValue = String(value).trim().toUpperCase();
+            
+            const genderMapping = {
+                'LAKI-LAKI': 'LAKI-LAKI',
+                'LAKI LAKI': 'LAKI-LAKI',
+                'L': 'LAKI-LAKI',
+                'PRIA': 'LAKI-LAKI',
+                'PEREMPUAN': 'PEREMPUAN',
+                'P': 'PEREMPUAN',
+                'WANITA': 'PEREMPUAN'
+            };
+            
+            return genderMapping[strValue] || '';
+        }
+
+        // Normalisasi nilai Fasilitas
+        function normalizeFasilitas(value) {
+            if (!value) return '';
+            
+            const strValue = String(value).trim().toUpperCase();
+            
+            const fasilitasMapping = {
+                'CR': 'CR',
+                'C R': 'CR',
+                'NR': 'NR',
+                'N R': 'NR'
+            };
+            
+            return fasilitasMapping[strValue] || '';
+        }
+
+        // Normalisasi nilai Lokasi Hunian
+        function normalizeLokasiHunian(value) {
+            if (!value) return '';
+            
+            const strValue = String(value).trim().toUpperCase();
+            
+            const lokasiMapping = {
+                'P2 SURYA RESIDANCE': 'P2 SURYA RESIDANCE',
+                'P2 SURYA RESIDENCE': 'P2 SURYA RESIDANCE',
+                'SURYA RESIDANCE': 'P2 SURYA RESIDANCE',
+                'MENTARI': 'MENTARI',
+                'PELANGI': 'PELANGI'
+            };
+            
+            return lokasiMapping[strValue] || '';
+        }
+
+        // Normalisasi nilai Floor
+        function normalizeFloor(value) {
+            if (!value) return '';
+            
+            const strValue = String(value).trim();
+            
+            const floorMapping = {
+                'Lantai Bawah': 'Lantai Bawah',
+                'Lantai bawah': 'Lantai Bawah',
+                'Bawah': 'Lantai Bawah',
+                'Lt Bawah': 'Lantai Bawah',
+                'Lantai Atas': 'Lantai Atas',
+                'Lantai atas': 'Lantai Atas',
+                'Atas': 'Lantai Atas',
+                'Lt Atas': 'Lantai Atas'
+            };
+            
+            return floorMapping[strValue] || strValue;
+        }
+
+        // Format tanggal dari berbagai format
+        function formatDate(value) {
+            if (!value) return null;
+            
+            // Jika sudah berupa Date object
+            if (value instanceof Date) {
+                return value.toISOString().split('T')[0];
+            }
+            
+            // Jika angka (format Excel)
+            if (typeof value === 'number') {
+                try {
+                    // Excel date epoch: 1899-12-30
+                    const excelEpoch = new Date(1899, 11, 30);
+                    const date = new Date(excelEpoch.getTime() + value * 86400000);
+                    return date.toISOString().split('T')[0];
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            // Jika string, coba parse berbagai format
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (!trimmed) return null;
+                
+                // Coba parse berbagai format tanggal
+                const dateFormats = [
+                    /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, // YYYY-MM-DD, YYYY/MM/DD
+                    /(\d{1,2})[-/](\d{1,2})[-/](\d{4})/, // DD-MM-YYYY, DD/MM/YYYY
+                    /(\d{1,2})[-/](\d{1,2})[-/](\d{2})/, // DD-MM-YY, DD/MM/YY
+                ];
+                
+                for (const format of dateFormats) {
+                    const match = trimmed.match(format);
+                    if (match) {
+                        try {
+                            let year, month, day;
+                            
+                            if (match[1].length === 4) {
+                                // YYYY-MM-DD
+                                year = parseInt(match[1]);
+                                month = parseInt(match[2]) - 1;
+                                day = parseInt(match[3]);
+                            } else if (match[3].length === 4) {
+                                // DD-MM-YYYY
+                                year = parseInt(match[3]);
+                                month = parseInt(match[2]) - 1;
+                                day = parseInt(match[1]);
+                            } else {
+                                // DD-MM-YY
+                                year = 2000 + parseInt(match[3]);
+                                month = parseInt(match[2]) - 1;
+                                day = parseInt(match[1]);
+                            }
+                            
+                            const date = new Date(year, month, day);
+                            if (!isNaN(date.getTime())) {
+                                return date.toISOString().split('T')[0];
+                            }
+                        } catch (e) {
+                            // Continue to next format
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+
+        // Proses data import dengan error handling yang lebih baik
+        async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
                 return;
             }
 
-            // Mapping kolom Excel ke field database
-            const findKey = (obj, target) => {
-                const targetLower = target.toLowerCase().replace(/[_\s]+/g, '');
-                for (const key in obj) {
-                    if (key.toLowerCase().replace(/[_\s]+/g, '') === targetLower) {
-                        return obj[key];
-                    }
-                }
-                return "";
-            };
+            showLoading("Memproses data import...");
 
-            // Format tanggal dari Excel
-            const formatDate = (value) => {
-                if (!value) return null;
+            try {
+                // Dapatkan header untuk mapping kolom
+                const firstRow = json[0];
+                const headers = Object.keys(firstRow);
                 
-                // Jika sudah berupa Date object
-                if (value instanceof Date) {
-                    return value.toISOString().split('T')[0];
-                }
+                console.log("Headers ditemukan:", headers);
                 
-                // Jika angka (format Excel)
-                if (typeof value === 'number') {
-                    try {
-                        const excelEpoch = new Date(1899, 11, 30);
-                        const date = new Date(excelEpoch.getTime() + value * 86400000);
-                        return date.toISOString().split('T')[0];
-                    } catch (e) {
-                        return null;
-                    }
-                }
-                
-                // Jika string, coba parse
-                if (typeof value === 'string') {
-                    const trimmed = value.trim();
-                    if (!trimmed) return null;
-                    
-                    // Coba berbagai format tanggal
-                    const formats = [
-                        /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, // YYYY-MM-DD
-                        /(\d{1,2})[-/](\d{1,2})[-/](\d{4})/, // DD-MM-YYYY
-                    ];
-                    
-                    for (const format of formats) {
-                        const match = trimmed.match(format);
-                        if (match) {
-                            try {
-                                let year, month, day;
-                                
-                                if (match[1].length === 4) {
-                                    // YYYY-MM-DD
-                                    year = parseInt(match[1]);
-                                    month = parseInt(match[2]) - 1;
-                                    day = parseInt(match[3]);
-                                } else {
-                                    // DD-MM-YYYY
-                                    year = parseInt(match[3]);
-                                    month = parseInt(match[2]) - 1;
-                                    day = parseInt(match[1]);
-                                }
-                                
-                                const date = new Date(year, month, day);
-                                if (!isNaN(date.getTime())) {
-                                    return date.toISOString().split('T')[0];
-                                }
-                            } catch (e) {
-                                // Continue to next format
+                // Process data untuk preview
+                importPreviewData = json.map((row, index) => {
+                    // Fungsi helper untuk mendapatkan nilai dengan berbagai kemungkinan nama kolom
+                    const getValue = (possibleKeys) => {
+                        for (const key of possibleKeys) {
+                            if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
+                                return row[key];
                             }
                         }
+                        return '';
+                    };
+
+                    // Mapping berbagai kemungkinan nama kolom
+                    const nik = getValue(['NIK', 'NIK Karyawan', 'Nomor Induk', 'No. Induk']);
+                    const nama = getValue(['NAMA', 'Nama', 'Nama Lengkap', 'Nama Karyawan']);
+                    const gender = getValue(['GENDER', 'Gender', 'Jenis Kelamin', 'JK']);
+                    const grd = getValue(['GRD', 'Grade', 'Golongan', 'GOL', 'Kelas']);
+                    const gol = getValue(['GOL_DETAIL', 'Gol Detail', 'Detail Golongan', 'Sub Golongan']);
+                    const jabatan = getValue(['JABATAN', 'Jabatan', 'Posisi', 'Position']);
+                    const department = getValue(['DEPARTMENT', 'Department', 'Divisi', 'Bagian']);
+                    const fasilitas = getValue(['FASILITAS', 'Fasilitas', 'Tipe Kamar', 'Room Type']);
+                    const point_of_hire = getValue(['Point of Hire', 'POINT OF HIRE', 'Asal', 'Domisili']);
+                    const tanggal_masuk_kerja = getValue(['TANGGAL MASUK KERJA', 'Tanggal Masuk Kerja', 'Tgl Masuk', 'Join Date']);
+                    const perusahaan = getValue(['PERUSAHAAN', 'Perusahaan', 'Company', 'Firma']);
+                    const lokasi_hunian = getValue(['LOKASI HUNIAN', 'Lokasi Hunian', 'Lokasi Mess', 'Mess']);
+                    const floor = getValue(['FLOOR', 'Floor', 'Lantai', 'Tingkat']);
+                    const block = getValue(['BLOCK', 'Block', 'Blok', 'Zona']);
+                    const no_kamar = getValue(['NO KAMAR', 'No Kamar', 'Nomor Kamar', 'Kamar']);
+                    const status_kamar = getValue(['STATUS KAMAR', 'Status Kamar', 'Status', 'Kondisi']);
+                    const tanggal_masuk_mess = getValue(['TANGGAL MASUK MESS HUNIAN P2', 'Tanggal Masuk Mess', 'Tgl Masuk Mess', 'Check-in Date']);
+
+                    const processed = {
+                        id: `preview-${index}`,
+                        rowNumber: index + 2, // +2 karena header + 1-based index
+                        nik: String(nik || "").trim(),
+                        nama: String(nama || "").trim(),
+                        gender: normalizeGender(gender),
+                        department: String(department || "").trim(),
+                        grd: normalizeGrd(grd),
+                        gol: String(gol || "").toUpperCase().trim(),
+                        jabatan: String(jabatan || "").trim(),
+                        fasilitas: normalizeFasilitas(fasilitas),
+                        point_of_hire: String(point_of_hire || "").trim(),
+                        tanggal_masuk_kerja: formatDate(tanggal_masuk_kerja),
+                        perusahaan: String(perusahaan || "").trim(),
+                        lokasi_hunian: normalizeLokasiHunian(lokasi_hunian),
+                        floor: normalizeFloor(floor),
+                        block: String(block || "").toUpperCase().trim(),
+                        no_kamar: String(no_kamar || "").trim(),
+                        status_kamar: String(status_kamar || "TERISI").toUpperCase().trim(),
+                        tanggal_masuk_mess_hunian_p2: formatDate(tanggal_masuk_mess),
+                        isValid: true,
+                        errors: [],
+                        isNew: true
+                    };
+
+                    // Validasi NIK
+                    if (!processed.nik) {
+                        processed.isValid = false;
+                        processed.errors.push("NIK tidak boleh kosong");
+                    } else if (!isValidNIK(processed.nik)) {
+                        processed.isValid = false;
+                        processed.errors.push(`Format NIK tidak valid: "${processed.nik}". Harus dimulai dengan huruf`);
+                    } else {
+                        processed.nik = processed.nik.toUpperCase();
                     }
-                }
-                
-                return null;
-            };
 
-            // Process data untuk preview
-            importPreviewData = json.map((row, index) => {
-                const processed = {
-                    id: `preview-${index}`,
-                    rowNumber: index + 2, // +2 karena header + 1-based index
-                    nik: String(findKey(row, "NIK") || "").trim(),
-                    nama: String(findKey(row, "NAMA") || findKey(row, "Nama") || "").trim(),
-                    gender: String(findKey(row, "GENDER") || findKey(row, "Gender") || "").toUpperCase().trim(),
-                    department: String(findKey(row, "DEPARTMENT") || findKey(row, "Department") || "").trim(),
-                    grd: String(findKey(row, "GRD") || findKey(row, "Grade") || "").toLowerCase().trim(),
-                    gol: String(findKey(row, "GOL") || findKey(row, "Golongan") || "").toUpperCase().trim(),
-                    jabatan: String(findKey(row, "JABATAN") || findKey(row, "Jabatan") || "").trim(),
-                    fasilitas: String(findKey(row, "FASILITAS") || findKey(row, "Fasilitas") || "").toUpperCase().trim(),
-                    point_of_hire: String(findKey(row, "Point of Hire") || findKey(row, "POINT OF HIRE") || findKey(row, "Point") || "").trim(),
-                    tanggal_masuk_kerja: formatDate(findKey(row, "TANGGAL MASUK KERJA") || findKey(row, "Tanggal Masuk Kerja")),
-                    perusahaan: String(findKey(row, "PERUSAHAAN") || findKey(row, "Perusahaan") || "").trim(),
-                    lokasi_hunian: String(findKey(row, "LOKASI HUNIAN") || findKey(row, "Lokasi Hunian") || "").toUpperCase().trim(),
-                    floor: String(findKey(row, "FLOOR") || findKey(row, "Floor") || "").toUpperCase().trim(),
-                    block: String(findKey(row, "BLOCK") || findKey(row, "Block") || "").toUpperCase().trim(),
-                    no_kamar: String(findKey(row, "NO KAMAR") || findKey(row, "No Kamar") || "").trim(),
-                    status_kamar: String(findKey(row, "STATUS KAMAR") || findKey(row, "Status Kamar") || "TERISI").toUpperCase().trim(),
-                    tanggal_masuk_mess_hunian_p2: formatDate(findKey(row, "TANGGAL MASUK MESS HUNIAN P2") || findKey(row, "Tanggal Masuk Mess")),
-                    isValid: true,
-                    errors: [],
-                    isNew: true
-                };
+                    // Validasi GRD
+                    if (!processed.grd) {
+                        processed.isValid = false;
+                        processed.errors.push("GRD harus diisi");
+                    } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
+                        processed.isValid = false;
+                        processed.errors.push(`GRD tidak valid: "${grd}". Harus: 1, 2, 3, 4, atau vendor`);
+                    }
 
-                // Validasi NIK
-                if (!processed.nik) {
-                    processed.isValid = false;
-                    processed.errors.push("NIK tidak boleh kosong");
-                } else if (!isValidNIK(processed.nik)) {
-                    processed.isValid = false;
-                    processed.errors.push(`Format NIK tidak valid: "${processed.nik}"`);
-                } else {
-                    processed.nik = processed.nik.toUpperCase();
-                }
+                    // Validasi field required lainnya
+                    if (!processed.nama) {
+                        processed.isValid = false;
+                        processed.errors.push("Nama harus diisi");
+                    }
+                    
+                    if (!processed.no_kamar) {
+                        processed.isValid = false;
+                        processed.errors.push("No Kamar harus diisi");
+                    }
 
-                // Validasi GRD
-                if (!processed.grd) {
-                    processed.isValid = false;
-                    processed.errors.push("GRD harus diisi");
-                } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
-                    processed.isValid = false;
-                    processed.errors.push(`GRD tidak valid: "${processed.grd}". Harus: 1, 2, 3, 4, atau vendor`);
-                }
+                    // Validasi gender
+                    if (processed.gender && !['LAKI-LAKI', 'PEREMPUAN'].includes(processed.gender)) {
+                        processed.isValid = false;
+                        processed.errors.push(`Gender tidak valid: "${gender}". Harus: LAKI-LAKI atau PEREMPUAN`);
+                    }
 
-                // Validasi field required lainnya
-                if (!processed.nama) {
-                    processed.isValid = false;
-                    processed.errors.push("Nama harus diisi");
-                }
-                
-                if (!processed.no_kamar) {
-                    processed.isValid = false;
-                    processed.errors.push("No Kamar harus diisi");
-                }
+                    // Validasi fasilitas
+                    if (processed.fasilitas && !['CR', 'NR'].includes(processed.fasilitas)) {
+                        processed.fasilitas = ''; // Reset jika tidak valid
+                    }
 
-                // Validasi gender
-                if (processed.gender && !['LAKI-LAKI', 'PEREMPUAN'].includes(processed.gender)) {
-                    processed.gender = ''; // Reset jika tidak valid
-                }
+                    // Validasi lokasi hunian
+                    if (processed.lokasi_hunian && !['P2 SURYA RESIDANCE', 'MENTARI', 'PELANGI'].includes(processed.lokasi_hunian)) {
+                        processed.isValid = false;
+                        processed.errors.push(`Lokasi Hunian tidak valid: "${lokasi_hunian}". Harus: P2 SURYA RESIDANCE, MENTARI, atau PELANGI`);
+                    }
 
-                // Validasi fasilitas
-                if (processed.fasilitas && !['CR', 'NR'].includes(processed.fasilitas)) {
-                    processed.fasilitas = ''; // Reset jika tidak valid
-                }
+                    // Validasi floor
+                    if (processed.floor && !['Lantai Bawah', 'Lantai Atas'].includes(processed.floor)) {
+                        processed.floor = ''; // Reset jika tidak valid
+                    }
 
-                // Validasi lokasi hunian
-                if (processed.lokasi_hunian && !['P2 SURYA RESIDANCE', 'MENTARI', 'PELANGI'].includes(processed.lokasi_hunian)) {
-                    processed.lokasi_hunian = ''; // Reset jika tidak valid
-                }
+                    // Validasi perusahaan
+                    if (!processed.perusahaan) {
+                        processed.perusahaan = '';
+                    }
 
-                // Validasi floor
-                if (processed.floor && !['Lantai Bawah', 'Lantai Atas'].includes(processed.floor)) {
-                    processed.floor = ''; // Reset jika tidak valid
-                }
+                    // Cek apakah NIK sudah ada di database
+                    const existingNik = employees.map(e => e.nik);
+                    if (existingNik.includes(processed.nik)) {
+                        processed.isNew = false;
+                    }
 
-                // Cek apakah NIK sudah ada di database
-                const existingNik = employees.map(e => e.nik);
-                if (existingNik.includes(processed.nik)) {
-                    processed.isNew = false;
-                }
+                    return processed;
+                });
 
-                return processed;
-            });
+                // Filter data yang valid
+                const validData = importPreviewData.filter(item => item.isValid);
+                const newData = validData.filter(item => item.isNew);
+                const updateData = validData.filter(item => !item.isNew);
 
-            // Filter data yang valid
-            const validData = importPreviewData.filter(item => item.isValid);
-            const newData = validData.filter(item => item.isNew);
-            const updateData = validData.filter(item => !item.isNew);
+                hideLoading();
 
-            // Tampilkan preview modal
-            closeImportModal();
-            showPreviewModal(validData, newData, updateData);
+                // Tampilkan preview modal
+                closeImportModal();
+                showPreviewModal(validData, newData, updateData);
+
+            } catch (error) {
+                console.error("Error processing import data:", error);
+                showToast("Gagal memproses data import: " + error.message, "error");
+                hideLoading();
+            }
         }
 
         // Tampilkan modal preview import
@@ -1920,7 +2105,7 @@
             importPreviewData = [];
         }
 
-        // Proses import data ke database
+        // Proses import data ke database dengan chunking untuk menghindari timeout
         async function processImport() {
             const validData = importPreviewData.filter(item => item.isValid);
             
@@ -1931,33 +2116,78 @@
 
             showLoading(`Mengimport ${validData.length} data ke database...`);
 
-            // Prepare data untuk upload
-            const toUpload = validData.map(item => {
-                const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
-                return cleanData;
-            });
-
             try {
+                // Prepare data untuk upload
+                const toUpload = validData.map(item => {
+                    const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
+                    return cleanData;
+                });
+
                 let successCount = 0;
                 let errorCount = 0;
                 const errors = [];
 
-                // Gunakan upsert untuk handle insert dan update
-                const { data, error } = await supabaseClient
-                    .from('karyawan_mess')
-                    .upsert(toUpload, {
-                        onConflict: 'nik',
-                        ignoreDuplicates: false
-                    });
-
-                if (error) {
-                    throw new Error(error.message);
+                // Split data menjadi chunk untuk menghindari timeout
+                const chunkSize = 50;
+                const chunks = [];
+                for (let i = 0; i < toUpload.length; i += chunkSize) {
+                    chunks.push(toUpload.slice(i, i + chunkSize));
                 }
 
-                successCount = toUpload.length;
+                // Process each chunk
+                for (let i = 0; i < chunks.length; i++) {
+                    const chunk = chunks[i];
+                    const start = i * chunkSize + 1;
+                    const end = Math.min((i + 1) * chunkSize, toUpload.length);
+                    
+                    document.getElementById('loading-detail').textContent = 
+                        `Mengimport data ${start}-${end} dari ${toUpload.length}...`;
+                    
+                    try {
+                        // Gunakan upsert untuk handle insert dan update
+                        const { data, error } = await supabaseClient
+                            .from('karyawan_mess')
+                            .upsert(chunk, {
+                                onConflict: 'nik',
+                                ignoreDuplicates: false
+                            });
+
+                        if (error) {
+                            throw new Error(error.message);
+                        }
+
+                        successCount += chunk.length;
+                    } catch (chunkError) {
+                        console.error(`Error importing chunk ${i + 1}:`, chunkError);
+                        errorCount += chunk.length;
+                        errors.push(`Chunk ${i + 1}: ${chunkError.message}`);
+                        
+                        // Coba insert satu per satu jika batch gagal
+                        for (const item of chunk) {
+                            try {
+                                const { error } = await supabaseClient
+                                    .from('karyawan_mess')
+                                    .upsert([item], {
+                                        onConflict: 'nik',
+                                        ignoreDuplicates: false
+                                    });
+                                
+                                if (error) {
+                                    errors.push(`NIK ${item.nik}: ${error.message}`);
+                                } else {
+                                    successCount++;
+                                    errorCount--;
+                                }
+                            } catch (singleError) {
+                                errors.push(`NIK ${item.nik}: ${singleError.message}`);
+                            }
+                        }
+                    }
+                }
 
                 if (errorCount > 0) {
                     showToast(`Import sebagian berhasil: ${successCount} data berhasil, ${errorCount} gagal`, "warning");
+                    console.log("Import errors:", errors);
                 } else {
                     showToast(`Import ${successCount} data berhasil!`, "success");
                 }
@@ -1986,6 +2216,28 @@
             
             // Buat worksheet
             const ws = XLSX.utils.aoa_to_sheet(headers);
+            
+            // Set column widths
+            const colWidths = [
+                { wch: 15 }, // NIK
+                { wch: 25 }, // NAMA
+                { wch: 12 }, // GENDER
+                { wch: 20 }, // DEPARTMENT
+                { wch: 8 },  // GRD
+                { wch: 8 },  // GOL
+                { wch: 20 }, // JABATAN
+                { wch: 10 }, // FASILITAS
+                { wch: 15 }, // Point of Hire
+                { wch: 15 }, // TANGGAL MASUK KERJA
+                { wch: 20 }, // PERUSAHAAN
+                { wch: 20 }, // LOKASI HUNIAN
+                { wch: 12 }, // FLOOR
+                { wch: 10 }, // BLOCK
+                { wch: 10 }, // NO KAMAR
+                { wch: 12 }, // STATUS KAMAR
+                { wch: 15 }  // TANGGAL MASUK MESS
+            ];
+            ws['!cols'] = colWidths;
             
             // Buat workbook
             const wb = XLSX.utils.book_new();
@@ -2027,10 +2279,12 @@
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
                 ["• Pastikan format kolom sesuai dengan contoh"],
-                ["• Simpan file dalam format .xlsx sebelum diupload"]
+                ["• Simpan file dalam format .xlsx sebelum diupload"],
+                ["• Maksimal ukuran file: 10MB"]
             ];
             
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
+            ws2['!cols'] = [{ wch: 100 }];
             XLSX.utils.book_append_sheet(wb, ws2, "Petunjuk Pengisian");
             
             // Download file
@@ -2070,6 +2324,16 @@
 
                 // Buat worksheet
                 const ws = XLSX.utils.json_to_sheet(exportData);
+                
+                // Set column widths
+                const colWidths = [
+                    { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 20 },
+                    { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 10 },
+                    { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 },
+                    { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
+                    { wch: 15 }
+                ];
+                ws['!cols'] = colWidths;
                 
                 // Buat workbook
                 const wb = XLSX.utils.book_new();
