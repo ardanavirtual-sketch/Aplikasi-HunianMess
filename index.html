@@ -270,6 +270,150 @@
         .grd-3 { background-color: rgba(245, 158, 11, 0.2); color: #fbbf24; }
         .grd-4 { background-color: rgba(168, 85, 247, 0.2); color: #c084fc; }
         .grd-vendor { background-color: rgba(239, 68, 68, 0.2); color: #f87171; }
+        
+        /* Hunian Card Styles */
+        .hunian-card {
+            background: linear-gradient(145deg, rgba(11, 37, 58, 0.9), rgba(7, 25, 39, 0.9));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hunian-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #0ea5e9, #0284c7);
+            transform: scaleX(0);
+            transition: transform 0.4s;
+            transform-origin: left;
+        }
+        
+        .hunian-card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .hunian-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(14, 165, 233, 0.3);
+        }
+        
+        .room-status {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .status-terisi { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.05));
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        
+        .status-tersedia { 
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.15), rgba(14, 165, 233, 0.05));
+            color: #0ea5e9;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+        
+        .status-rusak { 
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.05));
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+        
+        .status-diperbaiki { 
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.05));
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        
+        .grd-indicator {
+            width: 6px;
+            height: 100%;
+            position: absolute;
+            left: 0;
+            top: 0;
+            border-radius: 20px 0 0 20px;
+        }
+        
+        .grd-indicator-1 { background: linear-gradient(to bottom, #60a5fa, #3b82f6); }
+        .grd-indicator-2 { background: linear-gradient(to bottom, #4ade80, #22c55e); }
+        .grd-indicator-3 { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
+        .grd-indicator-4 { background: linear-gradient(to bottom, #c084fc, #a855f7); }
+        .grd-indicator-vendor { background: linear-gradient(to bottom, #f87171, #ef4444); }
+        
+        .floor-badge {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+        
+        .floor-bawah {
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.2), rgba(14, 165, 233, 0.1));
+            color: #0ea5e9;
+            border: 1px solid rgba(14, 165, 233, 0.3);
+        }
+        
+        .floor-atas {
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(168, 85, 247, 0.1));
+            color: #c084fc;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+        
+        .occupant-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 12px;
+        }
+        
+        .male-avatar {
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+        }
+        
+        .female-avatar {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+            color: white;
+        }
+        
+        .empty-avatar {
+            background: linear-gradient(135deg, #64748b, #475569);
+            color: #cbd5e1;
+        }
+        
+        .capacity-bar {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        
+        .capacity-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 1s ease-in-out;
+        }
+        
+        .capacity-high { background: linear-gradient(90deg, #ef4444, #f87171); }
+        .capacity-medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .capacity-low { background: linear-gradient(90deg, #10b981, #34d399); }
     </style>
 </head>
 <body class="flex h-screen">
@@ -650,6 +794,10 @@
                     <i data-lucide="layout-grid" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Dashboard</span>
                 </button>
+                <button onclick="switchTab('data-hunian')" id="nav-data-hunian" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                    <span class="nav-text font-bold text-sm">Data Hunian</span>
+                </button>
                 <button onclick="switchTab('data-karyawan')" id="nav-data-karyawan" class="nav-link w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/5 transition-all">
                     <i data-lucide="database" class="w-5 h-5"></i>
                     <span class="nav-text font-bold text-sm">Data Karyawan</span>
@@ -818,6 +966,102 @@
                             <div class="text-[10px] text-slate-400 font-bold uppercase">Vendor</div>
                             <div class="text-[8px] text-slate-500">Kontraktor</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB DATA HUNIAN -->
+            <div id="tab-data-hunian" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
+                <!-- Sub-Header Bar -->
+                <div class="px-8 py-4 bg-[#0b253a]/30 border-b border-white/5 flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-4">
+                        <span id="hunian-count-badge" class="bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 KAMAR</span>
+                        <h4 id="current-hunian-name" class="text-sm font-black text-white uppercase tracking-wider">DATA HUNIAN KARYAWAN</h4>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <button onclick="exportHunianData()" class="btn-secondary text-[10px]">
+                            <i data-lucide="download" class="w-4 h-4 mr-2"></i> EXPORT DATA
+                        </button>
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 w-4 h-4"></i>
+                            <input type="text" id="hunian-search" placeholder="Cari nama atau no kamar..." 
+                                   class="input-field pl-10 w-48 text-[11px] py-1.5"
+                                   oninput="renderHunianCards()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FILTER BAR -->
+                <div class="px-8 py-3 bg-[#0b253a]/20 border-b border-white/5 flex items-center gap-4 shrink-0">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-6 gap-3">
+                        <div>
+                            <label class="form-label">Lokasi</label>
+                            <select id="hunianFilterLokasi" onchange="renderHunianCards()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua Lokasi</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Block</label>
+                            <input type="text" id="hunianFilterBlock" oninput="renderHunianCards()" placeholder="Cari block..." 
+                                   class="input-field text-[11px] py-1.5">
+                        </div>
+                        <div>
+                            <label class="form-label">No Kamar</label>
+                            <input type="text" id="hunianFilterKamar" oninput="renderHunianCards()" placeholder="Cari no kamar..." 
+                                   class="input-field text-[11px] py-1.5">
+                        </div>
+                        <div>
+                            <label class="form-label">Status</label>
+                            <select id="hunianFilterStatus" onchange="renderHunianCards()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua Status</option>
+                                <option value="TERISI">TERISI</option>
+                                <option value="TERSEDIA">TERSEDIA</option>
+                                <option value="RUSAK">RUSAK</option>
+                                <option value="DIPERBAIKI">DIPERBAIKI</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">GRD</label>
+                            <select id="hunianFilterGrd" onchange="renderHunianCards()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua GRD</option>
+                                <option value="1">GRD 1</option>
+                                <option value="2">GRD 2</option>
+                                <option value="3">GRD 3</option>
+                                <option value="4">GRD 4</option>
+                                <option value="vendor">Vendor</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="form-label">Floor</label>
+                            <select id="hunianFilterFloor" onchange="renderHunianCards()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua Floor</option>
+                                <option value="Lantai Bawah">Lantai Bawah</option>
+                                <option value="Lantai Atas">Lantai Atas</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <button onclick="resetHunianFilters()" class="btn-secondary text-[10px]">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Hunian Cards Container -->
+                <div class="flex-1 overflow-y-auto custom-scrollbar p-8">
+                    <div id="hunian-cards-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Cards will be generated here -->
+                    </div>
+                    
+                    <div id="hunian-empty-state" class="hidden text-center py-20">
+                        <i data-lucide="home" class="w-16 h-16 text-slate-600 mx-auto mb-6"></i>
+                        <h4 class="text-lg font-black text-slate-400 mb-2">Tidak ada data hunian</h4>
+                        <p class="text-slate-500 text-sm max-w-md mx-auto mb-8">
+                            Tidak ada data hunian yang sesuai dengan filter pencarian. Coba ubah filter atau tambah data baru.
+                        </p>
+                        <button onclick="openModal()" class="btn-primary">
+                            <i data-lucide="plus" class="w-4 h-4 mr-2"></i> TAMBAH DATA HUNIAN
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1025,11 +1269,11 @@
 
         // Mapping GRD untuk display
         const grdMapping = {
-            '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky' },
-            '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald' },
-            '3': { name: 'Golongan 3', class: 'grd-3', color: 'amber' },
-            '4': { name: 'Golongan 4 UP', class: 'grd-4', color: 'purple' },
-            'vendor': { name: 'Vendor & Kontraktor', class: 'grd-vendor', color: 'rose' }
+            '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky', indicator: 'grd-indicator-1' },
+            '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald', indicator: 'grd-indicator-2' },
+            '3': { name: 'Golongan 3', class: 'grd-3', color: 'amber', indicator: 'grd-indicator-3' },
+            '4': { name: 'Golongan 4 UP', class: 'grd-4', color: 'purple', indicator: 'grd-indicator-4' },
+            'vendor': { name: 'Vendor & Kontraktor', class: 'grd-vendor', color: 'rose', indicator: 'grd-indicator-vendor' }
         };
 
         // ==================== FUNGSI UTAMA ====================
@@ -1096,6 +1340,11 @@
             return grdMapping[grd]?.class || 'bg-slate-500/10 text-slate-500';
         }
 
+        // Dapatkan indicator class untuk GRD
+        function getGrdIndicatorClass(grd) {
+            return grdMapping[grd]?.indicator || '';
+        }
+
         // ==================== FUNGSI DATABASE ====================
 
         // Ambil semua data dari database
@@ -1139,6 +1388,10 @@
                 updateUI();
                 populateFilterOptions();
                 updateCategoryCounts();
+                // Render hunian cards jika di tab data hunian
+                if (activeTab === 'data-hunian') {
+                    renderHunianCards();
+                }
             }
         }
 
@@ -1216,6 +1469,7 @@
             
             // Sembunyikan semua tab
             document.getElementById('tab-dashboard').classList.add('hidden');
+            document.getElementById('tab-data-hunian').classList.add('hidden');
             document.getElementById('tab-data-karyawan').classList.add('hidden');
             document.getElementById('tab-manajemen-data').classList.add('hidden');
             
@@ -1225,18 +1479,21 @@
             // Update header
             const titles = {
                 'dashboard': 'Dashboard',
+                'data-hunian': 'Data Hunian',
                 'data-karyawan': 'Data Karyawan',
                 'manajemen-data': 'Manajemen Data'
             };
             
             const subtitles = {
                 'dashboard': 'Sistem Manajemen Mess Terintegrasi',
+                'data-hunian': 'Data Hunian Mess P2',
                 'data-karyawan': 'Database Karyawan Mess P2',
                 'manajemen-data': 'Kelola Data Karyawan'
             };
             
             const icons = {
                 'dashboard': 'layout-grid',
+                'data-hunian': 'home',
                 'data-karyawan': 'database',
                 'manajemen-data': 'settings'
             };
@@ -1251,6 +1508,11 @@
             // Jika tab data karyawan, render tabel
             if (tab === 'data-karyawan') {
                 renderTable();
+            }
+            
+            // Jika tab data hunian, render cards
+            if (tab === 'data-hunian') {
+                renderHunianCards();
             }
             
             // Update lucide icons
@@ -1284,6 +1546,8 @@
             // Set active berdasarkan tab/kategori
             if (activeTab === 'dashboard') {
                 document.getElementById('nav-dashboard').classList.add('active');
+            } else if (activeTab === 'data-hunian') {
+                document.getElementById('nav-data-hunian').classList.add('active');
             } else if (activeTab === 'data-karyawan') {
                 document.getElementById('nav-data-karyawan').classList.add('active');
                 
@@ -1323,6 +1587,7 @@
             const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             document.getElementById('filterLokasi').innerHTML = lokasiHtml;
+            document.getElementById('hunianFilterLokasi').innerHTML = lokasiHtml;
 
             // Perusahaan
             const uniquePerusahaan = [...new Set(employees.map(e => e.perusahaan))].filter(Boolean).sort();
@@ -1472,6 +1737,224 @@
             lucide.createIcons();
         }
 
+        // ==================== FUNGSI DATA HUNIAN ====================
+
+        // Render hunian cards
+        function renderHunianCards() {
+            const search = document.getElementById('hunian-search').value.toLowerCase();
+            const filterLok = document.getElementById('hunianFilterLokasi').value;
+            const filterBlock = document.getElementById('hunianFilterBlock').value.toLowerCase();
+            const filterKamar = document.getElementById('hunianFilterKamar').value.toLowerCase();
+            const filterStatus = document.getElementById('hunianFilterStatus').value;
+            const filterGrd = document.getElementById('hunianFilterGrd').value;
+            const filterFloor = document.getElementById('hunianFilterFloor').value;
+
+            const filtered = employees.filter(e => {
+                const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
+                                     (e.no_kamar || "").toLowerCase().includes(search);
+                const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
+                const matchesBlock = !filterBlock || (e.block && e.block.toLowerCase().includes(filterBlock));
+                const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
+                const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
+                const matchesGrd = !filterGrd || e.grd === filterGrd;
+                const matchesFloor = !filterFloor || e.floor === filterFloor;
+                
+                return matchesSearch && matchesLok && matchesBlock && matchesKamar && 
+                       matchesStatus && matchesGrd && matchesFloor;
+            });
+
+            document.getElementById('hunian-count-badge').innerText = `${filtered.length} KAMAR`;
+            const container = document.getElementById('hunian-cards-container');
+            const emptyState = document.getElementById('hunian-empty-state');
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            
+            emptyState.classList.add('hidden');
+            
+            // Kelompokkan berdasarkan lokasi untuk summary
+            const groupedByLocation = {};
+            filtered.forEach(e => {
+                const loc = e.lokasi_hunian || 'Unknown';
+                if (!groupedByLocation[loc]) {
+                    groupedByLocation[loc] = { total: 0, terisi: 0, tersedia: 0 };
+                }
+                groupedByLocation[loc].total++;
+                if (e.status_kamar === 'TERISI') groupedByLocation[loc].terisi++;
+                if (e.status_kamar === 'TERSEDIA') groupedByLocation[loc].tersedia++;
+            });
+
+            container.innerHTML = filtered.map(e => {
+                const statusClass = getStatusClass(e.status_kamar);
+                const statusText = e.status_kamar || 'TERISI';
+                const grdClass = getGrdClass(e.grd);
+                const grdDisplay = getGrdDisplay(e.grd);
+                const grdIndicator = getGrdIndicatorClass(e.grd);
+                const floorClass = e.floor === 'Lantai Bawah' ? 'floor-bawah' : 'floor-atas';
+                const floorText = e.floor === 'Lantai Bawah' ? 'Bawah' : 'Atas';
+                
+                // Avatar berdasarkan gender
+                let avatarClass = 'empty-avatar';
+                let avatarText = '?';
+                if (e.gender === 'LAKI-LAKI') {
+                    avatarClass = 'male-avatar';
+                    avatarText = e.nama ? e.nama.charAt(0).toUpperCase() : 'M';
+                } else if (e.gender === 'PEREMPUAN') {
+                    avatarClass = 'female-avatar';
+                    avatarText = e.nama ? e.nama.charAt(0).toUpperCase() : 'F';
+                }
+
+                return `
+                    <div class="hunian-card p-6 relative">
+                        <div class="grd-indicator ${grdIndicator}"></div>
+                        <div class="flex items-start justify-between mb-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-3">
+                                    <div class="occupant-avatar ${avatarClass}">
+                                        ${avatarText}
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-black text-white truncate max-w-[180px]" title="${e.nama || '-'}">
+                                            ${e.nama || 'Tidak Ada Penghuni'}
+                                        </h4>
+                                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">${e.nik || '-'}</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center gap-2 mb-3">
+                                    <span class="${grdClass} grd-badge">${grdDisplay}</span>
+                                    <span class="floor-badge ${floorClass}">${floorText}</span>
+                                    <span class="bg-white/5 text-slate-300 px-2 py-0.5 rounded text-[9px] font-bold">${e.perusahaan || '-'}</span>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-3xl font-black text-emerald-400 mb-1">${e.no_kamar || '-'}</div>
+                                <div class="text-[8px] text-slate-400 uppercase tracking-widest">No Kamar</div>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center justify-between">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Lokasi</div>
+                                <div class="text-sm font-black text-white">${e.lokasi_hunian || '-'}</div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Block</div>
+                                <div class="text-sm font-bold text-slate-300">${e.block || '-'}</div>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <div class="text-[10px] text-slate-400 uppercase font-bold">Departemen</div>
+                                <div class="text-sm font-bold text-sky-300 truncate max-w-[150px]" title="${e.department || '-'}">
+                                    ${e.department || '-'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <div class="room-status ${statusClass}">${statusText}</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button onclick='openModal(${JSON.stringify(e).replace(/'/g, "&apos;")})' 
+                                        class="p-2 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white rounded-lg transition-all"
+                                        title="Edit">
+                                    <i data-lucide="edit-3" class="w-4 h-4"></i>
+                                </button>
+                                <button onclick="viewHunianDetail('${e.id}')" 
+                                        class="p-2 bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500 hover:text-white rounded-lg transition-all"
+                                        title="Detail">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+        }
+
+        // Reset filter hunian
+        function resetHunianFilters() {
+            document.getElementById('hunianFilterLokasi').value = '';
+            document.getElementById('hunianFilterBlock').value = '';
+            document.getElementById('hunianFilterKamar').value = '';
+            document.getElementById('hunianFilterStatus').value = '';
+            document.getElementById('hunianFilterGrd').value = '';
+            document.getElementById('hunianFilterFloor').value = '';
+            document.getElementById('hunian-search').value = '';
+            renderHunianCards();
+            showToast("Filter hunian telah direset", "success");
+        }
+
+        // View detail hunian
+        function viewHunianDetail(id) {
+            const employee = employees.find(e => e.id === id);
+            if (employee) {
+                openModal(employee);
+            }
+        }
+
+        // Export data hunian
+        function exportHunianData() {
+            if (employees.length === 0) {
+                showToast("Tidak ada data hunian untuk diexport", "warning");
+                return;
+            }
+
+            showLoading("Mempersiapkan file export hunian...");
+            try {
+                // Format data untuk export hunian
+                const exportData = employees.map(emp => ({
+                    'NO KAMAR': emp.no_kamar || '',
+                    'STATUS KAMAR': emp.status_kamar || '',
+                    'NAMA PENGHUNI': emp.nama || '',
+                    'NIK': emp.nik || '',
+                    'GENDER': emp.gender || '',
+                    'GRD': getGrdDisplay(emp.grd),
+                    'PERUSAHAAN': emp.perusahaan || '',
+                    'DEPARTMENT': emp.department || '',
+                    'JABATAN': emp.jabatan || '',
+                    'LOKASI HUNIAN': emp.lokasi_hunian || '',
+                    'BLOCK': emp.block || '',
+                    'FLOOR': emp.floor || '',
+                    'FASILITAS': emp.fasilitas || '',
+                    'POINT OF HIRE': emp.point_of_hire || '',
+                    'TGL MASUK MESS': formatDateForDisplay(emp.tanggal_masuk_mess_hunian_p2) || '',
+                    'TGL MASUK KERJA': formatDateForDisplay(emp.tanggal_masuk_kerja) || ''
+                }));
+
+                // Buat worksheet
+                const ws = XLSX.utils.json_to_sheet(exportData);
+                
+                // Set column widths
+                const colWidths = [
+                    { wch: 10 }, { wch: 12 }, { wch: 25 }, { wch: 15 },
+                    { wch: 8 }, { wch: 15 }, { wch: 20 }, { wch: 20 },
+                    { wch: 20 }, { wch: 20 }, { wch: 10 }, { wch: 12 },
+                    { wch: 10 }, { wch: 15 }, { wch: 15 }, { wch: 15 }
+                ];
+                ws['!cols'] = colWidths;
+                
+                // Buat workbook
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Data Hunian");
+                
+                // Download file
+                const today = new Date().toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Data_Hunian_Mess_${today}.xlsx`);
+                
+                showToast(`Export ${employees.length} data hunian berhasil`, "success");
+            } catch (error) {
+                console.error("Export hunian error:", error);
+                showToast("Gagal mengexport data hunian: " + error.message, "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
         // Format tanggal untuk display
         function formatDateForDisplay(dateString) {
             if (!dateString) return '-';
@@ -1503,10 +1986,10 @@
         // Dapatkan class untuk status kamar
         function getStatusClass(status) {
             switch(status?.toUpperCase()) {
-                case 'TERISI': return 'bg-emerald-500/10 text-emerald-500';
-                case 'TERSEDIA': return 'bg-sky-500/10 text-sky-500';
-                case 'RUSAK': return 'bg-rose-500/10 text-rose-500';
-                case 'DIPERBAIKI': return 'bg-amber-500/10 text-amber-500';
+                case 'TERISI': return 'status-terisi';
+                case 'TERSEDIA': return 'status-tersedia';
+                case 'RUSAK': return 'status-rusak';
+                case 'DIPERBAIKI': return 'status-diperbaiki';
                 default: return 'bg-slate-500/10 text-slate-500';
             }
         }
@@ -1610,7 +2093,7 @@
             }
         }
 
-        // ==================== FUNGSI IMPORT EXCEL ====================
+        // ==================== FUNGSI IMPORT EXCEL YANG DIPERBAIKI ====================
 
         // Handle file select untuk import
         async function handleFileSelect(event) {
@@ -1659,11 +2142,8 @@
                         const data = new Uint8Array(e.target.result);
                         const workbook = XLSX.read(data, { 
                             type: 'array', 
-                            cellDates: true, 
-                            cellNF: false, 
-                            cellText: false,
-                            raw: false,
-                            dateNF: 'yyyy-mm-dd'
+                            cellDates: true,
+                            raw: true  // Gunakan raw: true untuk mendapatkan data mentah
                         });
                         
                         // Ambil semua sheet names
@@ -1677,11 +2157,10 @@
                         const firstSheetName = sheetNames[0];
                         const worksheet = workbook.Sheets[firstSheetName];
                         
-                        // Convert ke JSON dengan opsi yang lebih baik
+                        // Convert ke JSON dengan opsi yang lebih fleksibel
                         const jsonData = XLSX.utils.sheet_to_json(worksheet, {
                             defval: "",           // Nilai default untuk cell kosong
-                            raw: false,           // Convert tanggal ke string
-                            dateNF: 'yyyy-mm-dd'  // Format tanggal
+                            raw: false            // Convert tanggal ke string
                         });
                         
                         resolve(jsonData);
@@ -1698,7 +2177,7 @@
         function normalizeGrd(value) {
             if (!value) return '';
             
-            const strValue = String(value).trim().toLowerCase();
+            const strValue = String(value).toString().trim().toLowerCase();
             
             // Mapping berbagai format GRD
             const grdMapping = {
@@ -1728,7 +2207,8 @@
                 'vendor': 'vendor',
                 'kontraktor': 'vendor',
                 'vendor & kontraktor': 'vendor',
-                'v': 'vendor'
+                'v': 'vendor',
+                'vend': 'vendor'
             };
             
             return grdMapping[strValue] || strValue;
@@ -1738,16 +2218,18 @@
         function normalizeGender(value) {
             if (!value) return '';
             
-            const strValue = String(value).trim().toUpperCase();
+            const strValue = String(value).toString().trim().toUpperCase();
             
             const genderMapping = {
                 'LAKI-LAKI': 'LAKI-LAKI',
                 'LAKI LAKI': 'LAKI-LAKI',
                 'L': 'LAKI-LAKI',
                 'PRIA': 'LAKI-LAKI',
+                'MALE': 'LAKI-LAKI',
                 'PEREMPUAN': 'PEREMPUAN',
                 'P': 'PEREMPUAN',
-                'WANITA': 'PEREMPUAN'
+                'WANITA': 'PEREMPUAN',
+                'FEMALE': 'PEREMPUAN'
             };
             
             return genderMapping[strValue] || '';
@@ -1757,13 +2239,15 @@
         function normalizeFasilitas(value) {
             if (!value) return '';
             
-            const strValue = String(value).trim().toUpperCase();
+            const strValue = String(value).toString().trim().toUpperCase();
             
             const fasilitasMapping = {
                 'CR': 'CR',
                 'C R': 'CR',
+                'C.R': 'CR',
                 'NR': 'NR',
-                'N R': 'NR'
+                'N R': 'NR',
+                'N.R': 'NR'
             };
             
             return fasilitasMapping[strValue] || '';
@@ -1773,24 +2257,25 @@
         function normalizeLokasiHunian(value) {
             if (!value) return '';
             
-            const strValue = String(value).trim().toUpperCase();
+            const strValue = String(value).toString().trim().toUpperCase();
             
             const lokasiMapping = {
                 'P2 SURYA RESIDANCE': 'P2 SURYA RESIDANCE',
                 'P2 SURYA RESIDENCE': 'P2 SURYA RESIDANCE',
                 'SURYA RESIDANCE': 'P2 SURYA RESIDANCE',
+                'SURYA RESIDENCE': 'P2 SURYA RESIDANCE',
                 'MENTARI': 'MENTARI',
                 'PELANGI': 'PELANGI'
             };
             
-            return lokasiMapping[strValue] || '';
+            return lokasiMapping[strValue] || strValue;
         }
 
         // Normalisasi nilai Floor
         function normalizeFloor(value) {
             if (!value) return '';
             
-            const strValue = String(value).trim();
+            const strValue = String(value).toString().trim();
             
             const floorMapping = {
                 'Lantai Bawah': 'Lantai Bawah',
@@ -1810,73 +2295,66 @@
         function formatDate(value) {
             if (!value) return null;
             
-            // Jika sudah berupa Date object
-            if (value instanceof Date) {
-                return value.toISOString().split('T')[0];
-            }
-            
-            // Jika angka (format Excel)
-            if (typeof value === 'number') {
-                try {
-                    // Excel date epoch: 1899-12-30
-                    const excelEpoch = new Date(1899, 11, 30);
-                    const date = new Date(excelEpoch.getTime() + value * 86400000);
-                    return date.toISOString().split('T')[0];
-                } catch (e) {
+            try {
+                // Jika sudah berupa Date object
+                if (value instanceof Date) {
+                    return value.toISOString().split('T')[0];
+                }
+                
+                // Jika string kosong
+                if (typeof value === 'string' && value.trim() === '') {
                     return null;
                 }
-            }
-            
-            // Jika string, coba parse berbagai format
-            if (typeof value === 'string') {
-                const trimmed = value.trim();
-                if (!trimmed) return null;
                 
-                // Coba parse berbagai format tanggal
-                const dateFormats = [
-                    /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, // YYYY-MM-DD, YYYY/MM/DD
-                    /(\d{1,2})[-/](\d{1,2})[-/](\d{4})/, // DD-MM-YYYY, DD/MM/YYYY
-                    /(\d{1,2})[-/](\d{1,2})[-/](\d{2})/, // DD-MM-YY, DD/MM/YY
-                ];
-                
-                for (const format of dateFormats) {
-                    const match = trimmed.match(format);
-                    if (match) {
-                        try {
-                            let year, month, day;
-                            
-                            if (match[1].length === 4) {
-                                // YYYY-MM-DD
-                                year = parseInt(match[1]);
-                                month = parseInt(match[2]) - 1;
-                                day = parseInt(match[3]);
-                            } else if (match[3].length === 4) {
-                                // DD-MM-YYYY
-                                year = parseInt(match[3]);
-                                month = parseInt(match[2]) - 1;
-                                day = parseInt(match[1]);
-                            } else {
-                                // DD-MM-YY
-                                year = 2000 + parseInt(match[3]);
-                                month = parseInt(match[2]) - 1;
-                                day = parseInt(match[1]);
-                            }
-                            
-                            const date = new Date(year, month, day);
-                            if (!isNaN(date.getTime())) {
-                                return date.toISOString().split('T')[0];
-                            }
-                        } catch (e) {
-                            // Continue to next format
-                        }
+                // Jika angka (format Excel)
+                if (typeof value === 'number') {
+                    try {
+                        // Excel date epoch: 1899-12-30
+                        const excelEpoch = new Date(1899, 11, 30);
+                        const date = new Date(excelEpoch.getTime() + value * 86400000);
+                        if (isNaN(date.getTime())) return null;
+                        return date.toISOString().split('T')[0];
+                    } catch (e) {
+                        return null;
                     }
                 }
+                
+                // Jika string, coba parse
+                if (typeof value === 'string') {
+                    const trimmed = value.trim();
+                    
+                    // Coba parse format ISO (YYYY-MM-DD)
+                    const isoMatch = trimmed.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+                    if (isoMatch) {
+                        const date = new Date(isoMatch[1], isoMatch[2] - 1, isoMatch[3]);
+                        if (!isNaN(date.getTime())) {
+                            return date.toISOString().split('T')[0];
+                        }
+                    }
+                    
+                    // Coba parse format DD/MM/YYYY atau DD-MM-YYYY
+                    const dateMatch = trimmed.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+                    if (dateMatch) {
+                        const date = new Date(dateMatch[3], dateMatch[2] - 1, dateMatch[1]);
+                        if (!isNaN(date.getTime())) {
+                            return date.toISOString().split('T')[0];
+                        }
+                    }
+                    
+                    // Coba parse menggunakan Date constructor
+                    const date = new Date(trimmed);
+                    if (!isNaN(date.getTime())) {
+                        return date.toISOString().split('T')[0];
+                    }
+                }
+            } catch (e) {
+                console.warn("Error formatting date:", e);
             }
             
             return null;
         }
 
-        // Proses data import dengan error handling yang lebih baik
+        // Process import data dengan mapping kolom yang lebih fleksibel
         async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
@@ -1886,63 +2364,68 @@
             showLoading("Memproses data import...");
 
             try {
-                // Dapatkan header untuk mapping kolom
-                const firstRow = json[0];
-                const headers = Object.keys(firstRow);
-                
-                console.log("Headers ditemukan:", headers);
-                
                 // Process data untuk preview
                 importPreviewData = json.map((row, index) => {
-                    // Fungsi helper untuk mendapatkan nilai dengan berbagai kemungkinan nama kolom
+                    // Helper untuk mendapatkan nilai dengan case-insensitive
                     const getValue = (possibleKeys) => {
-                        for (const key of possibleKeys) {
-                            if (row[key] !== undefined && row[key] !== null && row[key] !== '') {
-                                return row[key];
+                        const keys = Array.isArray(possibleKeys) ? possibleKeys : [possibleKeys];
+                        const rowKeys = Object.keys(row).map(k => k.toLowerCase().trim());
+                        
+                        for (const key of keys) {
+                            const lowerKey = key.toLowerCase().trim();
+                            const matchingKey = Object.keys(row).find(k => 
+                                k.toLowerCase().trim() === lowerKey
+                            );
+                            
+                            if (matchingKey && row[matchingKey] !== undefined && row[matchingKey] !== null && row[matchingKey] !== '') {
+                                return row[matchingKey];
                             }
                         }
+                        
                         return '';
                     };
 
-                    // Mapping berbagai kemungkinan nama kolom
-                    const nik = getValue(['NIK', 'NIK Karyawan', 'Nomor Induk', 'No. Induk']);
-                    const nama = getValue(['NAMA', 'Nama', 'Nama Lengkap', 'Nama Karyawan']);
-                    const gender = getValue(['GENDER', 'Gender', 'Jenis Kelamin', 'JK']);
-                    const grd = getValue(['GRD', 'Grade', 'Golongan', 'GOL', 'Kelas']);
-                    const gol = getValue(['GOL_DETAIL', 'Gol Detail', 'Detail Golongan', 'Sub Golongan']);
-                    const jabatan = getValue(['JABATAN', 'Jabatan', 'Posisi', 'Position']);
-                    const department = getValue(['DEPARTMENT', 'Department', 'Divisi', 'Bagian']);
-                    const fasilitas = getValue(['FASILITAS', 'Fasilitas', 'Tipe Kamar', 'Room Type']);
-                    const point_of_hire = getValue(['Point of Hire', 'POINT OF HIRE', 'Asal', 'Domisili']);
-                    const tanggal_masuk_kerja = getValue(['TANGGAL MASUK KERJA', 'Tanggal Masuk Kerja', 'Tgl Masuk', 'Join Date']);
-                    const perusahaan = getValue(['PERUSAHAAN', 'Perusahaan', 'Company', 'Firma']);
-                    const lokasi_hunian = getValue(['LOKASI HUNIAN', 'Lokasi Hunian', 'Lokasi Mess', 'Mess']);
-                    const floor = getValue(['FLOOR', 'Floor', 'Lantai', 'Tingkat']);
-                    const block = getValue(['BLOCK', 'Block', 'Blok', 'Zona']);
-                    const no_kamar = getValue(['NO KAMAR', 'No Kamar', 'Nomor Kamar', 'Kamar']);
-                    const status_kamar = getValue(['STATUS KAMAR', 'Status Kamar', 'Status', 'Kondisi']);
-                    const tanggal_masuk_mess = getValue(['TANGGAL MASUK MESS HUNIAN P2', 'Tanggal Masuk Mess', 'Tgl Masuk Mess', 'Check-in Date']);
+                    // Mapping kolom dengan berbagai kemungkinan nama
+                    const rawData = {
+                        nik: getValue(['NIK', 'No. Induk', 'Nomor Induk', 'ID']),
+                        nama: getValue(['NAMA', 'Nama', 'Nama Lengkap', 'Nama Karyawan', 'Name']),
+                        gender: getValue(['GENDER', 'Gender', 'Jenis Kelamin', 'JK', 'Sex']),
+                        grd: getValue(['GRD', 'Grade', 'Golongan', 'GOL', 'Kelas', 'Rank']),
+                        gol: getValue(['GOL_DETAIL', 'Gol Detail', 'Detail Golongan', 'Sub Golongan', 'Sub Grade']),
+                        jabatan: getValue(['JABATAN', 'Jabatan', 'Posisi', 'Position', 'Job Title']),
+                        department: getValue(['DEPARTMENT', 'Department', 'Divisi', 'Bagian', 'Div']),
+                        fasilitas: getValue(['FASILITAS', 'Fasilitas', 'Tipe Kamar', 'Room Type', 'Facility']),
+                        point_of_hire: getValue(['Point of Hire', 'POINT OF HIRE', 'Asal', 'Domisili', 'Origin', 'Domicile']),
+                        tanggal_masuk_kerja: getValue(['TANGGAL MASUK KERJA', 'Tanggal Masuk Kerja', 'Tgl Masuk', 'Join Date', 'Start Date']),
+                        perusahaan: getValue(['PERUSAHAAN', 'Perusahaan', 'Company', 'Firma', 'Employer']),
+                        lokasi_hunian: getValue(['LOKASI HUNIAN', 'Lokasi Hunian', 'Lokasi Mess', 'Mess', 'Location']),
+                        floor: getValue(['FLOOR', 'Floor', 'Lantai', 'Tingkat', 'Level']),
+                        block: getValue(['BLOCK', 'Block', 'Blok', 'Zona', 'Zone']),
+                        no_kamar: getValue(['NO KAMAR', 'No Kamar', 'Nomor Kamar', 'Kamar', 'Room Number']),
+                        status_kamar: getValue(['STATUS KAMAR', 'Status Kamar', 'Status', 'Kondisi', 'Condition', 'Room Status']),
+                        tanggal_masuk_mess: getValue(['TANGGAL MASUK MESS HUNIAN P2', 'Tanggal Masuk Mess', 'Tgl Masuk Mess', 'Check-in Date', 'Mess Entry Date'])
+                    };
 
                     const processed = {
                         id: `preview-${index}`,
-                        rowNumber: index + 2, // +2 karena header + 1-based index
-                        nik: String(nik || "").trim(),
-                        nama: String(nama || "").trim(),
-                        gender: normalizeGender(gender),
-                        department: String(department || "").trim(),
-                        grd: normalizeGrd(grd),
-                        gol: String(gol || "").toUpperCase().trim(),
-                        jabatan: String(jabatan || "").trim(),
-                        fasilitas: normalizeFasilitas(fasilitas),
-                        point_of_hire: String(point_of_hire || "").trim(),
-                        tanggal_masuk_kerja: formatDate(tanggal_masuk_kerja),
-                        perusahaan: String(perusahaan || "").trim(),
-                        lokasi_hunian: normalizeLokasiHunian(lokasi_hunian),
-                        floor: normalizeFloor(floor),
-                        block: String(block || "").toUpperCase().trim(),
-                        no_kamar: String(no_kamar || "").trim(),
-                        status_kamar: String(status_kamar || "TERISI").toUpperCase().trim(),
-                        tanggal_masuk_mess_hunian_p2: formatDate(tanggal_masuk_mess),
+                        rowNumber: index + 2,
+                        nik: String(rawData.nik || "").trim(),
+                        nama: String(rawData.nama || "").trim(),
+                        gender: normalizeGender(rawData.gender),
+                        department: String(rawData.department || "").trim(),
+                        grd: normalizeGrd(rawData.grd),
+                        gol: String(rawData.gol || "").toUpperCase().trim(),
+                        jabatan: String(rawData.jabatan || "").trim(),
+                        fasilitas: normalizeFasilitas(rawData.fasilitas),
+                        point_of_hire: String(rawData.point_of_hire || "").trim(),
+                        tanggal_masuk_kerja: formatDate(rawData.tanggal_masuk_kerja),
+                        perusahaan: String(rawData.perusahaan || "").trim(),
+                        lokasi_hunian: normalizeLokasiHunian(rawData.lokasi_hunian),
+                        floor: normalizeFloor(rawData.floor),
+                        block: String(rawData.block || "").toUpperCase().trim(),
+                        no_kamar: String(rawData.no_kamar || "").trim(),
+                        status_kamar: String(rawData.status_kamar || "TERISI").toUpperCase().trim(),
+                        tanggal_masuk_mess_hunian_p2: formatDate(rawData.tanggal_masuk_mess),
                         isValid: true,
                         errors: [],
                         isNew: true
@@ -1965,7 +2448,7 @@
                         processed.errors.push("GRD harus diisi");
                     } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
                         processed.isValid = false;
-                        processed.errors.push(`GRD tidak valid: "${grd}". Harus: 1, 2, 3, 4, atau vendor`);
+                        processed.errors.push(`GRD tidak valid: "${rawData.grd}". Harus: 1, 2, 3, 4, atau vendor`);
                     }
 
                     // Validasi field required lainnya
@@ -1977,33 +2460,6 @@
                     if (!processed.no_kamar) {
                         processed.isValid = false;
                         processed.errors.push("No Kamar harus diisi");
-                    }
-
-                    // Validasi gender
-                    if (processed.gender && !['LAKI-LAKI', 'PEREMPUAN'].includes(processed.gender)) {
-                        processed.isValid = false;
-                        processed.errors.push(`Gender tidak valid: "${gender}". Harus: LAKI-LAKI atau PEREMPUAN`);
-                    }
-
-                    // Validasi fasilitas
-                    if (processed.fasilitas && !['CR', 'NR'].includes(processed.fasilitas)) {
-                        processed.fasilitas = ''; // Reset jika tidak valid
-                    }
-
-                    // Validasi lokasi hunian
-                    if (processed.lokasi_hunian && !['P2 SURYA RESIDANCE', 'MENTARI', 'PELANGI'].includes(processed.lokasi_hunian)) {
-                        processed.isValid = false;
-                        processed.errors.push(`Lokasi Hunian tidak valid: "${lokasi_hunian}". Harus: P2 SURYA RESIDANCE, MENTARI, atau PELANGI`);
-                    }
-
-                    // Validasi floor
-                    if (processed.floor && !['Lantai Bawah', 'Lantai Atas'].includes(processed.floor)) {
-                        processed.floor = ''; // Reset jika tidak valid
-                    }
-
-                    // Validasi perusahaan
-                    if (!processed.perusahaan) {
-                        processed.perusahaan = '';
                     }
 
                     // Cek apakah NIK sudah ada di database
@@ -2105,7 +2561,7 @@
             importPreviewData = [];
         }
 
-        // Proses import data ke database dengan chunking untuk menghindari timeout
+        // Proses import data ke database - VERSI YANG DIPERBAIKI
         async function processImport() {
             const validData = importPreviewData.filter(item => item.isValid);
             
@@ -2117,7 +2573,7 @@
             showLoading(`Mengimport ${validData.length} data ke database...`);
 
             try {
-                // Prepare data untuk upload
+                // Prepare data untuk upload - SAVE ALL DATA
                 const toUpload = validData.map(item => {
                     const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
                     return cleanData;
@@ -2127,73 +2583,65 @@
                 let errorCount = 0;
                 const errors = [];
 
-                // Split data menjadi chunk untuk menghindari timeout
-                const chunkSize = 50;
-                const chunks = [];
-                for (let i = 0; i < toUpload.length; i += chunkSize) {
-                    chunks.push(toUpload.slice(i, i + chunkSize));
-                }
+                // IMPORT SEMUA DATA - tidak perlu chunking karena data sudah divalidasi
+                document.getElementById('loading-detail').textContent = 
+                    `Mengimport ${toUpload.length} data ke database...`;
+                
+                try {
+                    // Gunakan upsert untuk semua data
+                    const { data, error } = await supabaseClient
+                        .from('karyawan_mess')
+                        .upsert(toUpload, {
+                            onConflict: 'nik',
+                            ignoreDuplicates: false
+                        });
 
-                // Process each chunk
-                for (let i = 0; i < chunks.length; i++) {
-                    const chunk = chunks[i];
-                    const start = i * chunkSize + 1;
-                    const end = Math.min((i + 1) * chunkSize, toUpload.length);
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+
+                    successCount = toUpload.length;
                     
-                    document.getElementById('loading-detail').textContent = 
-                        `Mengimport data ${start}-${end} dari ${toUpload.length}...`;
+                    showToast(`Import ${successCount} data berhasil!`, "success");
+                    closePreviewModal();
+                    await fetchAllData();
                     
-                    try {
-                        // Gunakan upsert untuk handle insert dan update
-                        const { data, error } = await supabaseClient
-                            .from('karyawan_mess')
-                            .upsert(chunk, {
-                                onConflict: 'nik',
-                                ignoreDuplicates: false
-                            });
-
-                        if (error) {
-                            throw new Error(error.message);
-                        }
-
-                        successCount += chunk.length;
-                    } catch (chunkError) {
-                        console.error(`Error importing chunk ${i + 1}:`, chunkError);
-                        errorCount += chunk.length;
-                        errors.push(`Chunk ${i + 1}: ${chunkError.message}`);
-                        
-                        // Coba insert satu per satu jika batch gagal
-                        for (const item of chunk) {
-                            try {
-                                const { error } = await supabaseClient
-                                    .from('karyawan_mess')
-                                    .upsert([item], {
-                                        onConflict: 'nik',
-                                        ignoreDuplicates: false
-                                    });
-                                
-                                if (error) {
-                                    errors.push(`NIK ${item.nik}: ${error.message}`);
-                                } else {
-                                    successCount++;
-                                    errorCount--;
-                                }
-                            } catch (singleError) {
-                                errors.push(`NIK ${item.nik}: ${singleError.message}`);
+                } catch (chunkError) {
+                    console.error(`Error importing:`, chunkError);
+                    
+                    // Jika batch gagal, coba satu per satu
+                    for (const item of toUpload) {
+                        try {
+                            const { error } = await supabaseClient
+                                .from('karyawan_mess')
+                                .upsert([item], {
+                                    onConflict: 'nik',
+                                    ignoreDuplicates: false
+                                });
+                            
+                            if (error) {
+                                errors.push(`NIK ${item.nik}: ${error.message}`);
+                                errorCount++;
+                            } else {
+                                successCount++;
                             }
+                        } catch (singleError) {
+                            errors.push(`NIK ${item.nik}: ${singleError.message}`);
+                            errorCount++;
                         }
                     }
+                    
+                    if (errorCount > 0) {
+                        showToast(`Import sebagian berhasil: ${successCount} data berhasil, ${errorCount} gagal`, "warning");
+                        console.log("Import errors:", errors);
+                    } else {
+                        showToast(`Import ${successCount} data berhasil!`, "success");
+                    }
+                    
+                    closePreviewModal();
+                    await fetchAllData();
                 }
 
-                if (errorCount > 0) {
-                    showToast(`Import sebagian berhasil: ${successCount} data berhasil, ${errorCount} gagal`, "warning");
-                    console.log("Import errors:", errors);
-                } else {
-                    showToast(`Import ${successCount} data berhasil!`, "success");
-                }
-
-                closePreviewModal();
-                await fetchAllData();
             } catch (error) {
                 console.error("Import error:", error);
                 showToast("Gagal mengimport data: " + error.message, "error");
@@ -2394,10 +2842,17 @@
             // Setup event listener untuk import file
             document.getElementById('importFile').addEventListener('change', handleFileSelect);
             
-            // Setup event listener untuk search
+            // Setup event listener untuk search global
             document.getElementById('globalSearch').addEventListener('input', function() {
                 if (activeTab === 'data-karyawan') {
                     renderTable();
+                }
+            });
+            
+            // Setup event listener untuk search hunian
+            document.getElementById('hunian-search').addEventListener('input', function() {
+                if (activeTab === 'data-hunian') {
+                    renderHunianCards();
                 }
             });
             
@@ -2410,6 +2865,32 @@
                 
                 nikField.addEventListener('blur', function() {
                     validateNIK(this);
+                });
+            }
+            
+            // Setup drag and drop untuk import
+            const dragDropArea = document.getElementById('drag-drop-area');
+            if (dragDropArea) {
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dragDropArea.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        this.classList.add('dragover');
+                    });
+                });
+                
+                ['dragleave', 'drop'].forEach(eventName => {
+                    dragDropArea.addEventListener(eventName, function(e) {
+                        e.preventDefault();
+                        this.classList.remove('dragover');
+                        
+                        if (eventName === 'drop') {
+                            const files = e.dataTransfer.files;
+                            if (files.length > 0) {
+                                document.getElementById('importFile').files = files;
+                                handleFileSelect({ target: { files: files } });
+                            }
+                        }
+                    });
                 });
             }
             
@@ -2438,7 +2919,11 @@
             // Ctrl + F untuk fokus search
             if (e.ctrlKey && e.key === 'f') {
                 e.preventDefault();
-                document.getElementById('globalSearch').focus();
+                if (activeTab === 'data-hunian') {
+                    document.getElementById('hunian-search').focus();
+                } else if (activeTab === 'data-karyawan') {
+                    document.getElementById('globalSearch').focus();
+                }
             }
             
             // Ctrl + E untuk export (hanya di tab manajemen data)
