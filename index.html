@@ -426,7 +426,6 @@
                                     <th class="py-3 px-4 text-left">NAMA</th>
                                     <th class="py-3 px-4 text-left">GENDER</th>
                                     <th class="py-3 px-4 text-left">GOL</th>
-                                    <th class="py-3 px-4 text-left">GRD</th>
                                     <th class="py-3 px-4 text-left">LOKASI</th>
                                     <th class="py-3 px-4 text-left">NO KAMAR</th>
                                     <th class="py-3 px-4 text-left">STATUS</th>
@@ -515,33 +514,20 @@
                         </div>
                         
                         <div class="form-group">
-                            <label class="form-label required-field">GRD (Grade)</label>
-                            <select name="grd" id="field-grd" required 
+                            <label class="form-label required-field">Golongan Detail</label>
+                            <select name="gol" id="field-gol" required 
                                     class="input-field w-full">
-                                <option value="">Pilih GRD</option>
-                                <option value="1">1 - Golongan 1</option>
-                                <option value="2">2 - Golongan 2</option>
-                                <option value="3">3 - Golongan 3</option>
-                                <option value="4">4 - Golongan 4 UP</option>
-                                <option value="vendor">Vendor & Kontraktor</option>
+                                <option value="">Pilih Golongan Detail</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                                <option value="5">5</option>
+                                <option value="M">M</option>
+                                <option value="VENDOR">VENDOR</option>
                             </select>
                         </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Golongan Detail</label>
-                        <select name="gol" id="field-gol" 
-                                class="input-field w-full">
-                            <option value="">Pilih Golongan Detail</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4A">4A</option>
-                            <option value="4B">4B</option>
-                            <option value="5">5</option>
-                            <option value="M">M</option>
-                            <option value="VENDOR">VENDOR</option>
-                        </select>
                     </div>
                     
                     <div class="form-group">
@@ -697,9 +683,9 @@
                             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Template Format
                         </h5>
                         <ul class="text-[10px] text-slate-300 space-y-2">
-                            <li>• Kolom wajib: NIK, NAMA, GRD, NO KAMAR</li>
+                            <li>• Kolom wajib: NIK, NAMA, GOL, NO KAMAR</li>
                             <li>• Format NIK: Huruf pertama harus A-Z</li>
-                            <li>• GRD: 1, 2, 3, 4, vendor</li>
+                            <li>• GOL: 1, 2, 3, 4A, 4B, 5, M, VENDOR</li>
                             <li>• Format tanggal: YYYY-MM-DD</li>
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
@@ -956,14 +942,17 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">GRD</label>
-                            <select id="filterGrd" onchange="renderTable()" class="input-field text-[11px] py-1.5">
-                                <option value="">Semua GRD</option>
-                                <option value="1">GRD 1</option>
-                                <option value="2">GRD 2</option>
-                                <option value="3">GRD 3</option>
-                                <option value="4">GRD 4</option>
-                                <option value="vendor">Vendor</option>
+                            <label class="form-label">Golongan</label>
+                            <select id="filterGol" onchange="renderTable()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua Golongan</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                                <option value="5">5</option>
+                                <option value="M">M</option>
+                                <option value="VENDOR">VENDOR</option>
                             </select>
                         </div>
                         <div>
@@ -1004,7 +993,6 @@
                                 <th>NAMA</th>
                                 <th>GENDER</th>
                                 <th>DEPARTMENT</th>
-                                <th>GRD</th>
                                 <th>GOL</th>
                                 <th>JABATAN</th>
                                 <th>FASILITAS</th>
@@ -1067,7 +1055,6 @@
                                 <th>NAMA</th>
                                 <th>GENDER</th>
                                 <th>DEPARTMENT</th>
-                                <th>GRD</th>
                                 <th>GOL</th>
                                 <th>JABATAN</th>
                                 <th>FASILITAS</th>
@@ -1241,15 +1228,6 @@
         let isSidebarCollapsed = false;
         let importPreviewData = [];
 
-        // Mapping GRD untuk display (masih digunakan di tabel)
-        const grdMapping = {
-            '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky' },
-            '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald' },
-            '3': { name: 'Golongan 3', class: 'grd-3', color: 'amber' },
-            '4': { name: 'Golongan 4 UP', class: 'grd-4', color: 'purple' },
-            'vendor': { name: 'Vendor & Kontraktor', class: 'grd-vendor', color: 'rose' }
-        };
-
         // Mapping Lokasi untuk display
         const lokasiMapping = {
             'P2 SURYA RESIDANCE': { name: 'P2 SURYA RESIDANCE', class: 'location-p2', icon: 'home' },
@@ -1309,16 +1287,6 @@
                 error.classList.add('hidden');
                 return true;
             }
-        }
-
-        // Dapatkan nama GRD untuk display
-        function getGrdDisplay(grd) {
-            return grdMapping[grd]?.name || grd || '-';
-        }
-
-        // Dapatkan class untuk badge GRD
-        function getGrdClass(grd) {
-            return grdMapping[grd]?.class || 'bg-slate-500/10 text-slate-500';
         }
 
         // Dapatkan class untuk badge Lokasi
@@ -1401,7 +1369,7 @@
                 
                 // Isi semua field dengan data yang ada
                 const fields = [
-                    'nik', 'nama', 'gender', 'grd', 'gol', 'jabatan', 'department', 'perusahaan',
+                    'nik', 'nama', 'gender', 'gol', 'jabatan', 'department', 'perusahaan',
                     'lokasi_hunian', 'floor', 'block', 'no_kamar', 'fasilitas', 'point_of_hire',
                     'status_kamar', 'tanggal_masuk_kerja', 'tanggal_masuk_mess_hunian_p2'
                 ];
@@ -1764,7 +1732,7 @@
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
-            const filterGrd = document.getElementById('filterGrd').value;
+            const filterGol = document.getElementById('filterGol').value;
             const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
             const filterPerusahaan = document.getElementById('filterPerusahaan').value;
@@ -1774,13 +1742,13 @@
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
-                const matchesGrd = !filterGrd || e.grd === filterGrd;
+                const matchesGol = !filterGol || e.gol === filterGol;
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
                 const matchesLokasiFilter = currentLokasiFilter === 'ALL' || e.lokasi_hunian === currentLokasiFilter;
                 
-                return matchesSearch && matchesLok && matchesGrd && matchesKamar && 
+                return matchesSearch && matchesLok && matchesGol && matchesKamar && 
                        matchesStatus && matchesPerusahaan && matchesLokasiFilter;
             });
 
@@ -1790,7 +1758,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="18" class="text-center py-12">
+                        <td colspan="17" class="text-center py-12">
                             <i data-lucide="database" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
                             <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
                             <p class="text-slate-600 text-[10px] mt-2">Coba ubah filter pencarian atau tambah data baru</p>
@@ -1807,9 +1775,6 @@
                     <td class="text-white font-bold">${e.nama || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.gender || '-'}</td>
                     <td class="text-slate-300 font-medium">${e.department || '-'}</td>
-                    <td class="text-center">
-                        <span class="grd-badge ${getGrdClass(e.grd)}">${getGrdDisplay(e.grd)}</span>
-                    </td>
                     <td class="font-bold text-center"><span class="bg-white/5 px-2 py-1 rounded border border-white/5">${e.gol || '-'}</span></td>
                     <td class="text-slate-400">${e.jabatan || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.fasilitas || '-'}</td>
@@ -1852,7 +1817,7 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="18" class="text-center py-12">
+                        <td colspan="17" class="text-center py-12">
                             <i data-lucide="building" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
                             <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
                             <p class="text-slate-600 text-[10px] mt-2">Tambah data baru untuk lokasi ini</p>
@@ -1869,9 +1834,6 @@
                     <td class="text-white font-bold">${e.nama || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.gender || '-'}</td>
                     <td class="text-slate-300 font-medium">${e.department || '-'}</td>
-                    <td class="text-center">
-                        <span class="grd-badge ${getGrdClass(e.grd)}">${getGrdDisplay(e.grd)}</span>
-                    </td>
                     <td class="font-bold text-center"><span class="bg-white/5 px-2 py-1 rounded border border-white/5">${e.gol || '-'}</span></td>
                     <td class="text-slate-400">${e.jabatan || '-'}</td>
                     <td class="text-slate-400 uppercase">${e.fasilitas || '-'}</td>
@@ -1920,7 +1882,7 @@
         // Reset filter tabel
         function resetTableFilters() {
             document.getElementById('filterLokasi').value = '';
-            document.getElementById('filterGrd').value = '';
+            document.getElementById('filterGol').value = '';
             document.getElementById('filterKamar').value = '';
             document.getElementById('filterStatusKamar').value = '';
             document.getElementById('filterPerusahaan').value = '';
@@ -1957,9 +1919,9 @@
                 return;
             }
 
-            // Validasi GRD
-            if (!raw.grd) {
-                showToast("GRD (Grade) harus dipilih", "error");
+            // Validasi Golongan
+            if (!raw.gol) {
+                showToast("Golongan harus dipilih", "error");
                 return;
             }
 
@@ -1967,7 +1929,7 @@
             raw.nik = raw.nik.trim().toUpperCase();
             raw.nama = raw.nama.trim();
             raw.block = raw.block ? raw.block.trim().toUpperCase() : '';
-            raw.grd = raw.grd.trim().toLowerCase();
+            raw.gol = raw.gol.trim().toUpperCase();
             
             // Set nilai default untuk field yang kosong
             if (!raw.status_kamar) raw.status_kamar = 'TERISI';
@@ -2045,10 +2007,10 @@
         function downloadTemplate() {
             // Header untuk template
             const headers = [
-                ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GRD", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
-                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "1", "3", "Staff", "CR", "Jakarta", "2023-01-15", "PT. HJF", "P2 SURYA RESIDANCE", "Lantai Bawah", "B", "201", "TERISI", "2023-01-20"],
-                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "2", "Supervisor", "NR", "Surabaya", "2023-02-01", "PT. HJF", "MENTARI", "Lantai Atas", "A", "105", "TERISI", "2023-02-05"],
-                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "vendor", "VENDOR", "Technician", "CR", "Bandung", "2023-03-10", "VENDOR LAINNYA", "PELANGI", "Lantai Bawah", "C", "305", "TERISI", "2023-03-12"]
+                ["NIK", "NAMA", "GENDER", "DEPARTMENT", "GOL", "JABATAN", "FASILITAS", "Point of Hire", "TANGGAL MASUK KERJA", "PERUSAHAAN", "LOKASI HUNIAN", "FLOOR", "BLOCK", "NO KAMAR", "STATUS KAMAR", "TANGGAL MASUK MESS HUNIAN P2"],
+                ["EMP001", "John Doe", "LAKI-LAKI", "IT", "3", "Staff", "CR", "Jakarta", "2023-01-15", "PT. HJF", "P2 SURYA RESIDANCE", "Lantai Bawah", "B", "201", "TERISI", "2023-01-20"],
+                ["KRY1001", "Jane Smith", "PEREMPUAN", "HR", "2", "Supervisor", "NR", "Surabaya", "2023-02-01", "PT. HJF", "MENTARI", "Lantai Atas", "A", "105", "TERISI", "2023-02-05"],
+                ["VND001", "Michael Brown", "LAKI-LAKI", "MAINTENANCE", "VENDOR", "Technician", "CR", "Bandung", "2023-03-10", "VENDOR LAINNYA", "PELANGI", "Lantai Bawah", "C", "305", "TERISI", "2023-03-12"]
             ];
             
             // Buat worksheet
@@ -2060,7 +2022,6 @@
                 { wch: 25 }, // NAMA
                 { wch: 12 }, // GENDER
                 { wch: 20 }, // DEPARTMENT
-                { wch: 8 },  // GRD
                 { wch: 8 },  // GOL
                 { wch: 20 }, // JABATAN
                 { wch: 10 }, // FASILITAS
@@ -2094,24 +2055,18 @@
                 ["  - 12345, 1A2345 (dimulai dengan angka)"],
                 [""],
                 ["KOLOM WAJIB DIISI:"],
-                ["• NIK, NAMA, GRD, NO KAMAR"],
+                ["• NIK, NAMA, GOL, NO KAMAR"],
                 [""],
                 ["FORMAT DATA YANG DISESUAIKAN:"],
                 ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
-                ["2. GRD (Grade): 1, 2, 3, 4, vendor"],
-                ["   • 1 = Golongan 1"],
-                ["   • 2 = Golongan 2"],
-                ["   • 3 = Golongan 3"],
-                ["   • 4 = Golongan 4 UP"],
-                ["   • vendor = Vendor & Kontraktor"],
-                ["3. GOL (Golongan Detail): 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
-                ["4. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["5. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
-                ["6. FASILITAS: CR, NR"],
-                ["7. FLOOR: Lantai Bawah, Lantai Atas"],
-                ["8. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
-                ["9. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["10. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["2. GOL (Golongan): 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
+                ["4. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
+                ["5. FASILITAS: CR, NR"],
+                ["6. FLOOR: Lantai Bawah, Lantai Atas"],
+                ["7. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
+                ["8. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
+                ["9. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
                 [""],
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
@@ -2144,7 +2099,6 @@
                     NAMA: emp.nama || '',
                     GENDER: emp.gender || '',
                     DEPARTMENT: emp.department || '',
-                    GRD: emp.grd || '',
                     GOL: emp.gol || '',
                     JABATAN: emp.jabatan || '',
                     FASILITAS: emp.fasilitas || '',
@@ -2165,10 +2119,9 @@
                 // Set column widths
                 const colWidths = [
                     { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 20 },
-                    { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 10 },
-                    { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 },
-                    { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
-                    { wch: 15 }
+                    { wch: 8 }, { wch: 20 }, { wch: 10 }, { wch: 15 },
+                    { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 12 },
+                    { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 15 }
                 ];
                 ws['!cols'] = colWidths;
                 
@@ -2206,7 +2159,6 @@
                     NAMA: emp.nama || '',
                     GENDER: emp.gender || '',
                     DEPARTMENT: emp.department || '',
-                    GRD: emp.grd || '',
                     GOL: emp.gol || '',
                     JABATAN: emp.jabatan || '',
                     FASILITAS: emp.fasilitas || '',
@@ -2227,10 +2179,9 @@
                 // Set column widths
                 const colWidths = [
                     { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 20 },
-                    { wch: 8 }, { wch: 8 }, { wch: 20 }, { wch: 10 },
-                    { wch: 15 }, { wch: 15 }, { wch: 20 }, { wch: 20 },
-                    { wch: 12 }, { wch: 10 }, { wch: 10 }, { wch: 12 },
-                    { wch: 15 }
+                    { wch: 8 }, { wch: 20 }, { wch: 10 }, { wch: 15 },
+                    { wch: 15 }, { wch: 20 }, { wch: 20 }, { wch: 12 },
+                    { wch: 10 }, { wch: 10 }, { wch: 12 }, { wch: 15 }
                 ];
                 ws['!cols'] = colWidths;
                 
@@ -2485,7 +2436,6 @@
                         nama: String(row.NAMA || "").trim(),
                         gender: String(row.GENDER || "").toUpperCase(),
                         department: String(row.DEPARTMENT || "").trim(),
-                        grd: String(row.GRD || "").toLowerCase(),
                         gol: String(row.GOL || "").toUpperCase().trim(),
                         jabatan: String(row.JABATAN || "").trim(),
                         fasilitas: String(row.FASILITAS || "").toUpperCase(),
@@ -2514,13 +2464,13 @@
                         processed.nik = processed.nik.toUpperCase();
                     }
 
-                    // Validasi GRD
-                    if (!processed.grd) {
+                    // Validasi Golongan
+                    if (!processed.gol) {
                         processed.isValid = false;
-                        processed.errors.push("GRD harus diisi");
-                    } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
+                        processed.errors.push("Golongan harus diisi");
+                    } else if (!['1', '2', '3', '4A', '4B', '5', 'M', 'VENDOR'].includes(processed.gol)) {
                         processed.isValid = false;
-                        processed.errors.push(`GRD tidak valid: "${processed.grd}"`);
+                        processed.errors.push(`Golongan tidak valid: "${processed.gol}"`);
                     }
 
                     // Validasi field required lainnya
@@ -2581,7 +2531,6 @@
                     <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
                     <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
                     <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
-                    <td class="py-3 px-4 text-center"><span class="grd-badge ${getGrdClass(item.grd)}">${getGrdDisplay(item.grd)}</span></td>
                     <td class="py-3 px-4 font-bold text-sky-400">${item.lokasi_hunian || '-'}</td>
                     <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
                     <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
