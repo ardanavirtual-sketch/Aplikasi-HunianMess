@@ -121,6 +121,50 @@
             box-shadow: -4px 0 10px rgba(0,0,0,0.2);
         }
 
+        /* Location Group */
+        .location-group {
+            background: rgba(7, 25, 39, 0.8);
+            border-left: 4px solid;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .location-group-header {
+            padding: 12px 16px;
+            font-weight: 800;
+            font-size: 12px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .location-group-header:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .location-group-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+        }
+        
+        .location-group.expanded .location-group-content {
+            max-height: 5000px;
+        }
+        
+        .location-count {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 800;
+        }
+
         /* Modal & Form */
         .modal-overlay {
             background: rgba(0, 0, 0, 0.85);
@@ -491,6 +535,19 @@
         .tooltip:hover .tooltip-text {
             visibility: visible;
         }
+
+        /* Location Colors */
+        .location-p2 { border-left-color: #0ea5e9; background: rgba(14, 165, 233, 0.05); }
+        .location-p2 .location-group-header { background: rgba(14, 165, 233, 0.1); }
+        
+        .location-mentari { border-left-color: #f59e0b; background: rgba(245, 158, 11, 0.05); }
+        .location-mentari .location-group-header { background: rgba(245, 158, 11, 0.1); }
+        
+        .location-pelangi { border-left-color: #8b5cf6; background: rgba(139, 92, 246, 0.05); }
+        .location-pelangi .location-group-header { background: rgba(139, 92, 246, 0.1); }
+        
+        .location-lainnya { border-left-color: #94a3b8; background: rgba(148, 163, 184, 0.05); }
+        .location-lainnya .location-group-header { background: rgba(148, 163, 184, 0.1); }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -1438,53 +1495,48 @@
             </div>
 
             <div class="mb-6">
-                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Golongan (GRD)</p>
+                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Data Berdasarkan Lokasi</p>
                 <div class="space-y-1">
-                    <button onclick="switchCategory('1')" id="nav-gol1" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 1 (GRD 1)</span>
-                        <span id="count-gol1" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByLocation('P2 SURYA RESIDANCE')" id="nav-p2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="building" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">P2 Surya Residance</span>
+                        <span id="count-p2" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('2')" id="nav-gol2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 2 (GRD 2)</span>
-                        <span id="count-gol2" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByLocation('MENTARI')" id="nav-mentari" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="sun" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Mess Mentari</span>
+                        <span id="count-mentari" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('3')" id="nav-gol3" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 3 (GRD 3)</span>
-                        <span id="count-gol3" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByLocation('PELANGI')" id="nav-pelangi" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="cloud-rain" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Mess Pelangi</span>
+                        <span id="count-pelangi" class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="switchCategory('4')" id="nav-gol4" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 4 UP (GRD 4)</span>
-                        <span id="count-gol4" class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchCategory('vendor')" id="nav-vendor" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="briefcase" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Vendor & Kontrak</span>
-                        <span id="count-vendor" class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByLocation('MESS LAINNYA')" id="nav-lainnya" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="home" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Mess Lainnya</span>
+                        <span id="count-lainnya" class="text-[9px] bg-slate-500/20 text-slate-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
             </div>
 
             <div class="mb-6">
-                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Lokasi Mess</p>
+                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Status Kamar</p>
                 <div class="space-y-1">
-                    <button onclick="filterByLocation('P2 SURYA RESIDANCE')" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="building" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">P2 Surya Residance</span>
-                        <span id="count-p2" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByStatus('TERISI')" id="nav-terisi" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="user-check" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Kamar Terisi</span>
+                        <span id="count-terisi" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="filterByLocation('MENTARI')" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="sun" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Mess Mentari</span>
-                        <span id="count-mentari" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByStatus('TERSEDIA')" id="nav-tersedia" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="door-open" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Kamar Tersedia</span>
+                        <span id="count-tersedia" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
-                    <button onclick="filterByLocation('PELANGI')" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="cloud-rain" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Mess Pelangi</span>
-                        <span id="count-pelangi" class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">0</span>
+                    <button onclick="filterByStatus('RUSAK')" id="nav-rusak" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
+                        <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        <span class="nav-text font-bold text-xs flex-1 text-left">Kamar Rusak</span>
+                        <span id="count-rusak" class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full">0</span>
                     </button>
                 </div>
             </div>
@@ -1493,7 +1545,7 @@
         <div class="p-4 sidebar-footer-content">
             <div class="text-[10px] text-slate-500 text-center">
                 <p>© 2024 OceanMess PRO</p>
-                <p>v3.0.0</p>
+                <p>v3.1.0</p>
             </div>
         </div>
     </aside>
@@ -1729,7 +1781,7 @@
                             <div class="space-y-3">
                                 <div class="flex items-center justify-between text-sm">
                                     <span class="text-slate-400">Versi Aplikasi</span>
-                                    <span class="text-white font-bold">v3.0.0</span>
+                                    <span class="text-white font-bold">v3.1.0</span>
                                 </div>
                                 <div class="flex items-center justify-between text-sm">
                                     <span class="text-slate-400">Total User</span>
@@ -1750,46 +1802,10 @@
 
                 <!-- Distribution Charts -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- GRD Distribution -->
-                    <div class="glass-panel p-6 rounded-2xl">
-                        <h3 class="text-lg font-black text-white mb-6">Distribusi Golongan (GRD)</h3>
-                        <div class="grid grid-cols-5 gap-4">
-                            <div class="text-center">
-                                <div class="text-2xl font-black text-sky-400" id="gol1-count">0</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">GRD 1</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-black text-emerald-400" id="gol2-count">0</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">GRD 2</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-black text-amber-400" id="gol3-count">0</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">GRD 3</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-black text-purple-400" id="gol4-count">0</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">GRD 4</div>
-                            </div>
-                            <div class="text-center">
-                                <div class="text-2xl font-black text-rose-400" id="vendor-count">0</div>
-                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Vendor</div>
-                            </div>
-                        </div>
-                        <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mt-4">
-                            <div class="h-full grid grid-cols-5">
-                                <div class="bg-sky-500"></div>
-                                <div class="bg-emerald-500"></div>
-                                <div class="bg-amber-500"></div>
-                                <div class="bg-purple-500"></div>
-                                <div class="bg-rose-500"></div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Location Distribution -->
                     <div class="glass-panel p-6 rounded-2xl">
                         <h3 class="text-lg font-black text-white mb-6">Distribusi Lokasi Mess</h3>
-                        <div class="grid grid-cols-3 gap-4">
+                        <div class="grid grid-cols-4 gap-4">
                             <div class="text-center">
                                 <div class="text-2xl font-black text-sky-400" id="p2-count">0</div>
                                 <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">P2 Surya</div>
@@ -1802,30 +1818,64 @@
                                 <div class="text-2xl font-black text-purple-400" id="pelangi-count">0</div>
                                 <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Pelangi</div>
                             </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-slate-400" id="lainnya-count">0</div>
+                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Lainnya</div>
+                            </div>
                         </div>
                         <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mt-4">
-                            <div class="h-full grid grid-cols-3">
+                            <div class="h-full grid grid-cols-4">
                                 <div class="bg-sky-500"></div>
                                 <div class="bg-amber-500"></div>
                                 <div class="bg-purple-500"></div>
+                                <div class="bg-slate-500"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Distribution -->
+                    <div class="glass-panel p-6 rounded-2xl">
+                        <h3 class="text-lg font-black text-white mb-6">Distribusi Status Kamar</h3>
+                        <div class="grid grid-cols-3 gap-4">
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-emerald-400" id="terisi-count">0</div>
+                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Terisi</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-sky-400" id="tersedia-count">0</div>
+                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Tersedia</div>
+                            </div>
+                            <div class="text-center">
+                                <div class="text-2xl font-black text-rose-400" id="rusak-count">0</div>
+                                <div class="text-[10px] text-slate-400 font-bold uppercase mt-1">Rusak</div>
+                            </div>
+                        </div>
+                        <div class="w-full bg-white/5 h-3 rounded-full overflow-hidden mt-4">
+                            <div class="h-full grid grid-cols-3">
+                                <div class="bg-emerald-500"></div>
+                                <div class="bg-sky-500"></div>
+                                <div class="bg-rose-500"></div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- TAB DATA KARYAWAN -->
+            <!-- TAB DATA KARYAWAN (Dikelompokkan berdasarkan Lokasi) -->
             <div id="tab-data-karyawan" class="hidden absolute inset-0 flex flex-col animate-in slide-in-from-right-4 duration-500">
                 <!-- Header dengan Filter dan Pencarian -->
                 <div class="p-6 border-b border-white/5 bg-[#0b253a]/30 flex flex-col gap-4 shrink-0">
                     <div class="flex items-center justify-between">
                         <div>
                             <h3 class="text-xl font-black text-white">Data Karyawan</h3>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Kelola data karyawan secara keseluruhan</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">Dikelompokkan berdasarkan Lokasi Hunian</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <div class="view-toggle">
-                                <button onclick="switchView('table')" class="view-toggle-btn active" data-view="table">
+                                <button onclick="switchView('location')" class="view-toggle-btn active" data-view="location">
+                                    <i data-lucide="layers" class="w-3 h-3 inline mr-1"></i> Group
+                                </button>
+                                <button onclick="switchView('table')" class="view-toggle-btn" data-view="table">
                                     <i data-lucide="table" class="w-3 h-3 inline mr-1"></i> Table
                                 </button>
                                 <button onclick="switchView('card')" class="view-toggle-btn" data-view="card">
@@ -1845,18 +1895,7 @@
                                 <label class="form-label">Cari</label>
                                 <input type="text" id="searchKaryawan" placeholder="NIK/Nama/Kamar..." 
                                        class="input-field w-full text-sm"
-                                       oninput="searchKaryawan()">
-                            </div>
-                            <div>
-                                <label class="form-label">GRD</label>
-                                <select id="filterGrd" onchange="filterKaryawan()" class="input-field w-full text-sm">
-                                    <option value="">Semua GRD</option>
-                                    <option value="1">GRD 1</option>
-                                    <option value="2">GRD 2</option>
-                                    <option value="3">GRD 3</option>
-                                    <option value="4">GRD 4</option>
-                                    <option value="vendor">Vendor</option>
-                                </select>
+                                       oninput="filterKaryawan()">
                             </div>
                             <div>
                                 <label class="form-label">Lokasi</label>
@@ -1878,6 +1917,17 @@
                                 <label class="form-label">Perusahaan</label>
                                 <select id="filterPerusahaan" onchange="filterKaryawan()" class="input-field w-full text-sm">
                                     <option value="">Semua Perusahaan</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="form-label">GRD</label>
+                                <select id="filterGrd" onchange="filterKaryawan()" class="input-field w-full text-sm">
+                                    <option value="">Semua GRD</option>
+                                    <option value="1">GRD 1</option>
+                                    <option value="2">GRD 2</option>
+                                    <option value="3">GRD 3</option>
+                                    <option value="4">GRD 4</option>
+                                    <option value="vendor">Vendor</option>
                                 </select>
                             </div>
                             <div class="flex items-end">
@@ -1903,19 +1953,23 @@
                         </button>
                         <div class="h-4 w-px bg-white/10"></div>
                         <div class="flex items-center gap-2">
-                            <span class="text-xs text-slate-400">Per halaman:</span>
-                            <select id="pageSize" onchange="changePageSize()" class="bg-transparent text-xs text-white border-none focus:ring-0">
-                                <option value="10">10</option>
-                                <option value="25" selected>25</option>
-                                <option value="50">50</option>
-                                <option value="100">100</option>
-                            </select>
+                            <button onclick="expandAllGroups()" class="text-xs text-emerald-400 font-bold hover:text-emerald-300">
+                                <i data-lucide="maximize-2" class="w-3 h-3 inline mr-1"></i> Expand All
+                            </button>
+                            <button onclick="collapseAllGroups()" class="text-xs text-amber-400 font-bold hover:text-amber-300">
+                                <i data-lucide="minimize-2" class="w-3 h-3 inline mr-1"></i> Collapse All
+                            </button>
                         </div>
                     </div>
                 </div>
 
+                <!-- Location Group View -->
+                <div id="locationView" class="flex-1 overflow-auto custom-scrollbar p-6">
+                    <div id="location-groups-container"></div>
+                </div>
+
                 <!-- Table View -->
-                <div id="tableView" class="flex-1 overflow-auto custom-scrollbar bg-[#071927]">
+                <div id="tableView" class="hidden flex-1 overflow-auto custom-scrollbar bg-[#071927]">
                     <table class="data-table">
                         <thead class="text-slate-400">
                             <tr>
@@ -1951,7 +2005,7 @@
                 <!-- Pagination -->
                 <div class="px-6 py-4 border-t border-white/5 bg-[#0b253a]/20 flex items-center justify-between shrink-0">
                     <div class="text-xs text-slate-400">
-                        Halaman <span id="current-page" class="text-white font-bold">1</span> dari <span id="total-pages" class="text-white font-bold">1</span>
+                        Menampilkan <span id="current-page" class="text-white font-bold">1</span> dari <span id="total-pages" class="text-white font-bold">1</span> halaman
                     </div>
                     <div class="flex items-center gap-2">
                         <button onclick="prevPage()" class="pagination-btn">
@@ -2153,7 +2207,7 @@
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                                     <span class="text-sm text-slate-400">Versi Aplikasi</span>
-                                    <span class="text-slate-400 text-sm">v3.0.0</span>
+                                    <span class="text-slate-400 text-sm">v3.1.0</span>
                                 </div>
                             </div>
                         </div>
@@ -2182,16 +2236,40 @@
         let currentPage = 1;
         let pageSize = 25;
         let totalPages = 1;
-        let currentView = 'table';
+        let currentView = 'location'; // Default view is location groups
         let formCurrentTab = 'personal';
+        let expandedGroups = new Set();
 
-        // Mapping GRD untuk display
-        const grdMapping = {
-            '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky', icon: 'users' },
-            '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald', icon: 'users' },
-            '3': { name: 'Golongan 3', class: 'grd-3', color: 'amber', icon: 'users' },
-            '4': { name: 'Golongan 4 UP', class: 'grd-4', color: 'purple', icon: 'shield-check' },
-            'vendor': { name: 'Vendor & Kontraktor', class: 'grd-vendor', color: 'rose', icon: 'briefcase' }
+        // Mapping Lokasi untuk display
+        const locationMapping = {
+            'P2 SURYA RESIDANCE': { 
+                name: 'P2 Surya Residance', 
+                class: 'location-p2', 
+                color: 'sky', 
+                icon: 'building',
+                description: 'Lokasi utama hunian karyawan'
+            },
+            'MENTARI': { 
+                name: 'Mess Mentari', 
+                class: 'location-mentari', 
+                color: 'amber', 
+                icon: 'sun',
+                description: 'Lokasi hunian tambahan'
+            },
+            'PELANGI': { 
+                name: 'Mess Pelangi', 
+                class: 'location-pelangi', 
+                color: 'purple', 
+                icon: 'cloud-rain',
+                description: 'Lokasi hunian tambahan'
+            },
+            'MESS LAINNYA': { 
+                name: 'Mess Lainnya', 
+                class: 'location-lainnya', 
+                color: 'slate', 
+                icon: 'home',
+                description: 'Lokasi hunian lainnya'
+            }
         };
 
         // ==================== FUNGSI UTAMA ====================
@@ -2248,19 +2326,19 @@
             }
         }
 
-        // Dapatkan nama GRD untuk display
-        function getGrdDisplay(grd) {
-            return grdMapping[grd]?.name || grd || '-';
+        // Dapatkan nama Lokasi untuk display
+        function getLocationDisplay(location) {
+            return locationMapping[location]?.name || location || 'Lokasi Tidak Diketahui';
         }
 
-        // Dapatkan class untuk badge GRD
-        function getGrdClass(grd) {
-            return grdMapping[grd]?.class || 'bg-slate-500/10 text-slate-500';
+        // Dapatkan class untuk lokasi group
+        function getLocationClass(location) {
+            return locationMapping[location]?.class || 'location-lainnya';
         }
 
-        // Dapatkan icon untuk GRD
-        function getGrdIcon(grd) {
-            return grdMapping[grd]?.icon || 'users';
+        // Dapatkan icon untuk lokasi
+        function getLocationIcon(location) {
+            return locationMapping[location]?.icon || 'home';
         }
 
         // ==================== FUNGSI DATABASE ====================
@@ -2307,7 +2385,7 @@
                 hideLoading();
                 updateUI();
                 populateFilterOptions();
-                updateCategoryCounts();
+                updateLocationCounts();
                 renderKaryawanData();
             }
         }
@@ -2448,7 +2526,8 @@
             document.getElementById('detail-tgl-keluar').textContent = formatDateForDisplay(employee.tanggal_keluar_mess) || '-';
             
             // Informasi tambahan
-            document.getElementById('detail-grd').innerHTML = `<span class="grd-badge ${getGrdClass(employee.grd)}">${getGrdDisplay(employee.grd)}</span>`;
+            const grdDisplay = getGrdDisplay(employee.grd);
+            document.getElementById('detail-grd').innerHTML = `<span class="grd-badge ${getGrdClass(employee.grd)}">${grdDisplay}</span>`;
             document.getElementById('detail-gol').textContent = employee.gol || '-';
             document.getElementById('detail-poh').textContent = employee.point_of_hire || '-';
             document.getElementById('detail-emergency').textContent = employee.emergency_contact || '-';
@@ -2544,25 +2623,6 @@
             lucide.createIcons();
         }
 
-        // Ganti kategori filter berdasarkan GRD
-        function switchCategory(grd) {
-            activeTab = 'data-karyawan';
-            currentFilter = grd;
-            
-            // Switch ke tab data karyawan
-            switchTab('data-karyawan');
-            
-            // Update nama view berdasarkan GRD
-            const grdName = getGrdDisplay(grd);
-            document.getElementById('current-view-name').innerText = `DATABASE ${grdName.toUpperCase()}`;
-            
-            // Update navigation styles
-            updateNavStyles();
-            
-            // Render data dengan filter GRD
-            filterKaryawan();
-        }
-
         // Filter berdasarkan lokasi
         function filterByLocation(location) {
             activeTab = 'data-karyawan';
@@ -2573,6 +2633,24 @@
             // Set filter dropdown
             document.getElementById('filterLokasi').value = location;
             filterKaryawan();
+            
+            // Update navigation styles
+            updateNavStyles();
+        }
+
+        // Filter berdasarkan status
+        function filterByStatus(status) {
+            activeTab = 'data-karyawan';
+            currentFilter = 'status:' + status;
+            
+            switchTab('data-karyawan');
+            
+            // Set filter dropdown
+            document.getElementById('filterStatusKamar').value = status;
+            filterKaryawan();
+            
+            // Update navigation styles
+            updateNavStyles();
         }
 
         // Update style navigasi
@@ -2580,23 +2658,37 @@
             // Reset semua nav link
             document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
             
-            // Set active berdasarkan tab/kategori
+            // Set active berdasarkan tab
             if (activeTab === 'dashboard') {
                 document.getElementById('nav-dashboard').classList.add('active');
             } else if (activeTab === 'data-karyawan') {
                 document.getElementById('nav-data-karyawan').classList.add('active');
                 
-                // Jika ada filter kategori GRD, aktifkan juga
-                const grdMap = {
-                    '1': 'nav-gol1',
-                    '2': 'nav-gol2', 
-                    '3': 'nav-gol3',
-                    '4': 'nav-gol4',
-                    'vendor': 'nav-vendor'
+                // Jika ada filter lokasi, aktifkan juga
+                const locationMap = {
+                    'P2 SURYA RESIDANCE': 'nav-p2',
+                    'MENTARI': 'nav-mentari',
+                    'PELANGI': 'nav-pelangi',
+                    'MESS LAINNYA': 'nav-lainnya'
                 };
                 
-                if (grdMap[currentFilter]) {
-                    document.getElementById(grdMap[currentFilter]).classList.add('active');
+                // Jika ada filter status, aktifkan juga
+                const statusMap = {
+                    'TERISI': 'nav-terisi',
+                    'TERSEDIA': 'nav-tersedia',
+                    'RUSAK': 'nav-rusak'
+                };
+                
+                if (currentFilter.startsWith('location:')) {
+                    const location = currentFilter.split(':')[1];
+                    if (locationMap[location]) {
+                        document.getElementById(locationMap[location]).classList.add('active');
+                    }
+                } else if (currentFilter.startsWith('status:')) {
+                    const status = currentFilter.split(':')[1];
+                    if (statusMap[status]) {
+                        document.getElementById(statusMap[status]).classList.add('active');
+                    }
                 }
             } else if (activeTab === 'data-mess') {
                 document.getElementById('nav-data-mess').classList.add('active');
@@ -2625,7 +2717,7 @@
             overlay.classList.toggle('open');
         }
 
-        // Switch between table and card view
+        // Switch between views
         function switchView(view) {
             currentView = view;
             
@@ -2635,6 +2727,7 @@
             });
             
             // Show/hide views
+            document.getElementById('locationView').classList.toggle('hidden', view !== 'location');
             document.getElementById('tableView').classList.toggle('hidden', view !== 'table');
             document.getElementById('cardView').classList.toggle('hidden', view !== 'card');
             
@@ -2642,16 +2735,198 @@
             renderKaryawanData();
         }
 
-        // ==================== FUNGSI DATA KARYAWAN ====================
+        // Toggle location group
+        function toggleLocationGroup(location) {
+            const group = document.getElementById(`location-group-${location.replace(/\s+/g, '-')}`);
+            if (group) {
+                group.classList.toggle('expanded');
+                if (group.classList.contains('expanded')) {
+                    expandedGroups.add(location);
+                } else {
+                    expandedGroups.delete(location);
+                }
+            }
+        }
+
+        // Expand all groups
+        function expandAllGroups() {
+            document.querySelectorAll('.location-group').forEach(group => {
+                group.classList.add('expanded');
+                const location = group.id.replace('location-group-', '').replace(/-/g, ' ');
+                expandedGroups.add(location);
+            });
+            showToast("Semua grup telah di-expand", "success");
+        }
+
+        // Collapse all groups
+        function collapseAllGroups() {
+            document.querySelectorAll('.location-group').forEach(group => {
+                group.classList.remove('expanded');
+                const location = group.id.replace('location-group-', '').replace(/-/g, ' ');
+                expandedGroups.delete(location);
+            });
+            showToast("Semua grup telah di-collapse", "success");
+        }
+
+        // ==================== FUNGSI DATA KARYAWAN (Dikelompokkan Lokasi) ====================
 
         // Render data karyawan berdasarkan view
         function renderKaryawanData() {
-            if (currentView === 'table') {
+            if (currentView === 'location') {
+                renderLocationGroupView();
+            } else if (currentView === 'table') {
                 renderTableView();
             } else {
                 renderCardView();
             }
             updatePagination();
+        }
+
+        // Render location group view
+        function renderLocationGroupView() {
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = startIndex + pageSize;
+            const pageData = filteredEmployees.slice(startIndex, endIndex);
+            
+            // Group employees by location
+            const groupedByLocation = {};
+            pageData.forEach(emp => {
+                const location = emp.lokasi_hunian || 'Lokasi Tidak Diketahui';
+                if (!groupedByLocation[location]) {
+                    groupedByLocation[location] = [];
+                }
+                groupedByLocation[location].push(emp);
+            });
+            
+            const container = document.getElementById('location-groups-container');
+            
+            if (Object.keys(groupedByLocation).length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon mx-auto">
+                            <i data-lucide="users" class="w-8 h-8"></i>
+                        </div>
+                        <p class="text-slate-500 font-medium mt-4">Tidak ada data yang ditemukan</p>
+                        <p class="text-slate-600 text-xs mt-2">Coba ubah filter pencarian atau tambah data baru</p>
+                    </div>
+                `;
+                lucide.createIcons();
+                return;
+            }
+
+            container.innerHTML = Object.entries(groupedByLocation)
+                .sort(([locA], [locB]) => {
+                    // Sort by predefined order first, then alphabetically
+                    const order = ['P2 SURYA RESIDANCE', 'MENTARI', 'PELANGI', 'MESS LAINNYA', 'Lokasi Tidak Diketahui'];
+                    const indexA = order.indexOf(locA);
+                    const indexB = order.indexOf(locB);
+                    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+                    if (indexA !== -1) return -1;
+                    if (indexB !== -1) return 1;
+                    return locA.localeCompare(locB);
+                })
+                .map(([location, employees]) => {
+                    const locationData = locationMapping[location] || {
+                        name: location,
+                        class: 'location-lainnya',
+                        color: 'slate',
+                        icon: 'home',
+                        description: 'Lokasi hunian'
+                    };
+                    
+                    const isExpanded = expandedGroups.has(location);
+                    const locationId = location.replace(/\s+/g, '-');
+                    
+                    return `
+                    <div id="location-group-${locationId}" class="location-group ${locationData.class} ${isExpanded ? 'expanded' : ''}">
+                        <div class="location-group-header" onclick="toggleLocationGroup('${location}')">
+                            <div class="flex items-center gap-3">
+                                <i data-lucide="${locationData.icon}" class="w-4 h-4 ${locationData.color === 'sky' ? 'text-sky-400' : locationData.color === 'amber' ? 'text-amber-400' : locationData.color === 'purple' ? 'text-purple-400' : 'text-slate-400'}"></i>
+                                <div>
+                                    <h4 class="text-sm font-black text-white">${locationData.name}</h4>
+                                    <p class="text-[10px] text-slate-400">${employees.length} karyawan • ${locationData.description}</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="location-count">${employees.length}</span>
+                                <i data-lucide="${isExpanded ? 'chevron-up' : 'chevron-down'}" class="w-4 h-4 text-slate-400"></i>
+                            </div>
+                        </div>
+                        
+                        <div class="location-group-content">
+                            <div class="p-4">
+                                <table class="data-table">
+                                    <thead class="text-slate-400">
+                                        <tr>
+                                            <th class="sticky-col">
+                                                <div class="flex items-center gap-2">
+                                                    <input type="checkbox" id="select-all-${locationId}" onchange="toggleSelectAllInGroup('${locationId}')">
+                                                    <span>NIK</span>
+                                                </div>
+                                            </th>
+                                            <th>NAMA</th>
+                                            <th>GENDER</th>
+                                            <th>DEPARTMENT</th>
+                                            <th>GRD</th>
+                                            <th>NO KAMAR</th>
+                                            <th>STATUS KAMAR</th>
+                                            <th class="sticky-col-right">AKSI</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${employees.map(emp => `
+                                            <tr class="table-row-hover">
+                                                <td class="sticky-col">
+                                                    <div class="flex items-center gap-2">
+                                                        <input type="checkbox" value="${emp.id}" onchange="toggleSelectEmployee('${emp.id}', this.checked)" 
+                                                               ${selectedEmployees.has(emp.id) ? 'checked' : ''}>
+                                                        <span class="font-mono text-sky-400 font-bold">${emp.nik || '-'}</span>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="flex items-center gap-2">
+                                                        <div class="avatar">${getInitials(emp.nama)}</div>
+                                                        <span class="text-white font-bold">${emp.nama || '-'}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="text-slate-400 uppercase">${emp.gender || '-'}</td>
+                                                <td class="text-slate-300 font-medium">${emp.department || '-'}</td>
+                                                <td class="text-center">
+                                                    <span class="grd-badge ${getGrdClass(emp.grd)}">${getGrdDisplay(emp.grd)}</span>
+                                                </td>
+                                                <td class="text-emerald-400 font-black">${emp.no_kamar || '-'}</td>
+                                                <td><span class="status-badge status-${(emp.status_kamar || 'TERISI').toLowerCase()}">${emp.status_kamar || 'TERISI'}</span></td>
+                                                <td class="sticky-col-right">
+                                                    <div class="flex items-center justify-center gap-1">
+                                                        <button onclick='openDetailModal(${JSON.stringify(emp).replace(/'/g, "&apos;")})' class="p-2 bg-sky-500/10 text-sky-500 hover:bg-sky-500 hover:text-white rounded-lg transition-all" title="Detail">
+                                                            <i data-lucide="eye" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                        <button onclick='openModal(${JSON.stringify(emp).replace(/'/g, "&apos;")})' class="p-2 bg-amber-500/10 text-amber-500 hover:bg-amber-500 hover:text-white rounded-lg transition-all" title="Edit">
+                                                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+            lucide.createIcons();
+        }
+
+        // Toggle select all in group
+        function toggleSelectAllInGroup(locationId) {
+            const selectAll = document.getElementById(`select-all-${locationId}`);
+            const checkboxes = document.querySelectorAll(`#location-group-${locationId} input[type="checkbox"][value]`);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll.checked;
+                toggleSelectEmployee(cb.value, selectAll.checked);
+            });
         }
 
         // Render table view
@@ -2768,8 +3043,8 @@
                         
                         <div class="grid grid-cols-2 gap-2 mb-3">
                             <div>
-                                <label class="form-label">GRD</label>
-                                <span class="grd-badge ${getGrdClass(emp.grd)}">${getGrdDisplay(emp.grd)}</span>
+                                <label class="form-label">Lokasi</label>
+                                <span class="text-xs font-bold ${getLocationClass(emp.lokasi_hunian).replace('location-', 'text-')}">${getLocationDisplay(emp.lokasi_hunian)}</span>
                             </div>
                             <div>
                                 <label class="form-label">Status</label>
@@ -2793,12 +3068,12 @@
                                 <span class="text-slate-300">${emp.jabatan || '-'}</span>
                             </div>
                             <div class="flex items-center justify-between text-xs">
-                                <span class="text-slate-400">Lokasi</span>
-                                <span class="text-white font-bold">${emp.lokasi_hunian || '-'}</span>
-                            </div>
-                            <div class="flex items-center justify-between text-xs">
                                 <span class="text-slate-400">Kamar</span>
                                 <span class="text-emerald-400 font-black">${emp.no_kamar || '-'}</span>
+                            </div>
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="text-slate-400">GRD</span>
+                                <span class="grd-badge ${getGrdClass(emp.grd)}">${getGrdDisplay(emp.grd)}</span>
                             </div>
                         </div>
                         
@@ -2840,43 +3115,53 @@
                 selectedEmployees.delete(id);
             }
             
-            // Update select all checkbox
+            // Update select all checkboxes
             const totalCheckboxes = document.querySelectorAll('input[type="checkbox"][value]').length;
             const checkedCount = selectedEmployees.size;
-            document.getElementById('selectAll').checked = checkedCount === totalCheckboxes;
-        }
-
-        // Search karyawan
-        function searchKaryawan() {
-            const search = document.getElementById('searchKaryawan').value.toLowerCase();
-            filterKaryawan();
+            
+            // Update global select all
+            const globalSelectAll = document.getElementById('selectAll');
+            if (globalSelectAll) {
+                globalSelectAll.checked = checkedCount === totalCheckboxes;
+            }
+            
+            // Update group select alls
+            document.querySelectorAll('[id^="select-all-"]').forEach(selectAll => {
+                const groupId = selectAll.id.replace('select-all-', '');
+                const groupCheckboxes = document.querySelectorAll(`#location-group-${groupId} input[type="checkbox"][value]`);
+                const groupChecked = Array.from(groupCheckboxes).every(cb => cb.checked);
+                selectAll.checked = groupChecked;
+            });
         }
 
         // Filter karyawan
         function filterKaryawan() {
             const search = document.getElementById('searchKaryawan').value.toLowerCase();
-            const grd = document.getElementById('filterGrd').value;
             const lokasi = document.getElementById('filterLokasi').value;
             const status = document.getElementById('filterStatusKamar').value;
             const perusahaan = document.getElementById('filterPerusahaan').value;
+            const grd = document.getElementById('filterGrd').value;
 
             filteredEmployees = employees.filter(e => {
                 const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search) ||
                                      (e.department || "").toLowerCase().includes(search);
-                const matchesGrd = !grd || e.grd === grd;
                 const matchesLok = !lokasi || e.lokasi_hunian === lokasi;
                 const matchesStatus = !status || e.status_kamar === status;
                 const matchesPerusahaan = !perusahaan || e.perusahaan === perusahaan;
+                const matchesGrd = !grd || e.grd === grd;
                 
-                return matchesSearch && matchesGrd && matchesLok && matchesStatus && matchesPerusahaan;
+                return matchesSearch && matchesLok && matchesStatus && matchesPerusahaan && matchesGrd;
             });
 
             // Reset to first page
             currentPage = 1;
             selectedEmployees.clear();
-            document.getElementById('selectAll').checked = false;
+            
+            // Update select all checkbox
+            const selectAll = document.getElementById('selectAll');
+            if (selectAll) selectAll.checked = false;
             
             // Update counts
             document.getElementById('data-count').textContent = `${filteredEmployees.length} DATA`;
@@ -2889,20 +3174,18 @@
         // Reset filters
         function resetFilters() {
             document.getElementById('searchKaryawan').value = '';
-            document.getElementById('filterGrd').value = '';
             document.getElementById('filterLokasi').value = '';
             document.getElementById('filterStatusKamar').value = '';
             document.getElementById('filterPerusahaan').value = '';
+            document.getElementById('filterGrd').value = '';
             
+            currentFilter = 'ALL';
             filterKaryawan();
+            
+            // Reset nav styles
+            updateNavStyles();
+            
             showToast("Filter telah direset", "success");
-        }
-
-        // Change page size
-        function changePageSize() {
-            pageSize = parseInt(document.getElementById('pageSize').value);
-            currentPage = 1;
-            renderKaryawanData();
         }
 
         // Update pagination
@@ -2989,7 +3272,7 @@
             // Lokasi Hunian
             const uniqueLok = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
             const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
-                uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
+                uniqueLok.map(l => `<option value="${l}">${getLocationDisplay(l)}</option>`).join('');
             document.getElementById('filterLokasi').innerHTML = lokasiHtml;
 
             // Perusahaan
@@ -3021,11 +3304,9 @@
             document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
             document.getElementById('db-capacity-used').textContent = percTerisi.toFixed(1) + "%";
             
-            // Update category counts berdasarkan GRD
-            updateCategoryCounts();
-            
-            // Update location counts
+            // Update location and status counts
             updateLocationCounts();
+            updateStatusCounts();
             
             // Jika di tab data karyawan, render data
             if (activeTab === 'data-karyawan') {
@@ -3033,50 +3314,21 @@
             }
         }
 
-        // Update jumlah per kategori berdasarkan GRD
-        function updateCategoryCounts() {
-            const counts = {
-                '1': 0,  // GRD 1
-                '2': 0,  // GRD 2
-                '3': 0,  // GRD 3
-                '4': 0,  // GRD 4
-                'vendor': 0  // Vendor
-            };
-
-            employees.forEach(e => {
-                const grd = e.grd;
-                if (grd && counts.hasOwnProperty(grd)) {
-                    counts[grd]++;
-                }
-            });
-
-            // Update sidebar counts
-            document.getElementById('count-gol1').textContent = counts['1'];
-            document.getElementById('count-gol2').textContent = counts['2'];
-            document.getElementById('count-gol3').textContent = counts['3'];
-            document.getElementById('count-gol4').textContent = counts['4'];
-            document.getElementById('count-vendor').textContent = counts['vendor'];
-
-            // Update dashboard counts
-            document.getElementById('gol1-count').textContent = counts['1'];
-            document.getElementById('gol2-count').textContent = counts['2'];
-            document.getElementById('gol3-count').textContent = counts['3'];
-            document.getElementById('gol4-count').textContent = counts['4'];
-            document.getElementById('vendor-count').textContent = counts['vendor'];
-        }
-
         // Update location counts
         function updateLocationCounts() {
             const counts = {
                 'P2 SURYA RESIDANCE': 0,
                 'MENTARI': 0,
-                'PELANGI': 0
+                'PELANGI': 0,
+                'MESS LAINNYA': 0
             };
 
             employees.forEach(e => {
                 const lokasi = e.lokasi_hunian;
                 if (lokasi && counts.hasOwnProperty(lokasi)) {
                     counts[lokasi]++;
+                } else if (lokasi) {
+                    counts['MESS LAINNYA']++;
                 }
             });
 
@@ -3084,11 +3336,53 @@
             document.getElementById('count-p2').textContent = counts['P2 SURYA RESIDANCE'];
             document.getElementById('count-mentari').textContent = counts['MENTARI'];
             document.getElementById('count-pelangi').textContent = counts['PELANGI'];
+            document.getElementById('count-lainnya').textContent = counts['MESS LAINNYA'];
 
             // Update dashboard counts
             document.getElementById('p2-count').textContent = counts['P2 SURYA RESIDANCE'];
             document.getElementById('mentari-count').textContent = counts['MENTARI'];
             document.getElementById('pelangi-count').textContent = counts['PELANGI'];
+            document.getElementById('lainnya-count').textContent = counts['MESS LAINNYA'];
+        }
+
+        // Update status counts
+        function updateStatusCounts() {
+            const terisi = employees.filter(e => e.status_kamar === 'TERISI').length;
+            const tersedia = employees.filter(e => e.status_kamar === 'TERSEDIA').length;
+            const rusak = employees.filter(e => e.status_kamar === 'RUSAK' || e.status_kamar === 'DIPERBAIKI').length;
+
+            // Update sidebar counts
+            document.getElementById('count-terisi').textContent = terisi;
+            document.getElementById('count-tersedia').textContent = tersedia;
+            document.getElementById('count-rusak').textContent = rusak;
+
+            // Update dashboard counts
+            document.getElementById('terisi-count').textContent = terisi;
+            document.getElementById('tersedia-count').textContent = tersedia;
+            document.getElementById('rusak-count').textContent = rusak;
+        }
+
+        // GRD functions (kept for compatibility)
+        function getGrdDisplay(grd) {
+            const grdMapping = {
+                '1': 'Golongan 1',
+                '2': 'Golongan 2',
+                '3': 'Golongan 3',
+                '4': 'Golongan 4 UP',
+                'vendor': 'Vendor & Kontraktor'
+            };
+            return grdMapping[grd] || grd || '-';
+        }
+
+        function getGrdClass(grd) {
+            const classMapping = {
+                '1': 'grd-1',
+                '2': 'grd-2',
+                '3': 'grd-3',
+                '4': 'grd-4',
+                'vendor': 'grd-vendor'
+            };
+            return classMapping[grd] || 'bg-slate-500/10 text-slate-500';
         }
 
         // ==================== FUNGSI CRUD ====================
@@ -3211,39 +3505,23 @@
                     NIK: emp.nik || '',
                     NAMA: emp.nama || '',
                     GENDER: emp.gender || '',
-                    TANGGAL_LAHIR: emp.tanggal_lahir || '',
-                    ALAMAT: emp.alamat || '',
-                    TELEPON: emp.telepon || '',
-                    EMAIL: emp.email || '',
-                    EMERGENCY_CONTACT: emp.emergency_contact || '',
-                    NO_KTP: emp.no_ktp || '',
+                    LOKASI_HUNIAN: emp.lokasi_hunian || '',
+                    NO_KAMAR: emp.no_kamar || '',
+                    STATUS_KAMAR: emp.status_kamar || '',
+                    FLOOR: emp.floor || '',
+                    BLOCK: emp.block || '',
+                    FASILITAS: emp.fasilitas || '',
+                    TANGGAL_MASUK_MESS: emp.tanggal_masuk_mess_hunian_p2 || '',
+                    PERUSAHAAN: emp.perusahaan || '',
                     DEPARTMENT: emp.department || '',
                     JABATAN: emp.jabatan || '',
-                    PERUSAHAAN: emp.perusahaan || '',
                     GRD: emp.grd || '',
                     GOL: emp.gol || '',
                     STATUS_KARYAWAN: emp.status_karyawan || '',
                     TANGGAL_MASUK_KERJA: emp.tanggal_masuk_kerja || '',
-                    TANGGAL_KONTRAK_BERAKHIR: emp.tanggal_kontrak_berakhir || '',
-                    LOKASI_HUNIAN: emp.lokasi_hunian || '',
-                    FLOOR: emp.floor || '',
-                    BLOCK: emp.block || '',
-                    NO_KAMAR: emp.no_kamar || '',
-                    FASILITAS: emp.fasilitas || '',
-                    STATUS_KAMAR: emp.status_kamar || '',
-                    TANGGAL_MASUK_MESS: emp.tanggal_masuk_mess_hunian_p2 || '',
-                    TANGGAL_KELUAR_MESS: emp.tanggal_keluar_mess || '',
                     POINT_OF_HIRE: emp.point_of_hire || '',
                     BIAYA_SEWA: emp.biaya_sewa || '',
-                    STATUS_PEMBAYARAN: emp.status_pembayaran || '',
-                    NO_BPJS_KESEHATAN: emp.no_bpjs_kesehatan || '',
-                    NO_BPJS_KETENAGAKERJAAN: emp.no_bpjs_ketenagakerjaan || '',
-                    NO_NPWP: emp.no_npwp || '',
-                    NO_KARTU_AKSES: emp.no_kartu_akses || '',
-                    LEVEL_AKSES: emp.level_akses || '',
-                    CATATAN_KHUSUS: emp.catatan_khusus || '',
-                    CREATED_AT: emp.created_at || '',
-                    UPDATED_AT: emp.updated_at || ''
+                    STATUS_PEMBAYARAN: emp.status_pembayaran || ''
                 }));
 
                 // Buat worksheet
@@ -3251,14 +3529,11 @@
                 
                 // Set column widths
                 const colWidths = [
-                    { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 12 }, { wch: 30 },
-                    { wch: 15 }, { wch: 25 }, { wch: 20 }, { wch: 20 }, { wch: 20 },
-                    { wch: 20 }, { wch: 20 }, { wch: 8 }, { wch: 8 }, { wch: 15 },
-                    { wch: 12 }, { wch: 12 }, { wch: 20 }, { wch: 12 }, { wch: 8 },
-                    { wch: 12 }, { wch: 10 }, { wch: 15 }, { wch: 12 }, { wch: 12 },
-                    { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 20 }, { wch: 20 },
-                    { wch: 20 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 20 },
-                    { wch: 20 }, { wch: 20 }
+                    { wch: 15 }, { wch: 25 }, { wch: 12 }, { wch: 20 },
+                    { wch: 10 }, { wch: 12 }, { wch: 12 }, { wch: 8 },
+                    { wch: 10 }, { wch: 15 }, { wch: 20 }, { wch: 15 },
+                    { wch: 20 }, { wch: 8 }, { wch: 8 }, { wch: 15 },
+                    { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }
                 ];
                 ws['!cols'] = colWidths;
                 
@@ -3332,7 +3607,6 @@
         // ==================== FUNGSI IMPORT EXCEL ====================
         // (Fungsi import Excel dari versi sebelumnya tetap sama)
         // Untuk menjaga panjang kode, saya akan mempertahankan fungsi import Excel yang ada
-        // Anda bisa menyalin fungsi import dari kode sebelumnya ke sini
 
         // ==================== FUNGSI NOTIFIKASI ====================
 
@@ -3381,7 +3655,7 @@
             if (searchInput) {
                 searchInput.addEventListener('input', function() {
                     if (activeTab === 'data-karyawan') {
-                        searchKaryawan();
+                        filterKaryawan();
                     }
                 });
             }
