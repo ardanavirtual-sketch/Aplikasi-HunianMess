@@ -2468,7 +2468,7 @@
             });
         }
 
-        // Process import data
+        // Process import data - FIXED FOR DATE ISSUES
         async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
@@ -2531,6 +2531,34 @@
                     if (!processed.no_kamar) {
                         processed.isValid = false;
                         processed.errors.push("No Kamar harus diisi");
+                    }
+
+                    // Validasi tanggal
+                    if (processed.tanggal_masuk_kerja) {
+                        const validDate = validateAndFormatDate(processed.tanggal_masuk_kerja);
+                        if (!validDate) {
+                            processed.errors.push("Format tanggal masuk kerja tidak valid");
+                        } else {
+                            processed.tanggal_masuk_kerja = validDate;
+                        }
+                    } else {
+                        processed.tanggal_masuk_kerja = null;
+                    }
+                    
+                    if (processed.tanggal_masuk_mess_hunian_p2) {
+                        const validDate = validateAndFormatDate(processed.tanggal_masuk_mess_hunian_p2);
+                        if (!validDate) {
+                            processed.errors.push("Format tanggal masuk mess tidak valid");
+                        } else {
+                            processed.tanggal_masuk_mess_hunian_p2 = validDate;
+                        }
+                    } else {
+                        processed.tanggal_masuk_mess_hunian_p2 = null;
+                    }
+
+                    // Jika ada error, set isValid ke false
+                    if (processed.errors.length > 0) {
+                        processed.isValid = false;
                     }
 
                     // Cek apakah NIK sudah ada di database
@@ -2632,7 +2660,7 @@
             importPreviewData = [];
         }
 
-        // Proses import data ke database
+        // Proses import data ke database - FIXED FOR DATE ISSUES
         async function processImport() {
             const validData = importPreviewData.filter(item => item.isValid);
             
@@ -2648,13 +2676,22 @@
                 const toUpload = validData.map(item => {
                     const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
                     
-                    // Format tanggal yang benar
-                    if (cleanData.tanggal_masuk_kerja && typeof cleanData.tanggal_masuk_kerja === 'string') {
-                        cleanData.tanggal_masuk_kerja = formatDateForDatabase(cleanData.tanggal_masuk_kerja);
+                    // Pastikan tanggal di-set ke null jika kosong atau tidak valid
+                    if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
+                        cleanData.tanggal_masuk_kerja = null;
                     }
                     
-                    if (cleanData.tanggal_masuk_mess_hunian_p2 && typeof cleanData.tanggal_masuk_mess_hunian_p2 === 'string') {
-                        cleanData.tanggal_masuk_mess_hunian_p2 = formatDateForDatabase(cleanData.tanggal_masuk_mess_hunian_p2);
+                    if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
+                        cleanData.tanggal_masuk_mess_hunian_p2 = null;
+                    }
+                    
+                    // Format tanggal ke string ISO jika ada
+                    if (cleanData.tanggal_masuk_kerja) {
+                        cleanData.tanggal_masuk_kerja = cleanData.tanggal_masuk_kerja.toString();
+                    }
+                    
+                    if (cleanData.tanggal_masuk_mess_hunian_p2) {
+                        cleanData.tanggal_masuk_mess_hunian_p2 = cleanData.tanggal_masuk_mess_hunian_p2.toString();
                     }
                     
                     return cleanData;
@@ -2683,32 +2720,48 @@
             }
         }
 
-        // Format tanggal untuk database
-        function formatDateForDatabase(dateString) {
-            if (!dateString) return null;
+        // Fungsi untuk validasi dan format tanggal
+        function validateAndFormatDate(dateString) {
+            if (!dateString || dateString.toString().trim() === '') {
+                return null;
+            }
             
             try {
-                // Coba parse berbagai format tanggal
+                // Coba parse sebagai Date object
                 let date = new Date(dateString);
                 
-                // Jika parse gagal, coba format lain
+                // Cek jika valid
                 if (isNaN(date.getTime())) {
+                    // Coba parse dengan berbagai format
+                    const dateStr = dateString.toString().trim();
+                    
+                    // Coba format YYYY-MM-DD
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+                        date = new Date(dateStr);
+                    }
                     // Coba format DD/MM/YYYY
-                    const parts = dateString.split('/');
-                    if (parts.length === 3) {
+                    else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                        const parts = dateStr.split('/');
                         date = new Date(parts[2], parts[1] - 1, parts[0]);
-                    } else {
-                        // Coba format lain
-                        date = new Date(dateString.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+                    }
+                    // Coba format MM/DD/YYYY
+                    else if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+                        const parts = dateStr.split('/');
+                        date = new Date(parts[2], parts[0] - 1, parts[1]);
+                    }
+                    
+                    // Jika masih invalid, return null
+                    if (isNaN(date.getTime())) {
+                        return null;
                     }
                 }
                 
-                if (isNaN(date.getTime())) {
-                    return null; // Return null jika masih gagal
-                }
+                // Format ke YYYY-MM-DD untuk database
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
                 
-                // Format ke YYYY-MM-DD
-                return date.toISOString().split('T')[0];
+                return `${year}-${month}-${day}`;
             } catch (e) {
                 return null;
             }
