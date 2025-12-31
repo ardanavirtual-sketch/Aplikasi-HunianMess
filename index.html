@@ -323,43 +323,29 @@
         </div>
     </div>
 
-    <!-- MODAL HAPUS BERDASARKAN GOLONGAN -->
-    <div id="modal-delete-golongan" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
-        <div class="modal-overlay absolute inset-0" onclick="closeDeleteGolonganModal()"></div>
+    <!-- MODAL HAPUS BERDASARKAN LOKASI -->
+    <div id="modal-delete-lokasi" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div class="modal-overlay absolute inset-0" onclick="closeDeleteLokasiModal()"></div>
         <div class="glass-panel w-full max-w-lg max-h-[90vh] rounded-[32px] shadow-2xl overflow-hidden relative flex flex-col animate-in zoom-in-95 duration-300">
             <div class="p-8 border-b border-white/5 flex justify-between items-center bg-white/5">
                 <div>
-                    <h3 class="text-xl font-black text-white">Hapus Data Berdasarkan Golongan</h3>
-                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Pilih golongan untuk menghapus data secara massal</p>
+                    <h3 class="text-xl font-black text-white">Hapus Data Berdasarkan Lokasi</h3>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Pilih lokasi untuk menghapus data secara massal</p>
                 </div>
-                <button onclick="closeDeleteGolonganModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
+                <button onclick="closeDeleteLokasiModal()" class="w-10 h-10 rounded-full hover:bg-white/10 flex items-center justify-center transition-colors">
                     <i data-lucide="x" class="text-slate-400"></i>
                 </button>
             </div>
             
             <div class="flex-1 overflow-y-auto p-8 custom-scrollbar">
                 <div class="mb-6">
-                    <p class="text-sm text-slate-300 mb-4">Pilih golongan (GRD) yang ingin dihapus. Tindakan ini akan menghapus SEMUA data karyawan dengan golongan yang dipilih.</p>
+                    <p class="text-sm text-slate-300 mb-4">Pilih lokasi hunian yang ingin dihapus. Tindakan ini akan menghapus SEMUA data karyawan dengan lokasi yang dipilih.</p>
                     
-                    <div class="grid grid-cols-2 gap-4">
-                        <div class="form-group">
-                            <label class="form-label required-field">Golongan (GRD)</label>
-                            <select id="delete-grd-select" class="input-field w-full">
-                                <option value="">Pilih Golongan</option>
-                                <option value="1">Golongan 1 (GRD 1)</option>
-                                <option value="2">Golongan 2 (GRD 2)</option>
-                                <option value="3">Golongan 3 (GRD 3)</option>
-                                <option value="4">Golongan 4 UP (GRD 4)</option>
-                                <option value="vendor">Vendor & Kontraktor</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label class="form-label">Lokasi Hunian</label>
-                            <select id="delete-lokasi-select" class="input-field w-full">
-                                <option value="">Semua Lokasi</option>
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label required-field">Lokasi Hunian</label>
+                        <select id="delete-lokasi-select" class="input-field w-full">
+                            <option value="">Pilih Lokasi</option>
+                        </select>
                     </div>
                     
                     <div class="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
@@ -379,23 +365,19 @@
                                 <span class="text-slate-400 text-xs">Total Data:</span>
                                 <span id="delete-preview-count" class="font-bold text-white">0</span>
                             </div>
-                            <div class="flex justify-between items-center mb-2">
-                                <span class="text-slate-400 text-xs">Golongan:</span>
-                                <span id="delete-preview-grd" class="font-bold text-sky-400">-</span>
-                            </div>
                             <div class="flex justify-between items-center">
                                 <span class="text-slate-400 text-xs">Lokasi:</span>
-                                <span id="delete-preview-lokasi" class="font-bold text-emerald-400">-</span>
+                                <span id="delete-preview-lokasi" class="font-bold text-sky-400">-</span>
                             </div>
                         </div>
                     </div>
                 </div>
                 
                 <div class="flex gap-3">
-                    <button onclick="prosesHapusGolongan()" id="btn-proses-hapus" class="btn-danger flex-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <button onclick="prosesHapusLokasi()" id="btn-proses-hapus" class="btn-danger flex-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <i data-lucide="trash-2" class="w-4 h-4"></i> HAPUS DATA
                     </button>
-                    <button onclick="closeDeleteGolonganModal()" class="btn-secondary">
+                    <button onclick="closeDeleteLokasiModal()" class="btn-secondary">
                         <i data-lucide="x" class="w-4 h-4"></i> BATAL
                     </button>
                 </div>
@@ -784,7 +766,7 @@
             </div>
 
             <div class="mb-6">
-                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Lokasi</p>
+                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Lokasi Hunian</p>
                 <div class="space-y-1">
                     <button onclick="switchCategoryLocation('ALL')" id="nav-lokasi-all" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
                         <i data-lucide="map-pin" class="w-4 h-4"></i>
@@ -808,43 +790,12 @@
                     </button>
                 </div>
             </div>
-
-            <div class="mb-6">
-                <p class="sidebar-header-text text-[10px] font-black text-slate-600 uppercase tracking-[0.2em] mb-3 px-4">Filter Golongan (GRD)</p>
-                <div class="space-y-1">
-                    <button onclick="switchCategory('1')" id="nav-gol1" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 1 (GRD 1)</span>
-                        <span id="count-gol1" class="text-[9px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchCategory('2')" id="nav-gol2" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 2 (GRD 2)</span>
-                        <span id="count-gol2" class="text-[9px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchCategory('3')" id="nav-gol3" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="users" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 3 (GRD 3)</span>
-                        <span id="count-gol3" class="text-[9px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchCategory('4')" id="nav-gol4" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="shield-check" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Golongan 4 UP (GRD 4)</span>
-                        <span id="count-gol4" class="text-[9px] bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                    <button onclick="switchCategory('vendor')" id="nav-vendor" class="nav-link w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5">
-                        <i data-lucide="briefcase" class="w-4 h-4"></i>
-                        <span class="nav-text font-bold text-xs flex-1 text-left">Vendor & Kontrak</span>
-                        <span id="count-vendor" class="text-[9px] bg-rose-500/20 text-rose-400 px-2 py-0.5 rounded-full">0</span>
-                    </button>
-                </div>
-            </div>
         </nav>
 
         <div class="p-4 sidebar-footer-content">
             <div class="text-[10px] text-slate-500 text-center">
                 <p>© 2024 OceanMess</p>
-                <p>v2.2.0</p>
+                <p>v2.3.0</p>
             </div>
         </div>
     </aside>
@@ -882,7 +833,7 @@
                         <h3 id="stat-total" class="text-3xl font-black mt-2 text-white">0</h3>
                         <div class="flex items-center mt-3">
                             <i data-lucide="users" class="w-4 h-4 text-sky-400 mr-2"></i>
-                            <span class="text-[10px] text-slate-500">Semua golongan</span>
+                            <span class="text-[10px] text-slate-500">Semua lokasi</span>
                         </div>
                     </div>
                     <div class="glass-panel p-6 rounded-3xl border-l-4 border-emerald-500 stat-card">
@@ -902,7 +853,7 @@
                         </div>
                     </div>
                     <div class="glass-panel p-6 rounded-3xl border-l-4 border-purple-500 stat-card">
-                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Mess</p>
+                        <p class="text-slate-500 text-[10px] font-black uppercase tracking-widest">Total Lokasi</p>
                         <h3 id="stat-mess" class="text-3xl font-black mt-2 text-white">0</h3>
                         <div class="flex items-center mt-3">
                             <i data-lucide="building" class="w-4 h-4 text-purple-400 mr-2"></i>
@@ -938,40 +889,8 @@
                     </div>
                 </div>
 
-                <!-- Statistik Golongan berdasarkan GRD -->
-                <div class="glass-panel p-8 rounded-[32px] mb-8">
-                    <h3 class="text-xl font-black text-white mb-6">Distribusi Golongan (GRD)</h3>
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                        <div class="text-center p-4 bg-white/5 rounded-2xl">
-                            <div class="text-2xl font-black text-sky-400" id="gol1-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 1</div>
-                            <div class="text-[8px] text-slate-500">Golongan 1</div>
-                        </div>
-                        <div class="text-center p-4 bg-white/5 rounded-2xl">
-                            <div class="text-2xl font-black text-emerald-400" id="gol2-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 2</div>
-                            <div class="text-[8px] text-slate-500">Golongan 2</div>
-                        </div>
-                        <div class="text-center p-4 bg-white/5 rounded-2xl">
-                            <div class="text-2xl font-black text-amber-400" id="gol3-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 3</div>
-                            <div class="text-[8px] text-slate-500">Golongan 3</div>
-                        </div>
-                        <div class="text-center p-4 bg-white/5 rounded-2xl">
-                            <div class="text-2xl font-black text-purple-400" id="gol4-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">GRD 4</div>
-                            <div class="text-[8px] text-slate-500">Gol 4 UP</div>
-                        </div>
-                        <div class="text-center p-4 bg-white/5 rounded-2xl">
-                            <div class="text-2xl font-black text-rose-400" id="vendor-count">0</div>
-                            <div class="text-[10px] text-slate-400 font-bold uppercase">Vendor</div>
-                            <div class="text-[8px] text-slate-500">Kontraktor</div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Statistik Lokasi Hunian -->
-                <div class="glass-panel p-8 rounded-[32px]">
+                <div class="glass-panel p-8 rounded-[32px] mb-8">
                     <h3 class="text-xl font-black text-white mb-6">Distribusi Lokasi Hunian</h3>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="glass-card p-6 rounded-2xl border-l-4 border-sky-500">
@@ -1037,9 +956,15 @@
                             </select>
                         </div>
                         <div>
-                            <label class="form-label">Block</label>
-                            <input type="text" id="filterBlock" oninput="renderTable()" placeholder="Cari block..." 
-                                   class="input-field text-[11px] py-1.5">
+                            <label class="form-label">GRD</label>
+                            <select id="filterGrd" onchange="renderTable()" class="input-field text-[11px] py-1.5">
+                                <option value="">Semua GRD</option>
+                                <option value="1">GRD 1</option>
+                                <option value="2">GRD 2</option>
+                                <option value="3">GRD 3</option>
+                                <option value="4">GRD 4</option>
+                                <option value="vendor">Vendor</option>
+                            </select>
                         </div>
                         <div>
                             <label class="form-label">No Kamar</label>
@@ -1194,14 +1119,14 @@
                             </button>
                         </div>
                         
-                        <!-- Hapus Data Berdasarkan Golongan -->
+                        <!-- Hapus Data Berdasarkan Lokasi -->
                         <div class="glass-panel p-8 rounded-3xl border-l-4 border-rose-500">
                             <div class="w-12 h-12 bg-rose-500/20 text-rose-500 rounded-xl flex items-center justify-center mb-4">
                                 <i data-lucide="trash-2" class="w-6 h-6"></i>
                             </div>
                             <h4 class="text-lg font-black text-white mb-3">Hapus Data Massal</h4>
-                            <p class="text-slate-400 text-sm mb-6">Hapus data karyawan berdasarkan golongan (GRD) atau lokasi hunian secara massal.</p>
-                            <button onclick="openDeleteGolonganModal()" class="btn-danger w-full">
+                            <p class="text-slate-400 text-sm mb-6">Hapus data karyawan berdasarkan lokasi hunian secara massal.</p>
+                            <button onclick="openDeleteLokasiModal()" class="btn-danger w-full">
                                 <i data-lucide="trash-2" class="w-4 h-4 mr-2"></i> HAPUS DATA
                             </button>
                         </div>
@@ -1290,7 +1215,7 @@
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                                     <span class="text-sm text-slate-400">Versi Aplikasi</span>
-                                    <span class="text-slate-400 text-sm">v2.2.0</span>
+                                    <span class="text-slate-400 text-sm">v2.3.0</span>
                                 </div>
                             </div>
                         </div>
@@ -1311,13 +1236,12 @@
         // ==================== VARIABEL GLOBAL ====================
         let employees = [];
         let activeTab = 'dashboard';
-        let currentFilter = 'ALL';
         let currentLokasiFilter = 'ALL';
         let currentLokasiTab = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
 
-        // Mapping GRD untuk display
+        // Mapping GRD untuk display (masih digunakan di tabel)
         const grdMapping = {
             '1': { name: 'Golongan 1', class: 'grd-1', color: 'sky' },
             '2': { name: 'Golongan 2', class: 'grd-2', color: 'emerald' },
@@ -1449,7 +1373,6 @@
                 hideLoading();
                 updateUI();
                 populateFilterOptions();
-                updateCategoryCounts();
                 updateLokasiCounts();
             }
         }
@@ -1520,108 +1443,90 @@
             document.getElementById('modal-import').classList.add('hidden');
         }
 
-        // Buka modal hapus berdasarkan golongan
-        function openDeleteGolonganModal() {
+        // Buka modal hapus berdasarkan lokasi
+        function openDeleteLokasiModal() {
             // Populate lokasi options
             const uniqueLokasi = [...new Set(employees.map(e => e.lokasi_hunian))].filter(Boolean).sort();
-            const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
+            const lokasiHtml = '<option value="">Pilih Lokasi</option>' + 
                 uniqueLokasi.map(l => `<option value="${l}">${l}</option>`).join('');
             document.getElementById('delete-lokasi-select').innerHTML = lokasiHtml;
             
             // Reset form
-            document.getElementById('delete-grd-select').value = '';
             document.getElementById('delete-lokasi-select').value = '';
             document.getElementById('delete-preview').classList.add('hidden');
             document.getElementById('btn-proses-hapus').disabled = true;
             
-            document.getElementById('modal-delete-golongan').classList.remove('hidden');
+            document.getElementById('modal-delete-lokasi').classList.remove('hidden');
         }
 
-        // Tutup modal hapus berdasarkan golongan
-        function closeDeleteGolonganModal() {
-            document.getElementById('modal-delete-golongan').classList.add('hidden');
+        // Tutup modal hapus berdasarkan lokasi
+        function closeDeleteLokasiModal() {
+            document.getElementById('modal-delete-lokasi').classList.add('hidden');
         }
 
         // Preview data yang akan dihapus
         function previewDeleteData() {
-            const grd = document.getElementById('delete-grd-select').value;
             const lokasi = document.getElementById('delete-lokasi-select').value;
             
-            if (!grd) {
+            if (!lokasi) {
                 document.getElementById('delete-preview').classList.add('hidden');
                 document.getElementById('btn-proses-hapus').disabled = true;
                 return;
             }
             
-            // Filter data berdasarkan kriteria
-            const filtered = employees.filter(e => {
-                const matchesGrd = e.grd === grd;
-                const matchesLokasi = !lokasi || e.lokasi_hunian === lokasi;
-                return matchesGrd && matchesLokasi;
-            });
+            // Filter data berdasarkan lokasi
+            const filtered = employees.filter(e => e.lokasi_hunian === lokasi);
             
             if (filtered.length === 0) {
                 document.getElementById('delete-preview').classList.add('hidden');
                 document.getElementById('btn-proses-hapus').disabled = true;
-                showToast("Tidak ada data yang sesuai dengan kriteria", "warning");
+                showToast("Tidak ada data untuk lokasi yang dipilih", "warning");
                 return;
             }
             
             // Update preview
             document.getElementById('delete-preview-count').textContent = filtered.length;
-            document.getElementById('delete-preview-grd').textContent = getGrdDisplay(grd);
-            document.getElementById('delete-preview-lokasi').textContent = lokasi || 'Semua Lokasi';
+            document.getElementById('delete-preview-lokasi').textContent = getLokasiDisplay(lokasi);
             document.getElementById('delete-preview').classList.remove('hidden');
             document.getElementById('btn-proses-hapus').disabled = false;
         }
 
-        // Proses hapus data berdasarkan golongan
-        async function prosesHapusGolongan() {
-            const grd = document.getElementById('delete-grd-select').value;
+        // Proses hapus data berdasarkan lokasi
+        async function prosesHapusLokasi() {
             const lokasi = document.getElementById('delete-lokasi-select').value;
             
-            if (!grd) {
-                showToast("Pilih golongan terlebih dahulu", "error");
+            if (!lokasi) {
+                showToast("Pilih lokasi terlebih dahulu", "error");
                 return;
             }
             
             // Konfirmasi akhir
-            const grdName = getGrdDisplay(grd);
-            const lokasiName = lokasi || 'Semua Lokasi';
-            const confirmMessage = `Apakah Anda yakin ingin menghapus SEMUA data ${grdName} dari ${lokasiName}? Tindakan ini tidak dapat dibatalkan!`;
+            const lokasiName = getLokasiDisplay(lokasi);
+            const confirmMessage = `Apakah Anda yakin ingin menghapus SEMUA data dari ${lokasiName}? Tindakan ini tidak dapat dibatalkan!`;
             
             if (!confirm(confirmMessage)) {
                 return;
             }
             
-            showLoading(`Menghapus data ${grdName}...`);
+            showLoading(`Menghapus data ${lokasiName}...`);
             
             try {
-                // Buat query berdasarkan kriteria
-                let query = supabaseClient
+                // Buat query berdasarkan lokasi
+                const { error, count } = await supabaseClient
                     .from('karyawan_mess')
-                    .delete();
-                
-                // Filter berdasarkan GRD
-                query = query.eq('grd', grd);
-                
-                // Filter tambahan berdasarkan lokasi jika dipilih
-                if (lokasi) {
-                    query = query.eq('lokasi_hunian', lokasi);
-                }
-                
-                const { error, count } = await query;
+                    .delete()
+                    .eq('lokasi_hunian', lokasi);
                 
                 if (error) {
                     throw new Error(error.message);
                 }
                 
-                showToast(`Berhasil menghapus data ${grdName} dari ${lokasiName}`, "success");
-                closeDeleteGolonganModal();
+                showToast(`Berhasil menghapus data dari ${lokasiName}`, "success");
+                closeDeleteLokasiModal();
                 await fetchAllData();
                 
             } catch (error) {
-                console.error("Error deleting data by golongan:", error);
+                console.error("Error deleting data by lokasi:", error);
                 showToast("Gagal menghapus data: " + error.message, "error");
             } finally {
                 hideLoading();
@@ -1685,31 +1590,10 @@
             lucide.createIcons();
         }
 
-        // Ganti kategori filter berdasarkan GRD
-        function switchCategory(grd) {
-            activeTab = 'data-karyawan';
-            currentFilter = grd;
-            currentLokasiFilter = 'ALL';
-            
-            // Switch ke tab data karyawan
-            switchTab('data-karyawan');
-            
-            // Update nama view berdasarkan GRD
-            const grdName = getGrdDisplay(grd);
-            document.getElementById('current-view-name').innerText = `DATABASE ${grdName.toUpperCase()}`;
-            
-            // Update navigation styles
-            updateNavStyles();
-            
-            // Render tabel dengan filter GRD
-            renderTable();
-        }
-
         // Ganti kategori filter berdasarkan Lokasi
         function switchCategoryLocation(lokasi) {
             activeTab = 'data-karyawan';
             currentLokasiFilter = lokasi;
-            currentFilter = 'ALL';
             
             // Switch ke tab data karyawan
             switchTab('data-karyawan');
@@ -1761,19 +1645,6 @@
                 document.getElementById('nav-dashboard').classList.add('active');
             } else if (activeTab === 'data-karyawan') {
                 document.getElementById('nav-data-karyawan').classList.add('active');
-                
-                // Jika ada filter kategori GRD, aktifkan juga
-                const grdMap = {
-                    '1': 'nav-gol1',
-                    '2': 'nav-gol2', 
-                    '3': 'nav-gol3',
-                    '4': 'nav-gol4',
-                    'vendor': 'nav-vendor'
-                };
-                
-                if (grdMap[currentFilter]) {
-                    document.getElementById(grdMap[currentFilter]).classList.add('active');
-                }
                 
                 // Jika ada filter kategori Lokasi, aktifkan juga
                 const lokasiMap = {
@@ -1843,9 +1714,6 @@
             document.getElementById('capacity-text').innerText = percTerisi.toFixed(1) + "% TERPAKAI";
             document.getElementById('db-capacity-used').textContent = percTerisi.toFixed(1) + "%";
             
-            // Update category counts berdasarkan GRD
-            updateCategoryCounts();
-            
             // Update lokasi counts
             updateLokasiCounts();
             
@@ -1857,38 +1725,6 @@
             else if (activeTab === 'lokasi-hunian') {
                 renderLokasiTable();
             }
-        }
-
-        // Update jumlah per kategori berdasarkan GRD
-        function updateCategoryCounts() {
-            const counts = {
-                '1': 0,  // GRD 1
-                '2': 0,  // GRD 2
-                '3': 0,  // GRD 3
-                '4': 0,  // GRD 4
-                'vendor': 0  // Vendor
-            };
-
-            employees.forEach(e => {
-                const grd = e.grd;
-                if (grd && counts.hasOwnProperty(grd)) {
-                    counts[grd]++;
-                }
-            });
-
-            // Update sidebar counts
-            document.getElementById('count-gol1').textContent = counts['1'];
-            document.getElementById('count-gol2').textContent = counts['2'];
-            document.getElementById('count-gol3').textContent = counts['3'];
-            document.getElementById('count-gol4').textContent = counts['4'];
-            document.getElementById('count-vendor').textContent = counts['vendor'];
-
-            // Update dashboard counts
-            document.getElementById('gol1-count').textContent = counts['1'];
-            document.getElementById('gol2-count').textContent = counts['2'];
-            document.getElementById('gol3-count').textContent = counts['3'];
-            document.getElementById('gol4-count').textContent = counts['4'];
-            document.getElementById('vendor-count').textContent = counts['vendor'];
         }
 
         // Update jumlah per lokasi
@@ -1924,11 +1760,11 @@
             document.getElementById('lokasi-pelangi-detail').textContent = `${counts['PELANGI']} Penghuni`;
         }
 
-        // Render tabel data dengan filter GRD dan Lokasi
+        // Render tabel data dengan filter Lokasi
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
-            const filterBlock = document.getElementById('filterBlock').value.toLowerCase();
+            const filterGrd = document.getElementById('filterGrd').value;
             const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
             const filterPerusahaan = document.getElementById('filterPerusahaan').value;
@@ -1938,15 +1774,14 @@
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
-                const matchesBlock = !filterBlock || (e.block && e.block.toLowerCase().includes(filterBlock));
+                const matchesGrd = !filterGrd || e.grd === filterGrd;
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
                 const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
-                const matchesGrd = currentFilter === 'ALL' || e.grd === currentFilter;
                 const matchesLokasiFilter = currentLokasiFilter === 'ALL' || e.lokasi_hunian === currentLokasiFilter;
                 
-                return matchesSearch && matchesLok && matchesBlock && matchesKamar && 
-                       matchesStatus && matchesPerusahaan && matchesGrd && matchesLokasiFilter;
+                return matchesSearch && matchesLok && matchesGrd && matchesKamar && 
+                       matchesStatus && matchesPerusahaan && matchesLokasiFilter;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
@@ -2085,7 +1920,7 @@
         // Reset filter tabel
         function resetTableFilters() {
             document.getElementById('filterLokasi').value = '';
-            document.getElementById('filterBlock').value = '';
+            document.getElementById('filterGrd').value = '';
             document.getElementById('filterKamar').value = '';
             document.getElementById('filterStatusKamar').value = '';
             document.getElementById('filterPerusahaan').value = '';
@@ -2179,7 +2014,7 @@
             }
         }
 
-        // Hapus data karyawan
+        // Hapus data karyawan (individual)
         async function deleteEmployee(id) {
             if (!confirm("Apakah Anda yakin ingin menghapus data karyawan ini? Tindakan ini tidak dapat dibatalkan.")) {
                 return;
@@ -2493,7 +2328,6 @@
             }
             
             // Setup event listener untuk preview delete data
-            document.getElementById('delete-grd-select').addEventListener('change', previewDeleteData);
             document.getElementById('delete-lokasi-select').addEventListener('change', previewDeleteData);
             
             // Load data awal
@@ -2541,17 +2375,306 @@
                 if (!document.getElementById('modal-import').classList.contains('hidden')) {
                     closeImportModal();
                 }
-                if (!document.getElementById('modal-delete-golongan').classList.contains('hidden')) {
-                    closeDeleteGolonganModal();
+                if (!document.getElementById('modal-delete-lokasi').classList.contains('hidden')) {
+                    closeDeleteLokasiModal();
                 }
             }
         });
 
-        // Fungsi-fungsi untuk import Excel (tetap sama seperti sebelumnya)
-        // ... (kode untuk handleFileSelect, readExcelFile, processImportData, dll tetap sama)
-        // Karena panjang kode, saya tidak menyalin ulang bagian import yang sama
-        // Fungsi-fungsi tersebut sudah ada di kode asli Anda
+        // ==================== FUNGSI IMPORT EXCEL (SIMPLIFIED) ====================
         
+        // Handle file select untuk import
+        async function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validasi ukuran file
+            if (file.size > 10 * 1024 * 1024) {
+                showToast("Ukuran file terlalu besar (maksimal 10MB)", "error");
+                return;
+            }
+            
+            // Validasi ekstensi file
+            const validExtensions = ['.xlsx', '.xls', '.csv'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validExtensions.includes(fileExt)) {
+                showToast("Format file tidak didukung. Gunakan file Excel (.xlsx, .xls, .csv)", "error");
+                return;
+            }
+            
+            showLoading("Membaca file Excel...");
+            
+            try {
+                const data = await readExcelFile(file);
+                if (data && data.length > 0) {
+                    await processImportData(data);
+                } else {
+                    throw new Error("File Excel kosong atau format tidak sesuai");
+                }
+            } catch (error) {
+                console.error("Error reading Excel file:", error);
+                showToast("Gagal memproses file: " + error.message, "error");
+            } finally {
+                hideLoading();
+                // Reset input file
+                event.target.value = "";
+            }
+        }
+
+        // Baca file Excel dengan error handling yang lebih baik
+        function readExcelFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { 
+                            type: 'array', 
+                            cellDates: true, 
+                            cellNF: false, 
+                            cellText: false,
+                            raw: false,
+                            dateNF: 'yyyy-mm-dd'
+                        });
+                        
+                        // Ambil semua sheet names
+                        const sheetNames = workbook.SheetNames;
+                        if (sheetNames.length === 0) {
+                            reject(new Error("File Excel tidak memiliki sheet"));
+                            return;
+                        }
+                        
+                        // Gunakan sheet pertama
+                        const firstSheetName = sheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        
+                        // Convert ke JSON dengan opsi yang lebih baik
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+                            defval: "",           // Nilai default untuk cell kosong
+                            raw: false,           // Convert tanggal ke string
+                            dateNF: 'yyyy-mm-dd'  // Format tanggal
+                        });
+                        
+                        resolve(jsonData);
+                    } catch (error) {
+                        reject(new Error(`Gagal membaca file Excel: ${error.message}`));
+                    }
+                };
+                reader.onerror = (error) => reject(new Error(`Gagal membaca file: ${error.message}`));
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // Process import data (simplified version)
+        async function processImportData(json) {
+            if (!Array.isArray(json) || json.length === 0) {
+                showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
+                return;
+            }
+
+            showLoading("Memproses data import...");
+
+            try {
+                // Process data untuk preview
+                importPreviewData = json.map((row, index) => {
+                    // Simple data extraction
+                    const processed = {
+                        id: `preview-${index}`,
+                        rowNumber: index + 2,
+                        nik: String(row.NIK || "").trim(),
+                        nama: String(row.NAMA || "").trim(),
+                        gender: String(row.GENDER || "").toUpperCase(),
+                        department: String(row.DEPARTMENT || "").trim(),
+                        grd: String(row.GRD || "").toLowerCase(),
+                        gol: String(row.GOL || "").toUpperCase().trim(),
+                        jabatan: String(row.JABATAN || "").trim(),
+                        fasilitas: String(row.FASILITAS || "").toUpperCase(),
+                        point_of_hire: String(row["Point of Hire"] || "").trim(),
+                        tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || '',
+                        perusahaan: String(row.PERUSAHAAN || "").trim(),
+                        lokasi_hunian: String(row["LOKASI HUNIAN"] || "").toUpperCase(),
+                        floor: String(row.FLOOR || "").trim(),
+                        block: String(row.BLOCK || "").toUpperCase().trim(),
+                        no_kamar: String(row["NO KAMAR"] || "").trim(),
+                        status_kamar: String(row["STATUS KAMAR"] || "TERISI").toUpperCase(),
+                        tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || '',
+                        isValid: true,
+                        errors: [],
+                        isNew: true
+                    };
+
+                    // Validasi NIK
+                    if (!processed.nik) {
+                        processed.isValid = false;
+                        processed.errors.push("NIK tidak boleh kosong");
+                    } else if (!isValidNIK(processed.nik)) {
+                        processed.isValid = false;
+                        processed.errors.push(`Format NIK tidak valid: "${processed.nik}"`);
+                    } else {
+                        processed.nik = processed.nik.toUpperCase();
+                    }
+
+                    // Validasi GRD
+                    if (!processed.grd) {
+                        processed.isValid = false;
+                        processed.errors.push("GRD harus diisi");
+                    } else if (!['1', '2', '3', '4', 'vendor'].includes(processed.grd)) {
+                        processed.isValid = false;
+                        processed.errors.push(`GRD tidak valid: "${processed.grd}"`);
+                    }
+
+                    // Validasi field required lainnya
+                    if (!processed.nama) {
+                        processed.isValid = false;
+                        processed.errors.push("Nama harus diisi");
+                    }
+                    
+                    if (!processed.no_kamar) {
+                        processed.isValid = false;
+                        processed.errors.push("No Kamar harus diisi");
+                    }
+
+                    // Cek apakah NIK sudah ada di database
+                    const existingNik = employees.map(e => e.nik);
+                    if (existingNik.includes(processed.nik)) {
+                        processed.isNew = false;
+                    }
+
+                    return processed;
+                });
+
+                // Filter data yang valid
+                const validData = importPreviewData.filter(item => item.isValid);
+                const newData = validData.filter(item => item.isNew);
+                const updateData = validData.filter(item => !item.isNew);
+
+                hideLoading();
+
+                // Tampilkan preview modal
+                closeImportModal();
+                showPreviewModal(validData, newData, updateData);
+
+            } catch (error) {
+                console.error("Error processing import data:", error);
+                showToast("Gagal memproses data import: " + error.message, "error");
+                hideLoading();
+            }
+        }
+
+        // Tampilkan modal preview import (simplified)
+        function showPreviewModal(validData, newData, updateData) {
+            document.getElementById('modal-preview').classList.remove('hidden');
+            
+            // Update stats
+            document.getElementById('preview-stats').innerHTML = `
+                <span class="bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${validData.length} Data Valid</span>
+                <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${newData.length} Baru</span>
+                <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold">${updateData.length} Update</span>
+            `;
+
+            // Render preview table
+            const tbody = document.getElementById('preview-table-body');
+            tbody.innerHTML = validData.map(item => `
+                <tr class="${item.isValid ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500'}">
+                    <td class="py-3 px-4 text-slate-500 text-[10px]">${item.rowNumber}</td>
+                    <td class="py-3 px-4 font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
+                    <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
+                    <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
+                    <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
+                    <td class="py-3 px-4 text-center"><span class="grd-badge ${getGrdClass(item.grd)}">${getGrdDisplay(item.grd)}</span></td>
+                    <td class="py-3 px-4 font-bold text-sky-400">${item.lokasi_hunian || '-'}</td>
+                    <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
+                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
+                    <td class="py-3 px-4 text-center">
+                        ${!item.isNew ? 
+                            '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
+                            '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
+                    </td>
+                    <td class="py-3 px-4 text-center">
+                        ${item.isValid ? 
+                            '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : 
+                            '<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>'}
+                    </td>
+                </tr>
+            `).join('');
+
+            // Enable/disable process button
+            const processBtn = document.getElementById('btn-process-import');
+            if (validData.length > 0) {
+                processBtn.disabled = false;
+                processBtn.innerHTML = `<i data-lucide="upload" class="w-4 h-4"></i> PROSES IMPORT (${validData.length} DATA)`;
+            } else {
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<i data-lucide="upload" class="w-4 h-4"></i> TIDAK ADA DATA VALID';
+            }
+
+            // Show errors if any
+            const invalidData = importPreviewData.filter(item => !item.isValid);
+            const errorSection = document.getElementById('preview-errors');
+            const errorList = document.getElementById('error-list');
+            
+            if (invalidData.length > 0) {
+                errorSection.classList.remove('hidden');
+                errorList.innerHTML = invalidData.map(item => 
+                    `<div class="mb-1 p-2 bg-rose-500/5 rounded">
+                        <span class="font-bold">Baris ${item.rowNumber}:</span> ${item.errors.join(', ')} 
+                        <span class="text-slate-400">- NIK: "${item.nik || 'KOSONG'}"</span>
+                    </div>`
+                ).join('');
+            } else {
+                errorSection.classList.add('hidden');
+            }
+
+            lucide.createIcons();
+        }
+
+        // Tutup modal preview
+        function closePreviewModal() {
+            document.getElementById('modal-preview').classList.add('hidden');
+            importPreviewData = [];
+        }
+
+        // Proses import data ke database
+        async function processImport() {
+            const validData = importPreviewData.filter(item => item.isValid);
+            
+            if (validData.length === 0) {
+                showToast("Tidak ada data valid untuk diimport", "error");
+                return;
+            }
+
+            showLoading(`Mengimport ${validData.length} data ke database...`);
+
+            try {
+                // Prepare data untuk upload
+                const toUpload = validData.map(item => {
+                    const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
+                    return cleanData;
+                });
+
+                // Gunakan upsert untuk handle insert dan update
+                const { data, error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .upsert(toUpload, {
+                        onConflict: 'nik',
+                        ignoreDuplicates: false
+                    });
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                showToast(`Import ${validData.length} data berhasil!`, "success");
+                closePreviewModal();
+                await fetchAllData();
+            } catch (error) {
+                console.error("Import error:", error);
+                showToast("Gagal mengimport data: " + error.message, "error");
+            } finally {
+                hideLoading();
+            }
+        }
+
     </script>
 </body>
 </html>
