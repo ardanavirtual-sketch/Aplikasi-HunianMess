@@ -1,3 +1,4 @@
+[file content begin]
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -515,18 +516,9 @@
                         
                         <div class="form-group">
                             <label class="form-label required-field">Golongan Detail</label>
-                            <select name="gol" id="field-gol" required 
-                                    class="input-field w-full">
-                                <option value="">Pilih Golongan Detail</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4A">4A</option>
-                                <option value="4B">4B</option>
-                                <option value="5">5</option>
-                                <option value="M">M</option>
-                                <option value="VENDOR">VENDOR</option>
-                            </select>
+                            <input type="text" name="gol" id="field-gol" required 
+                                   class="input-field w-full"
+                                   placeholder="Masukkan Golongan">
                         </div>
                     </div>
                     
@@ -685,7 +677,7 @@
                         <ul class="text-[10px] text-slate-300 space-y-2">
                             <li>• Kolom wajib: NIK, NAMA, GOL, NO KAMAR</li>
                             <li>• Format NIK: Huruf pertama harus A-Z</li>
-                            <li>• GOL: 1, 2, 3, 4A, 4B, 5, M, VENDOR</li>
+                            <li>• GOL: Bebas (tidak ada batasan)</li>
                             <li>• Format tanggal: YYYY-MM-DD</li>
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
@@ -701,6 +693,7 @@
                             <li>• Data duplikat berdasarkan NIK akan diupdate</li>
                             <li>• Data akan divalidasi sebelum diimport</li>
                             <li>• Backup disarankan sebelum import massal</li>
+                            <li>• Golongan bisa diisi dengan nilai bebas</li>
                         </ul>
                     </div>
                 </div>
@@ -781,7 +774,7 @@
         <div class="p-4 sidebar-footer-content">
             <div class="text-[10px] text-slate-500 text-center">
                 <p>© 2024 OceanMess</p>
-                <p>v2.3.0</p>
+                <p>v2.3.1</p>
             </div>
         </div>
     </aside>
@@ -932,34 +925,38 @@
                     </div>
                 </div>
 
-                <!-- FILTER BAR -->
+                <!-- FILTER BAR - DIUBAH URUTANNYA -->
                 <div class="px-8 py-3 bg-[#0b253a]/20 border-b border-white/5 flex items-center gap-4 shrink-0">
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
+                        <!-- Lokasi Hunian (Pertama) -->
                         <div>
                             <label class="form-label">Lokasi Hunian</label>
                             <select id="filterLokasi" onchange="renderTable()" class="input-field text-[11px] py-1.5">
                                 <option value="">Semua Lokasi</option>
                             </select>
                         </div>
+                        
+                        <!-- Block (Kedua) -->
                         <div>
-                            <label class="form-label">Golongan</label>
-                            <select id="filterGol" onchange="renderTable()" class="input-field text-[11px] py-1.5">
-                                <option value="">Semua Golongan</option>
-                                <option value="1">1</option>
-                                <option value="2">2</option>
-                                <option value="3">3</option>
-                                <option value="4A">4A</option>
-                                <option value="4B">4B</option>
-                                <option value="5">5</option>
-                                <option value="M">M</option>
-                                <option value="VENDOR">VENDOR</option>
-                            </select>
+                            <label class="form-label">Block</label>
+                            <input type="text" id="filterBlock" oninput="renderTable()" placeholder="Cari block..." 
+                                   class="input-field text-[11px] py-1.5">
                         </div>
+                        
+                        <!-- No Kamar (Ketiga) -->
                         <div>
                             <label class="form-label">No Kamar</label>
                             <input type="text" id="filterKamar" oninput="renderTable()" placeholder="Cari no kamar..." 
                                    class="input-field text-[11px] py-1.5">
                         </div>
+                        
+                        <!-- Golongan (Diubah menjadi text input) -->
+                        <div>
+                            <label class="form-label">Golongan</label>
+                            <input type="text" id="filterGol" oninput="renderTable()" placeholder="Cari golongan..." 
+                                   class="input-field text-[11px] py-1.5">
+                        </div>
+                        
                         <div>
                             <label class="form-label">Status Kamar</label>
                             <select id="filterStatusKamar" onchange="renderTable()" class="input-field text-[11px] py-1.5">
@@ -968,12 +965,6 @@
                                 <option value="TERSEDIA">TERSEDIA</option>
                                 <option value="RUSAK">RUSAK</option>
                                 <option value="DIPERBAIKI">DIPERBAIKI</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="form-label">Perusahaan</label>
-                            <select id="filterPerusahaan" onchange="renderTable()" class="input-field text-[11px] py-1.5">
-                                <option value="">Semua Perusahaan</option>
                             </select>
                         </div>
                     </div>
@@ -1202,7 +1193,7 @@
                                 </div>
                                 <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
                                     <span class="text-sm text-slate-400">Versi Aplikasi</span>
-                                    <span class="text-slate-400 text-sm">v2.3.0</span>
+                                    <span class="text-slate-400 text-sm">v2.3.1</span>
                                 </div>
                             </div>
                         </div>
@@ -1389,6 +1380,7 @@
                 document.getElementById('field-tanggal_masuk_kerja').value = today;
                 document.getElementById('field-tanggal_masuk_mess_hunian_p2').value = today;
                 document.getElementById('field-status_kamar').value = 'TERISI';
+                document.getElementById('field-gol').value = '1'; // Default value
             }
             
             document.getElementById('modal-form').classList.remove('hidden');
@@ -1651,12 +1643,6 @@
             const lokasiHtml = '<option value="">Semua Lokasi</option>' + 
                 uniqueLok.map(l => `<option value="${l}">${l}</option>`).join('');
             document.getElementById('filterLokasi').innerHTML = lokasiHtml;
-
-            // Perusahaan
-            const uniquePerusahaan = [...new Set(employees.map(e => e.perusahaan))].filter(Boolean).sort();
-            const perusahaanHtml = '<option value="">Semua Perusahaan</option>' + 
-                uniquePerusahaan.map(p => `<option value="${p}">${p}</option>`).join('');
-            document.getElementById('filterPerusahaan').innerHTML = perusahaanHtml;
         }
 
         // Update UI (statistik)
@@ -1732,24 +1718,24 @@
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
-            const filterGol = document.getElementById('filterGol').value;
+            const filterGol = document.getElementById('filterGol').value.toLowerCase();
             const filterKamar = document.getElementById('filterKamar').value.toLowerCase();
+            const filterBlock = document.getElementById('filterBlock').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
-            const filterPerusahaan = document.getElementById('filterPerusahaan').value;
 
             const filtered = employees.filter(e => {
                 const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search);
                 const matchesLok = !filterLok || e.lokasi_hunian === filterLok;
-                const matchesGol = !filterGol || e.gol === filterGol;
+                const matchesGol = !filterGol || (e.gol && e.gol.toString().toLowerCase().includes(filterGol));
                 const matchesKamar = !filterKamar || (e.no_kamar && e.no_kamar.toLowerCase().includes(filterKamar));
+                const matchesBlock = !filterBlock || (e.block && e.block.toString().toLowerCase().includes(filterBlock));
                 const matchesStatus = !filterStatus || e.status_kamar === filterStatus;
-                const matchesPerusahaan = !filterPerusahaan || e.perusahaan === filterPerusahaan;
                 const matchesLokasiFilter = currentLokasiFilter === 'ALL' || e.lokasi_hunian === currentLokasiFilter;
                 
                 return matchesSearch && matchesLok && matchesGol && matchesKamar && 
-                       matchesStatus && matchesPerusahaan && matchesLokasiFilter;
+                       matchesBlock && matchesStatus && matchesLokasiFilter;
             });
 
             document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
@@ -1884,8 +1870,8 @@
             document.getElementById('filterLokasi').value = '';
             document.getElementById('filterGol').value = '';
             document.getElementById('filterKamar').value = '';
+            document.getElementById('filterBlock').value = '';
             document.getElementById('filterStatusKamar').value = '';
-            document.getElementById('filterPerusahaan').value = '';
             document.getElementById('globalSearch').value = '';
             renderTable();
             showToast("Filter telah direset", "success");
@@ -1919,9 +1905,9 @@
                 return;
             }
 
-            // Validasi Golongan
+            // Validasi Golongan (tidak ada batasan khusus)
             if (!raw.gol) {
-                showToast("Golongan harus dipilih", "error");
+                showToast("Golongan harus diisi", "error");
                 return;
             }
 
@@ -2059,7 +2045,7 @@
                 [""],
                 ["FORMAT DATA YANG DISESUAIKAN:"],
                 ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
-                ["2. GOL (Golongan): 1, 2, 3, 4A, 4B, 5, M, VENDOR"],
+                ["2. GOL (Golongan): Bisa diisi dengan nilai apa saja (tidak ada batasan)"],
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
                 ["4. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
                 ["5. FASILITAS: CR, NR"],
@@ -2072,7 +2058,8 @@
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
                 ["• Pastikan format kolom sesuai dengan contoh"],
                 ["• Simpan file dalam format .xlsx sebelum diupload"],
-                ["• Maksimal ukuran file: 10MB"]
+                ["• Maksimal ukuran file: 10MB"],
+                ["• Golongan tidak memiliki batasan khusus, bisa diisi dengan nilai bebas"]
             ];
             
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
@@ -2249,7 +2236,7 @@
             }, 3000);
         }
 
-        // ==================== INISIALISASI APLIKASI ====================
+        // ==================== FUNGSI IMPORT EXCEL (DIKOREKSI) ====================
 
         // Setup event listeners saat halaman dimuat
         window.onload = function() {
@@ -2281,6 +2268,9 @@
             // Setup event listener untuk preview delete data
             document.getElementById('delete-lokasi-select').addEventListener('change', previewDeleteData);
             
+            // Setup drag and drop untuk import
+            setupDragAndDrop();
+            
             // Load data awal
             fetchAllData();
             
@@ -2294,6 +2284,70 @@
                 }
             });
         };
+
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            const dropArea = document.getElementById('drag-drop-area');
+            
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropArea.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropArea.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight() {
+                dropArea.classList.add('dragover');
+            }
+
+            function unhighlight() {
+                dropArea.classList.remove('dragover');
+            }
+
+            dropArea.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                if (files.length > 0) {
+                    const file = files[0];
+                    
+                    // Validasi ukuran file
+                    if (file.size > 10 * 1024 * 1024) {
+                        showToast("Ukuran file terlalu besar (maksimal 10MB)", "error");
+                        return;
+                    }
+                    
+                    // Validasi ekstensi file
+                    const validExtensions = ['.xlsx', '.xls', '.csv'];
+                    const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+                    if (!validExtensions.includes(fileExt)) {
+                        showToast("Format file tidak didukung. Gunakan file Excel (.xlsx, .xls, .csv)", "error");
+                        return;
+                    }
+                    
+                    // Trigger file input
+                    const dataTransfer = new DataTransfer();
+                    dataTransfer.items.add(file);
+                    document.getElementById('importFile').files = dataTransfer.files;
+                    
+                    // Trigger change event
+                    const event = new Event('change', { bubbles: true });
+                    document.getElementById('importFile').dispatchEvent(event);
+                }
+            }
+        }
 
         // Keyboard shortcuts
         document.addEventListener('keydown', function(e) {
@@ -2332,7 +2386,7 @@
             }
         });
 
-        // ==================== FUNGSI IMPORT EXCEL (SIMPLIFIED) ====================
+        // ==================== FUNGSI IMPORT EXCEL ====================
         
         // Handle file select untuk import
         async function handleFileSelect(event) {
@@ -2384,8 +2438,7 @@
                             cellDates: true, 
                             cellNF: false, 
                             cellText: false,
-                            raw: false,
-                            dateNF: 'yyyy-mm-dd'
+                            raw: false
                         });
                         
                         // Ambil semua sheet names
@@ -2416,7 +2469,7 @@
             });
         }
 
-        // Process import data (simplified version)
+        // Process import data
         async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
@@ -2428,26 +2481,26 @@
             try {
                 // Process data untuk preview
                 importPreviewData = json.map((row, index) => {
-                    // Simple data extraction
+                    // Ekstraksi data dengan mapping yang lebih fleksibel
                     const processed = {
                         id: `preview-${index}`,
                         rowNumber: index + 2,
-                        nik: String(row.NIK || "").trim(),
-                        nama: String(row.NAMA || "").trim(),
-                        gender: String(row.GENDER || "").toUpperCase(),
-                        department: String(row.DEPARTMENT || "").trim(),
-                        gol: String(row.GOL || "").toUpperCase().trim(),
-                        jabatan: String(row.JABATAN || "").trim(),
-                        fasilitas: String(row.FASILITAS || "").toUpperCase(),
-                        point_of_hire: String(row["Point of Hire"] || "").trim(),
-                        tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || '',
-                        perusahaan: String(row.PERUSAHAAN || "").trim(),
-                        lokasi_hunian: String(row["LOKASI HUNIAN"] || "").toUpperCase(),
-                        floor: String(row.FLOOR || "").trim(),
-                        block: String(row.BLOCK || "").toUpperCase().trim(),
-                        no_kamar: String(row["NO KAMAR"] || "").trim(),
-                        status_kamar: String(row["STATUS KAMAR"] || "TERISI").toUpperCase(),
-                        tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || '',
+                        nik: String(row.NIK || row.nik || "").trim(),
+                        nama: String(row.NAMA || row.nama || "").trim(),
+                        gender: String(row.GENDER || row.gender || "").toUpperCase(),
+                        department: String(row.DEPARTMENT || row.department || "").trim(),
+                        gol: String(row.GOL || row.gol || "").toUpperCase().trim(),
+                        jabatan: String(row.JABATAN || row.jabatan || "").trim(),
+                        fasilitas: String(row.FASILITAS || row.fasilitas || "").toUpperCase(),
+                        point_of_hire: String(row["Point of Hire"] || row.point_of_hire || "").trim(),
+                        tanggal_masuk_kerja: row["TANGGAL MASUK KERJA"] || row.tanggal_masuk_kerja || '',
+                        perusahaan: String(row.PERUSAHAAN || row.perusahaan || "").trim(),
+                        lokasi_hunian: String(row["LOKASI HUNIAN"] || row.lokasi_hunian || "").toUpperCase(),
+                        floor: String(row.FLOOR || row.floor || "").trim(),
+                        block: String(row.BLOCK || row.block || "").toUpperCase().trim(),
+                        no_kamar: String(row["NO KAMAR"] || row.no_kamar || "").trim(),
+                        status_kamar: String(row["STATUS KAMAR"] || row.status_kamar || "TERISI").toUpperCase(),
+                        tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || row.tanggal_masuk_mess_hunian_p2 || '',
                         isValid: true,
                         errors: [],
                         isNew: true
@@ -2464,13 +2517,10 @@
                         processed.nik = processed.nik.toUpperCase();
                     }
 
-                    // Validasi Golongan
+                    // Validasi Golongan (tidak ada batasan khusus)
                     if (!processed.gol) {
                         processed.isValid = false;
                         processed.errors.push("Golongan harus diisi");
-                    } else if (!['1', '2', '3', '4A', '4B', '5', 'M', 'VENDOR'].includes(processed.gol)) {
-                        processed.isValid = false;
-                        processed.errors.push(`Golongan tidak valid: "${processed.gol}"`);
                     }
 
                     // Validasi field required lainnya
@@ -2511,7 +2561,7 @@
             }
         }
 
-        // Tampilkan modal preview import (simplified)
+        // Tampilkan modal preview import
         function showPreviewModal(validData, newData, updateData) {
             document.getElementById('modal-preview').classList.remove('hidden');
             
@@ -2598,6 +2648,16 @@
                 // Prepare data untuk upload
                 const toUpload = validData.map(item => {
                     const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
+                    
+                    // Format tanggal yang benar
+                    if (cleanData.tanggal_masuk_kerja && typeof cleanData.tanggal_masuk_kerja === 'string') {
+                        cleanData.tanggal_masuk_kerja = formatDateForDatabase(cleanData.tanggal_masuk_kerja);
+                    }
+                    
+                    if (cleanData.tanggal_masuk_mess_hunian_p2 && typeof cleanData.tanggal_masuk_mess_hunian_p2 === 'string') {
+                        cleanData.tanggal_masuk_mess_hunian_p2 = formatDateForDatabase(cleanData.tanggal_masuk_mess_hunian_p2);
+                    }
+                    
                     return cleanData;
                 });
 
@@ -2624,6 +2684,38 @@
             }
         }
 
+        // Format tanggal untuk database
+        function formatDateForDatabase(dateString) {
+            if (!dateString) return null;
+            
+            try {
+                // Coba parse berbagai format tanggal
+                let date = new Date(dateString);
+                
+                // Jika parse gagal, coba format lain
+                if (isNaN(date.getTime())) {
+                    // Coba format DD/MM/YYYY
+                    const parts = dateString.split('/');
+                    if (parts.length === 3) {
+                        date = new Date(parts[2], parts[1] - 1, parts[0]);
+                    } else {
+                        // Coba format lain
+                        date = new Date(dateString.replace(/(\d{2})-(\d{2})-(\d{4})/, '$3-$2-$1'));
+                    }
+                }
+                
+                if (isNaN(date.getTime())) {
+                    return null; // Return null jika masih gagal
+                }
+                
+                // Format ke YYYY-MM-DD
+                return date.toISOString().split('T')[0];
+            } catch (e) {
+                return null;
+            }
+        }
+
     </script>
 </body>
 </html>
+[file content end]
