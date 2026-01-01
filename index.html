@@ -308,6 +308,72 @@
             transform: translateY(-3px);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
+
+        /* Pagination Styles */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 16px;
+            background: rgba(11, 37, 58, 0.3);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .pagination-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .pagination-btn.active {
+            background: var(--ocean-gradient);
+            color: white;
+            border-color: #0ea5e9;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .pagination-info {
+            font-size: 11px;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        /* Virtual Scroll Container */
+        .virtual-scroll-container {
+            position: relative;
+            overflow: auto;
+            height: calc(100vh - 200px);
+        }
+
+        .virtual-scroll-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+        }
+
+        /* Performance Optimization */
+        .table-virtual-row {
+            position: absolute;
+            width: 100%;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body class="flex h-screen">
@@ -925,6 +991,12 @@
                     <div class="flex items-center gap-4">
                         <span id="data-count-badge" class="bg-gradient-to-r from-sky-500 to-blue-500 text-white px-3 py-1 rounded-full text-[10px] font-black">0 DATA</span>
                         <h4 id="current-view-name" class="text-sm font-black text-white uppercase tracking-wider">DATABASE KARYAWAN</h4>
+                        <span id="total-data-info" class="text-[10px] text-slate-400">(Loading...)</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div id="table-info" class="text-[10px] text-slate-400 px-3 py-1 rounded-full bg-white/5">
+                            Menampilkan <span id="displayed-count">0</span> dari <span id="total-count">0</span> data
+                        </div>
                     </div>
                 </div>
 
@@ -971,39 +1043,76 @@
                             </select>
                         </div>
                     </div>
-                    <div>
+                    <div class="flex gap-2">
                         <button onclick="resetTableFilters()" class="btn-secondary text-[10px]">
                             Reset
+                        </button>
+                        <button onclick="toggleViewMode()" id="toggle-view-btn" class="btn-secondary text-[10px]">
+                            <i data-lucide="list" class="w-3 h-3 mr-1"></i> Tampilan
                         </button>
                     </div>
                 </div>
 
                 <!-- Table Container -->
-                <div class="flex-1 overflow-auto custom-scrollbar bg-[#071927]">
-                    <table class="database-table">
-                        <thead class="text-slate-400">
-                            <tr>
-                                <th class="sticky-col-left">NIK</th>
-                                <th>NAMA</th>
-                                <th>GENDER</th>
-                                <th>DEPARTMENT</th>
-                                <th>GOL</th>
-                                <th>JABATAN</th>
-                                <th>FASILITAS</th>
-                                <th class="text-sky-400">POINT OF HIRE</th>
-                                <th>TGL MASUK KERJA</th>
-                                <th>PERUSAHAAN</th>
-                                <th>LOKASI HUNIAN</th>
-                                <th>FLOOR</th>
-                                <th>BLOCK</th>
-                                <th class="text-emerald-400">NO KAMAR</th>
-                                <th>STATUS KAMAR</th>
-                                <th class="text-amber-400">TGL MASUK MESS</th>
-                                <th class="sticky-col-right text-center">AKSI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body"></tbody>
-                    </table>
+                <div class="flex-1 overflow-hidden bg-[#071927] flex flex-col">
+                    <div class="flex-1 overflow-auto custom-scrollbar" id="table-container">
+                        <table class="database-table" id="data-table">
+                            <thead class="text-slate-400">
+                                <tr>
+                                    <th class="sticky-col-left">NIK</th>
+                                    <th>NAMA</th>
+                                    <th>GENDER</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>GOL</th>
+                                    <th>JABATAN</th>
+                                    <th>FASILITAS</th>
+                                    <th class="text-sky-400">POINT OF HIRE</th>
+                                    <th>TGL MASUK KERJA</th>
+                                    <th>PERUSAHAAN</th>
+                                    <th>LOKASI HUNIAN</th>
+                                    <th>FLOOR</th>
+                                    <th>BLOCK</th>
+                                    <th class="text-emerald-400">NO KAMAR</th>
+                                    <th>STATUS KAMAR</th>
+                                    <th class="text-amber-400">TGL MASUK MESS</th>
+                                    <th class="sticky-col-right text-center">AKSI</th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-body"></tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- Pagination -->
+                    <div id="pagination-container" class="pagination-container hidden">
+                        <button onclick="changePage('first')" id="first-page" class="pagination-btn">
+                            <i data-lucide="chevrons-left" class="w-3 h-3"></i>
+                        </button>
+                        <button onclick="changePage('prev')" id="prev-page" class="pagination-btn">
+                            <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                        </button>
+                        
+                        <div class="pagination-info">
+                            Halaman <span id="current-page">1</span> dari <span id="total-pages">1</span>
+                        </div>
+                        
+                        <button onclick="changePage('next')" id="next-page" class="pagination-btn">
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        </button>
+                        <button onclick="changePage('last')" id="last-page" class="pagination-btn">
+                            <i data-lucide="chevrons-right" class="w-3 h-3"></i>
+                        </button>
+                        
+                        <div class="ml-4">
+                            <select id="page-size" onchange="changePageSize()" class="input-field text-[11px] py-1">
+                                <option value="50">50 data/halaman</option>
+                                <option value="100">100 data/halaman</option>
+                                <option value="200">200 data/halaman</option>
+                                <option value="500">500 data/halaman</option>
+                                <option value="1000">1000 data/halaman</option>
+                                <option value="0">Semua data</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1221,6 +1330,14 @@
         let currentLokasiTab = 'ALL';
         let isSidebarCollapsed = false;
         let importPreviewData = [];
+        
+        // Variabel untuk pagination
+        let currentPage = 1;
+        let pageSize = 100; // Default 100 data per halaman
+        let totalPages = 1;
+        let filteredEmployees = [];
+        let isVirtualScrollEnabled = false;
+        let viewMode = 'pagination'; // 'pagination' atau 'virtual'
 
         // Valid lokasi hunian sesuai constraint di database
         const validLokasiHunian = [
@@ -1324,40 +1441,68 @@
             return lokasiMapping[lokasi]?.name || lokasi || '-';
         }
 
-        // ==================== FUNGSI DATABASE ====================
+        // ==================== FUNGSI DATABASE (DIPERBAIKI) ====================
 
-        // Ambil semua data dari database
+        // Ambil semua data dari database DENGAN PAGINATION
         async function fetchAllData() {
             showLoading("Memuat data dari database...");
             try {
-                const { data, error } = await supabaseClient
-                    .from('karyawan_mess')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                // Gunakan range() untuk mendapatkan data dalam jumlah besar
+                let allEmployees = [];
+                let hasMore = true;
+                let start = 0;
+                const limit = 1000; // Max per query
+                
+                while (hasMore) {
+                    const { data, error, count } = await supabaseClient
+                        .from('karyawan_mess')
+                        .select('*', { count: 'exact' })
+                        .order('created_at', { ascending: false })
+                        .range(start, start + limit - 1);
 
-                if (error) {
-                    console.error("Error fetching data:", error);
-                    showToast("Gagal memuat data: " + error.message, "error");
-                    employees = [];
-                    document.getElementById('db-connection-status').className = 'px-3 py-1 bg-rose-500/20 text-rose-400 rounded-full text-xs font-bold';
-                    document.getElementById('db-connection-status').textContent = 'Disconnected';
-                    document.getElementById('db-status').className = 'font-bold text-rose-400';
-                    document.getElementById('db-status').textContent = 'Disconnected';
-                } else {
-                    employees = data || [];
-                    showToast(`Data berhasil dimuat: ${employees.length} karyawan`, "success");
-                    document.getElementById('db-connection-status').className = 'px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold';
-                    document.getElementById('db-connection-status').textContent = 'Connected';
-                    document.getElementById('db-status').className = 'font-bold text-emerald-400';
-                    document.getElementById('db-status').textContent = 'Connected';
-                    
-                    // Update database info
-                    document.getElementById('db-total-data').textContent = employees.length;
-                    if (employees.length > 0) {
-                        const latest = new Date(employees[0].created_at);
-                        document.getElementById('db-latest-update').textContent = latest.toLocaleDateString('id-ID');
+                    if (error) {
+                        console.error("Error fetching data:", error);
+                        showToast("Gagal memuat data: " + error.message, "error");
+                        employees = [];
+                        document.getElementById('db-connection-status').className = 'px-3 py-1 bg-rose-500/20 text-rose-400 rounded-full text-xs font-bold';
+                        document.getElementById('db-connection-status').textContent = 'Disconnected';
+                        document.getElementById('db-status').className = 'font-bold text-rose-400';
+                        document.getElementById('db-status').textContent = 'Disconnected';
+                        break;
+                    }
+
+                    if (data && data.length > 0) {
+                        allEmployees = allEmployees.concat(data);
+                        start += limit;
+                        
+                        // Update loading message
+                        document.getElementById('loading-detail').textContent = 
+                            `Memuat data... ${allEmployees.length} data terkumpul`;
+                        
+                        // Jika data kurang dari limit, berarti sudah semua
+                        if (data.length < limit) {
+                            hasMore = false;
+                        }
+                    } else {
+                        hasMore = false;
                     }
                 }
+
+                employees = allEmployees;
+                showToast(`Data berhasil dimuat: ${employees.length} karyawan`, "success");
+                
+                document.getElementById('db-connection-status').className = 'px-3 py-1 bg-emerald-500/20 text-emerald-400 rounded-full text-xs font-bold';
+                document.getElementById('db-connection-status').textContent = 'Connected';
+                document.getElementById('db-status').className = 'font-bold text-emerald-400';
+                document.getElementById('db-status').textContent = 'Connected';
+                
+                // Update database info
+                document.getElementById('db-total-data').textContent = employees.length.toLocaleString();
+                if (employees.length > 0) {
+                    const latest = new Date(employees[0].created_at);
+                    document.getElementById('db-latest-update').textContent = latest.toLocaleDateString('id-ID');
+                }
+                
             } catch (err) {
                 console.error("Exception fetching data:", err);
                 showToast("Gagal memuat data: " + err.message, "error");
@@ -1367,6 +1512,34 @@
                 updateUI();
                 populateFilterOptions();
                 updateLokasiCounts();
+                
+                // Jika di tab data karyawan, render tabel
+                if (activeTab === 'data-karyawan') {
+                    renderTable();
+                }
+            }
+        }
+
+        // Ambil data dengan COUNT untuk statistik yang akurat
+        async function fetchDataCount() {
+            try {
+                const { count, error } = await supabaseClient
+                    .from('karyawan_mess')
+                    .select('*', { count: 'exact', head: true });
+
+                if (!error && count !== null) {
+                    document.getElementById('db-total-data').textContent = count.toLocaleString();
+                    document.getElementById('stat-total').textContent = count.toLocaleString();
+                    
+                    // Update sidebar counts
+                    document.getElementById('count-all-lokasi').textContent = count;
+                    
+                    return count;
+                }
+                return employees.length;
+            } catch (err) {
+                console.error("Error fetching count:", err);
+                return employees.length;
             }
         }
 
@@ -1503,14 +1676,25 @@
             showLoading(`Menghapus data ${lokasiName}...`);
             
             try {
-                // Buat query berdasarkan lokasi
-                const { error, count } = await supabaseClient
-                    .from('karyawan_mess')
-                    .delete()
-                    .eq('lokasi_hunian', lokasi);
+                // Hapus data secara batch karena mungkin banyak
+                const batchSize = 100;
+                const totalToDelete = employees.filter(e => e.lokasi_hunian === lokasi).length;
+                let deleted = 0;
                 
-                if (error) {
-                    throw new Error(error.message);
+                while (deleted < totalToDelete) {
+                    const { error } = await supabaseClient
+                        .from('karyawan_mess')
+                        .delete()
+                        .eq('lokasi_hunian', lokasi)
+                        .limit(batchSize);
+                    
+                    if (error) {
+                        throw new Error(error.message);
+                    }
+                    
+                    deleted += batchSize;
+                    document.getElementById('loading-detail').textContent = 
+                        `Menghapus... ${Math.min(deleted, totalToDelete)} dari ${totalToDelete} data`;
                 }
                 
                 showToast(`Berhasil menghapus data dari ${lokasiName}`, "success");
@@ -1627,6 +1811,20 @@
             renderLokasiTable();
         }
 
+        // Toggle view mode antara pagination dan virtual scroll
+        function toggleViewMode() {
+            if (viewMode === 'pagination') {
+                viewMode = 'virtual';
+                document.getElementById('toggle-view-btn').innerHTML = '<i data-lucide="grid" class="w-3 h-3 mr-1"></i> Tampilan';
+                showToast("Mode virtual scroll diaktifkan", "info");
+            } else {
+                viewMode = 'pagination';
+                document.getElementById('toggle-view-btn').innerHTML = '<i data-lucide="list" class="w-3 h-3 mr-1"></i> Tampilan';
+                showToast("Mode pagination diaktifkan", "info");
+            }
+            renderTable();
+        }
+
         // Update style navigasi
         function updateNavStyles() {
             // Reset semua nav link
@@ -1666,7 +1864,7 @@
             lucide.createIcons();
         }
 
-        // ==================== FUNGSI FILTER & TABEL ====================
+        // ==================== FUNGSI FILTER & TABEL (DIPERBAIKI) ====================
 
         // Isi opsi filter
         function populateFilterOptions() {
@@ -1703,14 +1901,8 @@
             // Update lokasi counts
             updateLokasiCounts();
             
-            // Jika di tab data karyawan, render tabel
-            if (activeTab === 'data-karyawan') {
-                renderTable();
-            }
-            // Jika di tab lokasi hunian, render tabel lokasi
-            else if (activeTab === 'lokasi-hunian') {
-                renderLokasiTable();
-            }
+            // Update total data info
+            document.getElementById('total-data-info').textContent = `(${employees.length.toLocaleString()} data)`;
         }
 
         // Update jumlah per lokasi
@@ -1730,23 +1922,23 @@
             });
 
             // Update sidebar counts
-            document.getElementById('count-all-lokasi').textContent = counts['ALL'];
-            document.getElementById('count-p2').textContent = counts['P2 SURYA RESIDANCE'];
-            document.getElementById('count-mentari').textContent = counts['MENTARI'];
-            document.getElementById('count-pelangi').textContent = counts['PELANGI'];
+            document.getElementById('count-all-lokasi').textContent = counts['ALL'].toLocaleString();
+            document.getElementById('count-p2').textContent = counts['P2 SURYA RESIDANCE'].toLocaleString();
+            document.getElementById('count-mentari').textContent = counts['MENTARI'].toLocaleString();
+            document.getElementById('count-pelangi').textContent = counts['PELANGI'].toLocaleString();
 
             // Update dashboard stats
-            document.getElementById('lokasi-p2-count').textContent = counts['P2 SURYA RESIDANCE'];
-            document.getElementById('lokasi-p2-detail').textContent = `${counts['P2 SURYA RESIDANCE']} Penghuni`;
+            document.getElementById('lokasi-p2-count').textContent = counts['P2 SURYA RESIDANCE'].toLocaleString();
+            document.getElementById('lokasi-p2-detail').textContent = `${counts['P2 SURYA RESIDANCE'].toLocaleString()} Penghuni`;
             
-            document.getElementById('lokasi-mentari-count').textContent = counts['MENTARI'];
-            document.getElementById('lokasi-mentari-detail').textContent = `${counts['MENTARI']} Penghuni`;
+            document.getElementById('lokasi-mentari-count').textContent = counts['MENTARI'].toLocaleString();
+            document.getElementById('lokasi-mentari-detail').textContent = `${counts['MENTARI'].toLocaleString()} Penghuni`;
             
-            document.getElementById('lokasi-pelangi-count').textContent = counts['PELANGI'];
-            document.getElementById('lokasi-pelangi-detail').textContent = `${counts['PELANGI']} Penghuni`;
+            document.getElementById('lokasi-pelangi-count').textContent = counts['PELANGI'].toLocaleString();
+            document.getElementById('lokasi-pelangi-detail').textContent = `${counts['PELANGI'].toLocaleString()} Penghuni`;
         }
 
-        // Render tabel data dengan filter Lokasi
+        // Render tabel data dengan filter Lokasi DAN PAGINATION
         function renderTable() {
             const search = document.getElementById('globalSearch').value.toLowerCase();
             const filterLok = document.getElementById('filterLokasi').value;
@@ -1755,7 +1947,8 @@
             const filterBlock = document.getElementById('filterBlock').value.toLowerCase();
             const filterStatus = document.getElementById('filterStatusKamar').value;
 
-            const filtered = employees.filter(e => {
+            // Filter data
+            filteredEmployees = employees.filter(e => {
                 const matchesSearch = (e.nama || "").toLowerCase().includes(search) || 
                                      (e.nik || "").toLowerCase().includes(search) ||
                                      (e.no_kamar || "").toLowerCase().includes(search);
@@ -1770,10 +1963,22 @@
                        matchesBlock && matchesStatus && matchesLokasiFilter;
             });
 
-            document.getElementById('data-count-badge').innerText = `${filtered.length} DATA`;
+            document.getElementById('data-count-badge').innerText = `${filteredEmployees.length.toLocaleString()} DATA`;
+            document.getElementById('displayed-count').textContent = Math.min(pageSize === 0 ? filteredEmployees.length : pageSize, filteredEmployees.length).toLocaleString();
+            document.getElementById('total-count').textContent = filteredEmployees.length.toLocaleString();
+
+            if (viewMode === 'pagination') {
+                renderPaginationTable();
+            } else {
+                renderVirtualScrollTable();
+            }
+        }
+
+        // Render tabel dengan pagination
+        function renderPaginationTable() {
             const tbody = document.getElementById('table-body');
             
-            if (filtered.length === 0) {
+            if (filteredEmployees.length === 0) {
                 tbody.innerHTML = `
                     <tr>
                         <td colspan="17" class="text-center py-12">
@@ -1783,11 +1988,102 @@
                         </td>
                     </tr>
                 `;
+                document.getElementById('pagination-container').classList.add('hidden');
                 lucide.createIcons();
                 return;
             }
 
-            tbody.innerHTML = filtered.map(e => `
+            // Hitung pagination
+            if (pageSize === 0) {
+                // Tampilkan semua data
+                totalPages = 1;
+                currentPage = 1;
+                const displayData = filteredEmployees;
+                renderTableRows(displayData, tbody);
+                document.getElementById('pagination-container').classList.add('hidden');
+            } else {
+                totalPages = Math.ceil(filteredEmployees.length / pageSize);
+                if (currentPage > totalPages) currentPage = totalPages;
+                if (currentPage < 1) currentPage = 1;
+                
+                // Hitung start dan end index
+                const startIndex = (currentPage - 1) * pageSize;
+                const endIndex = Math.min(startIndex + pageSize, filteredEmployees.length);
+                const displayData = filteredEmployees.slice(startIndex, endIndex);
+                
+                renderTableRows(displayData, tbody);
+                
+                // Update pagination controls
+                updatePaginationControls();
+                document.getElementById('pagination-container').classList.remove('hidden');
+            }
+            
+            // Update page info
+            document.getElementById('current-page').textContent = currentPage;
+            document.getElementById('total-pages').textContent = totalPages;
+            
+            lucide.createIcons();
+        }
+
+        // Render tabel dengan virtual scroll (untuk data sangat besar)
+        function renderVirtualScrollTable() {
+            const tbody = document.getElementById('table-body');
+            const container = document.getElementById('table-container');
+            
+            if (filteredEmployees.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="17" class="text-center py-12">
+                            <i data-lucide="database" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
+                            <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
+                            <p class="text-slate-600 text-[10px] mt-2">Coba ubah filter pencarian atau tambah data baru</p>
+                        </td>
+                    </tr>
+                `;
+                document.getElementById('pagination-container').classList.add('hidden');
+                lucide.createIcons();
+                return;
+            }
+
+            // Sembunyikan pagination untuk virtual scroll
+            document.getElementById('pagination-container').classList.add('hidden');
+            
+            // Untuk virtual scroll sederhana, tampilkan 200 data pertama
+            const displayData = filteredEmployees.slice(0, 200);
+            renderTableRows(displayData, tbody);
+            
+            // Tambahkan info virtual scroll
+            if (filteredEmployees.length > 200) {
+                const infoRow = document.createElement('tr');
+                infoRow.innerHTML = `
+                    <td colspan="17" class="text-center py-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4 text-sky-400"></i>
+                            <span class="text-sky-400 text-[10px]">Menampilkan 200 dari ${filteredEmployees.length.toLocaleString()} data. Gunakan filter untuk melihat data spesifik.</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(infoRow);
+            }
+            
+            lucide.createIcons();
+        }
+
+        // Render baris tabel
+        function renderTableRows(data, tbody) {
+            if (data.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="17" class="text-center py-12">
+                            <i data-lucide="database" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
+                            <p class="text-slate-500 font-medium">Tidak ada data yang ditemukan</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = data.map(e => `
                 <tr class="table-row-hover">
                     <td class="sticky-col-left font-mono text-sky-400 font-bold border-r border-white/5">${e.nik || '-'}</td>
                     <td class="text-white font-bold">${e.nama || '-'}</td>
@@ -1819,7 +2115,47 @@
                     </td>
                 </tr>
             `).join('');
-            lucide.createIcons();
+        }
+
+        // Update pagination controls
+        function updatePaginationControls() {
+            document.getElementById('first-page').disabled = currentPage === 1;
+            document.getElementById('prev-page').disabled = currentPage === 1;
+            document.getElementById('next-page').disabled = currentPage === totalPages;
+            document.getElementById('last-page').disabled = currentPage === totalPages;
+            
+            // Update page size selector
+            document.getElementById('page-size').value = pageSize;
+        }
+
+        // Ganti halaman
+        function changePage(action) {
+            switch(action) {
+                case 'first':
+                    currentPage = 1;
+                    break;
+                case 'prev':
+                    if (currentPage > 1) currentPage--;
+                    break;
+                case 'next':
+                    if (currentPage < totalPages) currentPage++;
+                    break;
+                case 'last':
+                    currentPage = totalPages;
+                    break;
+            }
+            renderTable();
+            
+            // Scroll ke atas tabel
+            document.getElementById('table-container').scrollTop = 0;
+        }
+
+        // Ganti ukuran halaman
+        function changePageSize() {
+            const newSize = parseInt(document.getElementById('page-size').value);
+            pageSize = newSize;
+            currentPage = 1;
+            renderTable();
         }
 
         // Render tabel untuk tab Lokasi Hunian
@@ -1829,7 +2165,7 @@
                 return e.lokasi_hunian === currentLokasiTab;
             });
 
-            document.getElementById('lokasi-count-badge').innerText = `${filtered.length} DATA`;
+            document.getElementById('lokasi-count-badge').innerText = `${filtered.length.toLocaleString()} DATA`;
             const tbody = document.getElementById('lokasi-table-body');
             
             if (filtered.length === 0) {
@@ -1846,7 +2182,10 @@
                 return;
             }
 
-            tbody.innerHTML = filtered.map(e => `
+            // Untuk tab lokasi, tampilkan maksimal 1000 data
+            const displayData = filtered.length > 1000 ? filtered.slice(0, 1000) : filtered;
+            
+            tbody.innerHTML = displayData.map(e => `
                 <tr class="table-row-hover">
                     <td class="sticky-col-left font-mono text-sky-400 font-bold border-r border-white/5">${e.nik || '-'}</td>
                     <td class="text-white font-bold">${e.nama || '-'}</td>
@@ -1878,6 +2217,21 @@
                     </td>
                 </tr>
             `).join('');
+            
+            // Tambahkan info jika data lebih dari 1000
+            if (filtered.length > 1000) {
+                const infoRow = document.createElement('tr');
+                infoRow.innerHTML = `
+                    <td colspan="17" class="text-center py-4">
+                        <div class="flex items-center justify-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4 text-amber-400"></i>
+                            <span class="text-amber-400 text-[10px]">Menampilkan 1000 dari ${filtered.length.toLocaleString()} data. Gunakan filter atau export untuk melihat semua data.</span>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(infoRow);
+            }
+            
             lucide.createIcons();
         }
 
@@ -1905,6 +2259,7 @@
             document.getElementById('filterBlock').value = '';
             document.getElementById('filterStatusKamar').value = '';
             document.getElementById('globalSearch').value = '';
+            currentPage = 1;
             renderTable();
             showToast("Filter telah direset", "success");
         }
@@ -2774,47 +3129,53 @@
                 let totalImported = 0;
                 let errors = [];
 
-                // 1. Proses data baru (INSERT)
+                // 1. Proses data baru (INSERT) dengan batch
                 if (newData.length > 0) {
-                    const toInsert = newData.map(item => {
-                        const { id, rowNumber, isValid, errors, isNew, isDuplicateInFile, ...cleanData } = item;
-                        
-                        // Pastikan floor null jika tidak valid atau kosong
-                        if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
-                            cleanData.floor = null;
-                        } else if (!cleanData.floor || cleanData.floor === '') {
-                            cleanData.floor = null;
-                        }
-                        
-                        // Pastikan tanggal di-set ke null jika kosong
-                        if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
-                            cleanData.tanggal_masuk_kerja = null;
-                        }
-                        
-                        if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
-                            cleanData.tanggal_masuk_mess_hunian_p2 = null;
-                        }
-                        
-                        // Set default values untuk field yang mungkin kosong
-                        if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
-                        if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
-                        
-                        return cleanData;
-                    });
+                    const batchSize = 100;
+                    for (let i = 0; i < newData.length; i += batchSize) {
+                        const batch = newData.slice(i, i + batchSize);
+                        const toInsert = batch.map(item => {
+                            const { id, rowNumber, isValid, errors, isNew, isDuplicateInFile, ...cleanData } = item;
+                            
+                            // Pastikan floor null jika tidak valid atau kosong
+                            if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
+                                cleanData.floor = null;
+                            } else if (!cleanData.floor || cleanData.floor === '') {
+                                cleanData.floor = null;
+                            }
+                            
+                            // Pastikan tanggal di-set ke null jika kosong
+                            if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
+                                cleanData.tanggal_masuk_kerja = null;
+                            }
+                            
+                            if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
+                                cleanData.tanggal_masuk_mess_hunian_p2 = null;
+                            }
+                            
+                            // Set default values untuk field yang mungkin kosong
+                            if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
+                            if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
+                            
+                            return cleanData;
+                        });
 
-                    try {
-                        const { data, error } = await supabaseClient
-                            .from('karyawan_mess')
-                            .insert(toInsert)
-                            .select();
+                        try {
+                            const { data, error } = await supabaseClient
+                                .from('karyawan_mess')
+                                .insert(toInsert)
+                                .select();
 
-                        if (error) {
-                            throw new Error(`Gagal insert data baru: ${error.message}`);
+                            if (error) {
+                                throw new Error(`Batch ${Math.floor(i/batchSize) + 1}: ${error.message}`);
+                            }
+                            
+                            totalImported += batch.length;
+                            document.getElementById('loading-detail').textContent = 
+                                `Mengimport... ${totalImported} dari ${validData.length} data`;
+                        } catch (insertError) {
+                            errors.push(`Gagal insert batch data baru: ${insertError.message}`);
                         }
-                        
-                        totalImported += newData.length;
-                    } catch (insertError) {
-                        errors.push(`Gagal insert data baru: ${insertError.message}`);
                     }
                 }
 
@@ -2855,6 +3216,8 @@
                                 errors.push(`Gagal update data ${cleanData.nik}: ${error.message}`);
                             } else {
                                 totalImported++;
+                                document.getElementById('loading-detail').textContent = 
+                                    `Mengimport... ${totalImported} dari ${validData.length} data`;
                             }
                         } catch (updateError) {
                             console.error(`Error processing update for row ${item.rowNumber}:`, updateError);
