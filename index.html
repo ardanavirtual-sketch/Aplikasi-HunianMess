@@ -455,7 +455,7 @@
                         <div>• <strong>GENDER:</strong> LAKI-LAKI atau PEREMPUAN</div>
                         <div>• <strong>STATUS KAMAR:</strong> TERISI, TERSEDIA, RUSAK, DIPERBAIKI</div>
                         <div>• <strong>FASILITAS:</strong> CR atau NR</div>
-                        <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. OST, PT. KPS, PT. CKM</div>
+                        <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</div>
                         <div>• <strong>FLOOR:</strong> Lantai Bawah, Lantai Atas (atau kosongkan)</div>
                     </div>
                 </div>
@@ -539,9 +539,9 @@
                                 class="input-field w-full">
                             <option value="">Pilih Perusahaan</option>
                             <option value="PT. HJF">PT. HJF</option>
-                            <option value="PT. OST">PT. OST</option>
-                            <option value="PT. KAI">PT. KPS</option>
-                            <option value="PT. CKM">PT. CKM</option>
+                            <option value="PT. INKA">PT. INKA</option>
+                            <option value="PT. KAI">PT. KAI</option>
+                            <option value="VENDOR LAINNYA">VENDOR LAINNYA</option>
                         </select>
                     </div>
                 </div>
@@ -681,7 +681,7 @@
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
                             <li>• Fasilitas: CR, NR</li>
-                            <li>• Perusahaan: PT. HJF, PT. OST, PT. KPS, PT. CKM</li>
+                            <li>• Perusahaan: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</li>
                             <li>• Floor: Lantai Bawah, Lantai Atas (atau kosongkan)</li>
                         </ul>
                     </div>
@@ -1232,9 +1232,9 @@
         // Valid perusahaan
         const validPerusahaan = [
             'PT. HJF',
-            'PT. OST',
-            'PT. KPS',
-            'PT. CKM'
+            'PT. INKA',
+            'PT. KAI',
+            'VENDOR LAINNYA'
         ];
 
         // Valid fasilitas
@@ -2094,7 +2094,7 @@
                 ["2. GENDER: LAKI-LAKI atau PEREMPUAN"],
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
                 ["4. FASILITAS: CR atau NR"],
-                ["5. PERUSAHAAN: PT. HJF, PT. OST, PT. KPS, PT. CKM"],
+                ["5. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
                 ["6. FLOOR: Lantai Bawah, Lantai Atas (atau kosongkan)"],
                 [""],
                 ["CATATAN:"],
@@ -2553,7 +2553,7 @@
 
                     // Validasi perusahaan jika diisi
                     if (processed.perusahaan && !validPerusahaan.includes(processed.perusahaan)) {
-                        processed.perusahaan = "PT. CKM"; // Default jika tidak valid
+                        processed.perusahaan = "VENDOR LAINNYA"; // Default jika tidak valid
                     }
 
                     // Validasi fasilitas jika diisi
