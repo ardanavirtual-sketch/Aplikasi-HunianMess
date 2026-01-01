@@ -455,7 +455,7 @@
                         <div>• <strong>GENDER:</strong> LAKI-LAKI atau PEREMPUAN</div>
                         <div>• <strong>STATUS KAMAR:</strong> TERISI, TERSEDIA, RUSAK, DIPERBAIKI</div>
                         <div>• <strong>FASILITAS:</strong> CR atau NR</div>
-                        <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</div>
+                        <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. OST, PT. KPS, PT. CKM</div>
                         <div>• <strong>FLOOR:</strong> Lantai Bawah, Lantai Atas (atau kosongkan)</div>
                     </div>
                 </div>
@@ -539,9 +539,9 @@
                                 class="input-field w-full">
                             <option value="">Pilih Perusahaan</option>
                             <option value="PT. HJF">PT. HJF</option>
-                            <option value="PT. INKA">PT. INKA</option>
-                            <option value="PT. KAI">PT. KAI</option>
-                            <option value="VENDOR LAINNYA">VENDOR LAINNYA</option>
+                            <option value="PT. OST">PT. OST</option>
+                            <option value="PT. KAI">PT. KPS</option>
+                            <option value="PT. CKM">PT. CKM</option>
                         </select>
                     </div>
                 </div>
@@ -681,7 +681,7 @@
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
                             <li>• Fasilitas: CR, NR</li>
-                            <li>• Perusahaan: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</li>
+                            <li>• Perusahaan: PT. HJF, PT. OST, PT. KPS, PT. CKM</li>
                             <li>• Floor: Lantai Bawah, Lantai Atas (atau kosongkan)</li>
                         </ul>
                     </div>
@@ -1232,9 +1232,9 @@
         // Valid perusahaan
         const validPerusahaan = [
             'PT. HJF',
-            'PT. INKA',
-            'PT. KAI',
-            'VENDOR LAINNYA'
+            'PT. OST',
+            'PT. KPS',
+            'PT. CKM'
         ];
 
         // Valid fasilitas
@@ -2094,7 +2094,7 @@
                 ["2. GENDER: LAKI-LAKI atau PEREMPUAN"],
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
                 ["4. FASILITAS: CR atau NR"],
-                ["5. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["5. PERUSAHAAN: PT. HJF, PT. OST, PT. KPS, PT. CKM"],
                 ["6. FLOOR: Lantai Bawah, Lantai Atas (atau kosongkan)"],
                 [""],
                 ["CATATAN:"],
@@ -2474,7 +2474,7 @@
             });
         }
 
-        // Process import data dengan validasi constraint
+        // Process import data dengan validasi constraint dan deteksi duplikat
         async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
@@ -2485,12 +2485,17 @@
 
             try {
                 // Process data untuk preview
-                importPreviewData = json.map((row, index) => {
+                const processedData = [];
+                const nikSet = new Set(); // Untuk melacak duplikat NIK dalam file
+                const duplicateNiks = new Set(); // NIK yang duplikat dalam file
+                
+                // Tahap 1: Process semua data
+                json.forEach((row, index) => {
                     // Ekstraksi data dengan mapping yang lebih fleksibel
                     const processed = {
                         id: `preview-${index}`,
                         rowNumber: index + 2,
-                        nik: String(row.NIK || row.nik || "").trim(),
+                        nik: String(row.NIK || row.nik || "").trim().toUpperCase(),
                         nama: String(row.NAMA || row.nama || "").trim(),
                         gender: String(row.GENDER || row.gender || "").toUpperCase(),
                         department: String(row.DEPARTMENT || row.department || "").trim(),
@@ -2508,15 +2513,22 @@
                         tanggal_masuk_mess_hunian_p2: row["TANGGAL MASUK MESS HUNIAN P2"] || row.tanggal_masuk_mess_hunian_p2 || '',
                         isValid: true,
                         errors: [],
-                        isNew: true
+                        isNew: true,
+                        isDuplicateInFile: false // Flag untuk duplikat dalam file
                     };
+
+                    // Cek duplikat NIK dalam file
+                    if (processed.nik && nikSet.has(processed.nik)) {
+                        duplicateNiks.add(processed.nik);
+                        processed.isDuplicateInFile = true;
+                    } else if (processed.nik) {
+                        nikSet.add(processed.nik);
+                    }
 
                     // Validasi NIK (tidak ada batasan khusus)
                     if (!processed.nik) {
                         processed.isValid = false;
                         processed.errors.push("NIK tidak boleh kosong");
-                    } else {
-                        processed.nik = processed.nik.toUpperCase();
                     }
 
                     // Validasi Golongan (tidak ada batasan khusus)
@@ -2553,7 +2565,7 @@
 
                     // Validasi perusahaan jika diisi
                     if (processed.perusahaan && !validPerusahaan.includes(processed.perusahaan)) {
-                        processed.perusahaan = "VENDOR LAINNYA"; // Default jika tidak valid
+                        processed.perusahaan = "PT. CKM"; // Default jika tidak valid
                     }
 
                     // Validasi fasilitas jika diisi
@@ -2597,29 +2609,39 @@
                     }
 
                     // Jika ada error, set isValid ke false
-                    if (processed.errors.length > 0) {
+                    if (processed.errors.length > 0 || processed.isDuplicateInFile) {
                         processed.isValid = false;
+                        if (processed.isDuplicateInFile) {
+                            processed.errors.push("NIK duplikat dalam file ini");
+                        }
                     }
 
-                    // Cek apakah NIK sudah ada di database
-                    const existingNik = employees.map(e => e.nik);
-                    if (existingNik.includes(processed.nik)) {
-                        processed.isNew = false;
-                    }
-
-                    return processed;
+                    processedData.push(processed);
                 });
 
-                // Filter data yang valid
-                const validData = importPreviewData.filter(item => item.isValid);
+                // Filter data yang valid dan tidak duplikat
+                const validData = processedData.filter(item => item.isValid && !item.isDuplicateInFile);
+                
+                // Cek apakah NIK sudah ada di database
+                const existingNiks = employees.map(e => e.nik);
+                validData.forEach(item => {
+                    if (existingNiks.includes(item.nik)) {
+                        item.isNew = false;
+                    }
+                });
+
+                // Kelompokkan data
                 const newData = validData.filter(item => item.isNew);
                 const updateData = validData.filter(item => !item.isNew);
+                
+                // Simpan data untuk preview
+                importPreviewData = processedData;
 
                 hideLoading();
 
                 // Tampilkan preview modal
                 closeImportModal();
-                showPreviewModal(validData, newData, updateData);
+                showPreviewModal(validData, newData, updateData, duplicateNiks.size > 0);
 
             } catch (error) {
                 console.error("Error processing import data:", error);
@@ -2628,41 +2650,60 @@
             }
         }
 
-        // Tampilkan modal preview import
-        function showPreviewModal(validData, newData, updateData) {
+        // Tampilkan modal preview import dengan informasi duplikat
+        function showPreviewModal(validData, newData, updateData, hasDuplicatesInFile) {
             document.getElementById('modal-preview').classList.remove('hidden');
             
-            // Update stats
-            document.getElementById('preview-stats').innerHTML = `
+            // Update stats dengan informasi duplikat jika ada
+            let statsHTML = `
                 <span class="bg-sky-500/20 text-sky-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${validData.length} Data Valid</span>
                 <span class="bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full text-[10px] font-bold mr-2">${newData.length} Baru</span>
                 <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-[10px] font-bold">${updateData.length} Update</span>
             `;
+            
+            if (hasDuplicatesInFile) {
+                statsHTML += `<span class="bg-rose-500/20 text-rose-400 px-3 py-1 rounded-full text-[10px] font-bold ml-2">Duplikat Dihapus</span>`;
+            }
+            
+            document.getElementById('preview-stats').innerHTML = statsHTML;
 
             // Render preview table
             const tbody = document.getElementById('preview-table-body');
-            tbody.innerHTML = validData.map(item => `
-                <tr class="${item.isValid ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500'}">
-                    <td class="py-3 px-4 text-slate-500 text-[10px]">${item.rowNumber}</td>
-                    <td class="py-3 px-4 font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
-                    <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
-                    <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
-                    <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
-                    <td class="py-3 px-4 font-bold text-sky-400">${item.lokasi_hunian || '-'}</td>
-                    <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
-                    <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
-                    <td class="py-3 px-4 text-center">
-                        ${!item.isNew ? 
-                            '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
-                            '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                        ${item.isValid ? 
-                            '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : 
-                            '<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>'}
-                    </td>
-                </tr>
-            `).join('');
+            
+            if (validData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="10" class="text-center py-8">
+                            <i data-lucide="alert-circle" class="w-12 h-12 text-slate-600 mx-auto mb-4"></i>
+                            <p class="text-slate-500 font-medium">Tidak ada data valid untuk ditampilkan</p>
+                            <p class="text-slate-600 text-[10px] mt-2">Perbaiki data terlebih dahulu</p>
+                        </td>
+                    </tr>
+                `;
+            } else {
+                tbody.innerHTML = validData.map(item => `
+                    <tr class="${item.isValid ? 'border-l-4 border-emerald-500' : 'border-l-4 border-rose-500'}">
+                        <td class="py-3 px-4 text-slate-500 text-[10px]">${item.rowNumber}</td>
+                        <td class="py-3 px-4 font-mono ${item.isNew ? 'text-emerald-400' : 'text-amber-400'} font-bold">${item.nik || '-'}</td>
+                        <td class="py-3 px-4 font-medium">${item.nama || '-'}</td>
+                        <td class="py-3 px-4 text-slate-400">${item.gender || '-'}</td>
+                        <td class="py-3 px-4 text-center"><span class="bg-white/5 px-2 py-0.5 rounded text-[9px]">${item.gol || '-'}</span></td>
+                        <td class="py-3 px-4 font-bold text-sky-400">${item.lokasi_hunian || '-'}</td>
+                        <td class="py-3 px-4 font-black text-emerald-400">${item.no_kamar || '-'}</td>
+                        <td class="py-3 px-4"><span class="px-2 py-0.5 rounded-full text-[8px] font-bold ${getStatusClass(item.status_kamar)}">${item.status_kamar || 'TERISI'}</span></td>
+                        <td class="py-3 px-4 text-center">
+                            ${!item.isNew ? 
+                                '<span class="bg-amber-500/10 text-amber-500 px-2 py-0.5 rounded text-[8px] font-bold">UPDATE</span>' : 
+                                '<span class="bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded text-[8px] font-bold">BARU</span>'}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            ${item.isValid ? 
+                                '<i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>' : 
+                                '<i data-lucide="x-circle" class="w-4 h-4 text-rose-500"></i>'}
+                        </td>
+                    </tr>
+                `).join('');
+            }
 
             // Enable/disable process button
             const processBtn = document.getElementById('btn-process-import');
@@ -2675,7 +2716,7 @@
             }
 
             // Show errors if any
-            const invalidData = importPreviewData.filter(item => !item.isValid);
+            const invalidData = importPreviewData.filter(item => !item.isValid || item.isDuplicateInFile);
             const errorSection = document.getElementById('preview-errors');
             const errorList = document.getElementById('error-list');
             
@@ -2687,6 +2728,15 @@
                         <span class="text-slate-400">- NIK: "${item.nik || 'KOSONG'}"</span>
                     </div>`
                 ).join('');
+                
+                if (hasDuplicatesInFile) {
+                    errorList.innerHTML += `
+                        <div class="mt-2 p-2 bg-amber-500/5 rounded border-l-2 border-amber-500">
+                            <span class="font-bold text-amber-400">Catatan:</span> 
+                            <span class="text-slate-400">Data dengan NIK duplikat dalam file akan diabaikan (hanya baris pertama yang diproses)</span>
+                        </div>
+                    `;
+                }
             } else {
                 errorSection.classList.add('hidden');
             }
@@ -2700,59 +2750,127 @@
             importPreviewData = [];
         }
 
-        // Proses import data ke database
+        // Proses import data ke database (DIPERBAIKI)
         async function processImport() {
-            const validData = importPreviewData.filter(item => item.isValid);
+            const validData = importPreviewData.filter(item => item.isValid && !item.isDuplicateInFile);
             
             if (validData.length === 0) {
                 showToast("Tidak ada data valid untuk diimport", "error");
                 return;
             }
 
+            // Konfirmasi import
+            if (!confirm(`Anda akan mengimport ${validData.length} data. Data baru: ${validData.filter(item => item.isNew).length}, Data update: ${validData.filter(item => !item.isNew).length}. Lanjutkan?`)) {
+                return;
+            }
+
             showLoading(`Mengimport ${validData.length} data ke database...`);
 
             try {
-                // Prepare data untuk upload
-                const toUpload = validData.map(item => {
-                    const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
-                    
-                    // Pastikan floor null jika tidak valid atau kosong
-                    if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
-                        cleanData.floor = null;
-                    } else if (!cleanData.floor || cleanData.floor === '') {
-                        cleanData.floor = null;
-                    }
-                    
-                    // Pastikan tanggal di-set ke null jika kosong
-                    if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
-                        cleanData.tanggal_masuk_kerja = null;
-                    }
-                    
-                    if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
-                        cleanData.tanggal_masuk_mess_hunian_p2 = null;
-                    }
-                    
-                    // Set default values untuk field yang mungkin kosong
-                    if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
-                    if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
-                    
-                    return cleanData;
-                });
+                // Pisahkan data baru dan data update
+                const newData = validData.filter(item => item.isNew);
+                const updateData = validData.filter(item => !item.isNew);
+                
+                let totalImported = 0;
+                let errors = [];
 
-                // Gunakan upsert untuk handle insert dan update
-                const { data, error } = await supabaseClient
-                    .from('karyawan_mess')
-                    .upsert(toUpload, {
-                        onConflict: 'nik',
-                        ignoreDuplicates: false
+                // 1. Proses data baru (INSERT)
+                if (newData.length > 0) {
+                    const toInsert = newData.map(item => {
+                        const { id, rowNumber, isValid, errors, isNew, isDuplicateInFile, ...cleanData } = item;
+                        
+                        // Pastikan floor null jika tidak valid atau kosong
+                        if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
+                            cleanData.floor = null;
+                        } else if (!cleanData.floor || cleanData.floor === '') {
+                            cleanData.floor = null;
+                        }
+                        
+                        // Pastikan tanggal di-set ke null jika kosong
+                        if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
+                            cleanData.tanggal_masuk_kerja = null;
+                        }
+                        
+                        if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
+                            cleanData.tanggal_masuk_mess_hunian_p2 = null;
+                        }
+                        
+                        // Set default values untuk field yang mungkin kosong
+                        if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
+                        if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
+                        
+                        return cleanData;
                     });
 
-                if (error) {
-                    console.error("Supabase error:", error);
-                    throw new Error(error.message);
+                    try {
+                        const { data, error } = await supabaseClient
+                            .from('karyawan_mess')
+                            .insert(toInsert)
+                            .select();
+
+                        if (error) {
+                            throw new Error(`Gagal insert data baru: ${error.message}`);
+                        }
+                        
+                        totalImported += newData.length;
+                    } catch (insertError) {
+                        errors.push(`Gagal insert data baru: ${insertError.message}`);
+                    }
                 }
 
-                showToast(`Import ${validData.length} data berhasil!`, "success");
+                // 2. Proses data update (UPDATE satu per satu untuk menghindari konflik)
+                if (updateData.length > 0) {
+                    for (const item of updateData) {
+                        try {
+                            const { id, rowNumber, isValid, errors, isNew, isDuplicateInFile, ...cleanData } = item;
+                            
+                            // Pastikan floor null jika tidak valid atau kosong
+                            if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
+                                cleanData.floor = null;
+                            } else if (!cleanData.floor || cleanData.floor === '') {
+                                cleanData.floor = null;
+                            }
+                            
+                            // Pastikan tanggal di-set ke null jika kosong
+                            if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
+                                cleanData.tanggal_masuk_kerja = null;
+                            }
+                            
+                            if (!cleanData.tanggal_masuk_mess_hunian_p2 || cleanData.tanggal_masuk_mess_hunian_p2 === '') {
+                                cleanData.tanggal_masuk_mess_hunian_p2 = null;
+                            }
+                            
+                            // Set default values untuk field yang mungkin kosong
+                            if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
+                            if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
+
+                            // Update satu per satu berdasarkan NIK
+                            const { error } = await supabaseClient
+                                .from('karyawan_mess')
+                                .update(cleanData)
+                                .eq('nik', cleanData.nik);
+
+                            if (error) {
+                                console.error(`Error updating ${cleanData.nik}:`, error);
+                                errors.push(`Gagal update data ${cleanData.nik}: ${error.message}`);
+                            } else {
+                                totalImported++;
+                            }
+                        } catch (updateError) {
+                            console.error(`Error processing update for row ${item.rowNumber}:`, updateError);
+                            errors.push(`Baris ${item.rowNumber} (${item.nik}): ${updateError.message}`);
+                        }
+                    }
+                }
+
+                // Tampilkan hasil
+                if (errors.length > 0) {
+                    showToast(`Import selesai dengan ${errors.length} error. ${totalImported} data berhasil diimport.`, "warning");
+                    console.error("Import errors:", errors);
+                } else {
+                    showToast(`Berhasil mengimport ${totalImported} data!`, "success");
+                }
+                
                 closePreviewModal();
                 await fetchAllData();
             } catch (error) {
