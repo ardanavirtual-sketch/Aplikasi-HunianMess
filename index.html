@@ -456,6 +456,7 @@
                         <div>• <strong>STATUS KAMAR:</strong> TERISI, TERSEDIA, RUSAK, DIPERBAIKI</div>
                         <div>• <strong>FASILITAS:</strong> CR atau NR</div>
                         <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</div>
+                        <div>• <strong>FLOOR:</strong> Lantai Bawah, Lantai Atas (atau kosongkan)</div>
                     </div>
                 </div>
             </div>
@@ -681,6 +682,7 @@
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
                             <li>• Fasilitas: CR, NR</li>
                             <li>• Perusahaan: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</li>
+                            <li>• Floor: Lantai Bawah, Lantai Atas (atau kosongkan)</li>
                         </ul>
                     </div>
                     
@@ -694,6 +696,7 @@
                             <li>• Backup disarankan sebelum import massal</li>
                             <li>• Lokasi hunian harus sesuai dengan pilihan</li>
                             <li>• NIK bisa diisi dengan kombinasi huruf/angka apapun</li>
+                            <li>• Floor hanya boleh: Lantai Bawah, Lantai Atas, atau kosong</li>
                         </ul>
                     </div>
                 </div>
@@ -1242,6 +1245,12 @@
 
         // Valid gender
         const validGender = ['LAKI-LAKI', 'PEREMPUAN'];
+
+        // Valid floor (sesuai constraint "valid_floor" di database)
+        const validFloor = [
+            'Lantai Bawah',
+            'Lantai Atas'
+        ];
 
         // Mapping Lokasi untuk display
         const lokasiMapping = {
@@ -1940,11 +1949,24 @@
                 return;
             }
 
+            // Validasi floor jika diisi
+            if (raw.floor && !validFloor.includes(raw.floor)) {
+                showToast(`Floor harus salah satu dari: ${validFloor.join(', ')} atau dikosongkan`, "error");
+                return;
+            }
+
             // Format data
             raw.nik = raw.nik.trim().toUpperCase();
             raw.nama = raw.nama.trim();
             raw.block = raw.block ? raw.block.trim().toUpperCase() : '';
             raw.gol = raw.gol.trim().toUpperCase();
+            
+            // Jika floor tidak valid, set ke null
+            if (raw.floor && !validFloor.includes(raw.floor)) {
+                raw.floor = null;
+            } else if (!raw.floor || raw.floor === '') {
+                raw.floor = null;
+            }
             
             // Set nilai default untuk field yang kosong
             if (!raw.status_kamar) raw.status_kamar = 'TERISI';
@@ -2073,13 +2095,15 @@
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
                 ["4. FASILITAS: CR atau NR"],
                 ["5. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["6. FLOOR: Lantai Bawah, Lantai Atas (atau kosongkan)"],
                 [""],
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
                 ["• Pastikan format kolom sesuai dengan contoh"],
                 ["• Simpan file dalam format .xlsx sebelum diupload"],
                 ["• Maksimal ukuran file: 10MB"],
-                ["• Golongan bisa diisi dengan nilai bebas"]
+                ["• Golongan bisa diisi dengan nilai bebas"],
+                ["• Floor hanya boleh diisi dengan: Lantai Bawah, Lantai Atas, atau dikosongkan"]
             ];
             
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
@@ -2521,6 +2545,12 @@
                         processed.errors.push(`Lokasi Hunian harus salah satu dari: ${validLokasiHunian.join(', ')}`);
                     }
 
+                    // Validasi floor sesuai constraint
+                    if (processed.floor && !validFloor.includes(processed.floor)) {
+                        // Jika floor tidak valid, set ke null
+                        processed.floor = null;
+                    }
+
                     // Validasi perusahaan jika diisi
                     if (processed.perusahaan && !validPerusahaan.includes(processed.perusahaan)) {
                         processed.perusahaan = "VENDOR LAINNYA"; // Default jika tidak valid
@@ -2685,6 +2715,13 @@
                 // Prepare data untuk upload
                 const toUpload = validData.map(item => {
                     const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
+                    
+                    // Pastikan floor null jika tidak valid atau kosong
+                    if (cleanData.floor && !validFloor.includes(cleanData.floor)) {
+                        cleanData.floor = null;
+                    } else if (!cleanData.floor || cleanData.floor === '') {
+                        cleanData.floor = null;
+                    }
                     
                     // Pastikan tanggal di-set ke null jika kosong
                     if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
