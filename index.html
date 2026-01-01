@@ -447,14 +447,15 @@
                 
                 <div class="mt-6 p-4 bg-sky-500/10 rounded-lg">
                     <h5 class="text-xs font-bold text-sky-400 mb-2 flex items-center gap-2">
-                        <i data-lucide="info" class="w-4 h-4"></i> Format NIK yang Valid:
+                        <i data-lucide="info" class="w-4 h-4"></i> Panduan Import:
                     </h5>
                     <div class="text-[10px] text-slate-300 space-y-1">
-                        <div>• Karakter pertama harus huruf (A-Z)</div>
-                        <div>• Dapat diikuti kombinasi huruf dan angka</div>
-                        <div>• Panjang minimal 2 karakter, maksimal 20 karakter</div>
-                        <div>• Contoh valid: A12345, AB1234, EMP001, KRY1001</div>
-                        <div>• Contoh tidak valid: 12345, 1A2345 (dimulai dengan angka)</div>
+                        <div>• <strong>NIK:</strong> Bisa diisi dengan kombinasi huruf dan angka apapun</div>
+                        <div>• <strong>LOKASI HUNIAN:</strong> Harus salah satu dari: P2 SURYA RESIDANCE, MENTARI, PELANGI</div>
+                        <div>• <strong>GENDER:</strong> LAKI-LAKI atau PEREMPUAN</div>
+                        <div>• <strong>STATUS KAMAR:</strong> TERISI, TERSEDIA, RUSAK, DIPERBAIKI</div>
+                        <div>• <strong>FASILITAS:</strong> CR atau NR</div>
+                        <div>• <strong>PERUSAHAAN:</strong> PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</div>
                     </div>
                 </div>
             </div>
@@ -486,12 +487,10 @@
                         <label class="form-label required-field">NIK</label>
                         <input type="text" name="nik" id="field-nik" required 
                                class="input-field w-full"
-                               pattern="^[A-Za-z][A-Za-z0-9]{1,19}$" 
-                               title="NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)"
-                               onblur="validateNIK(this)"
+                               placeholder="Masukkan NIK (bebas huruf/angka)"
                                oninput="formatNIK(this)">
-                        <div id="nik-hint" class="text-[10px] text-slate-500 mt-1 hidden">
-                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Contoh: A12345, EMP001, KRY1001
+                        <div id="nik-hint" class="text-[10px] text-slate-500 mt-1">
+                            <i data-lucide="info" class="w-3 h-3 inline mr-1"></i> Bisa diisi kombinasi huruf dan angka apapun
                         </div>
                         <div id="nik-error" class="text-[10px] text-rose-500 mt-1 hidden"></div>
                     </div>
@@ -541,7 +540,7 @@
                             <option value="PT. HJF">PT. HJF</option>
                             <option value="PT. INKA">PT. INKA</option>
                             <option value="PT. KAI">PT. KAI</option>
-                            <option value="VENDOR">VENDOR LAINNYA</option>
+                            <option value="VENDOR LAINNYA">VENDOR LAINNYA</option>
                         </select>
                     </div>
                 </div>
@@ -674,13 +673,14 @@
                             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> Template Format
                         </h5>
                         <ul class="text-[10px] text-slate-300 space-y-2">
-                            <li>• Kolom wajib: NIK, NAMA, GOL, NO KAMAR</li>
-                            <li>• Format NIK: Huruf pertama harus A-Z</li>
+                            <li>• Kolom wajib: NIK, NAMA, GOL, NO KAMAR, LOKASI HUNIAN</li>
+                            <li>• Format NIK: Bebas (huruf dan angka)</li>
                             <li>• GOL: Bebas (tidak ada batasan)</li>
                             <li>• Format tanggal: YYYY-MM-DD</li>
                             <li>• Format status: TERISI, TERSEDIA, RUSAK, DIPERBAIKI</li>
                             <li>• Lokasi Hunian: P2 SURYA RESIDANCE, MENTARI, PELANGI</li>
                             <li>• Fasilitas: CR, NR</li>
+                            <li>• Perusahaan: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA</li>
                         </ul>
                     </div>
                     
@@ -692,7 +692,8 @@
                             <li>• Data duplikat berdasarkan NIK akan diupdate</li>
                             <li>• Data akan divalidasi sebelum diimport</li>
                             <li>• Backup disarankan sebelum import massal</li>
-                            <li>• Golongan bisa diisi dengan nilai bebas</li>
+                            <li>• Lokasi hunian harus sesuai dengan pilihan</li>
+                            <li>• NIK bisa diisi dengan kombinasi huruf/angka apapun</li>
                         </ul>
                     </div>
                 </div>
@@ -1218,6 +1219,30 @@
         let isSidebarCollapsed = false;
         let importPreviewData = [];
 
+        // Valid lokasi hunian sesuai constraint di database
+        const validLokasiHunian = [
+            'P2 SURYA RESIDANCE',
+            'MENTARI', 
+            'PELANGI'
+        ];
+
+        // Valid perusahaan
+        const validPerusahaan = [
+            'PT. HJF',
+            'PT. INKA',
+            'PT. KAI',
+            'VENDOR LAINNYA'
+        ];
+
+        // Valid fasilitas
+        const validFasilitas = ['CR', 'NR'];
+
+        // Valid status kamar
+        const validStatusKamar = ['TERISI', 'TERSEDIA', 'RUSAK', 'DIPERBAIKI'];
+
+        // Valid gender
+        const validGender = ['LAKI-LAKI', 'PEREMPUAN'];
+
         // Mapping Lokasi untuk display
         const lokasiMapping = {
             'P2 SURYA RESIDANCE': { name: 'P2 SURYA RESIDANCE', class: 'location-p2', icon: 'home' },
@@ -1238,17 +1263,16 @@
             document.getElementById('loading-overlay').classList.add('hidden');
         }
 
-        // Fungsi validasi NIK
+        // Fungsi validasi NIK (TIDAK ADA BATASAN KHUSUS)
         function isValidNIK(nik) {
             if (!nik || typeof nik !== 'string') return false;
-            const cleanNIK = nik.toString().trim().toUpperCase();
-            const nikPattern = /^[A-Z][A-Z0-9]{1,19}$/;
-            return nikPattern.test(cleanNIK);
+            const cleanNIK = nik.toString().trim();
+            return cleanNIK.length > 0; // Hanya cek tidak kosong
         }
 
-        // Format NIK otomatis
+        // Format NIK otomatis (hanya uppercase, tidak ada batasan)
         function formatNIK(input) {
-            input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+            input.value = input.value.toUpperCase();
         }
 
         // Validasi NIK dengan feedback
@@ -1258,8 +1282,10 @@
             const value = input.value.trim();
             
             if (value === '') {
-                hint.classList.add('hidden');
+                hint.classList.remove('hidden');
                 error.classList.add('hidden');
+                input.classList.remove('validation-success');
+                input.classList.remove('validation-error');
                 return false;
             }
             
@@ -1268,7 +1294,7 @@
             if (!isValidNIK(value)) {
                 input.classList.remove('validation-success');
                 input.classList.add('validation-error');
-                error.textContent = 'NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)';
+                error.textContent = 'NIK tidak boleh kosong';
                 error.classList.remove('hidden');
                 return false;
             } else {
@@ -1345,7 +1371,7 @@
             // Reset form
             form.reset();
             document.getElementById('edit-id').value = "";
-            document.getElementById('nik-hint').classList.add('hidden');
+            document.getElementById('nik-hint').classList.remove('hidden');
             document.getElementById('nik-error').classList.add('hidden');
             
             // Set tanggal maksimal ke hari ini
@@ -1388,8 +1414,6 @@
         // Tutup modal form
         function closeModal() { 
             document.getElementById('modal-form').classList.add('hidden');
-            document.getElementById('nik-hint').classList.add('hidden');
-            document.getElementById('nik-error').classList.add('hidden');
         }
 
         // Buka modal import
@@ -1898,15 +1922,21 @@
             const id = raw.id;
             delete raw.id;
 
-            // Validasi NIK
-            if (!isValidNIK(raw.nik)) {
-                showToast("NIK harus dimulai dengan huruf, diikuti kombinasi huruf dan angka (2-20 karakter)", "error");
+            // Validasi NIK (hanya cek tidak kosong)
+            if (!raw.nik || raw.nik.trim() === '') {
+                showToast("NIK harus diisi", "error");
                 return;
             }
 
             // Validasi Golongan (tidak ada batasan khusus)
             if (!raw.gol) {
                 showToast("Golongan harus diisi", "error");
+                return;
+            }
+
+            // Validasi lokasi hunian sesuai constraint
+            if (!validLokasiHunian.includes(raw.lokasi_hunian)) {
+                showToast(`Lokasi hunian harus salah satu dari: ${validLokasiHunian.join(', ')}`, "error");
                 return;
             }
 
@@ -2030,35 +2060,26 @@
             const instructions = [
                 ["PETUNJUK PENGISIAN TEMPLATE IMPORT OCEAN MESS"],
                 [""],
-                ["FORMAT NIK (WAJIB DIPERHATIKAN):"],
-                ["• NIK harus dimulai dengan HURUF (A-Z)"],
-                ["• Dapat diikuti kombinasi huruf dan angka"],
-                ["• Panjang minimal 2 karakter, maksimal 20 karakter"],
-                ["• Contoh format NIK yang VALID:"],
-                ["  - EMP001, KRY1001, A12345, AB1234"],
-                ["• Contoh format NIK yang TIDAK VALID:"],
-                ["  - 12345, 1A2345 (dimulai dengan angka)"],
+                ["FORMAT NIK:"],
+                ["• Bisa diisi dengan kombinasi huruf dan angka apapun"],
+                ["• Contoh: 12345, EMP001, KRY1001, A1B2C3"],
                 [""],
                 ["KOLOM WAJIB DIISI:"],
-                ["• NIK, NAMA, GOL, NO KAMAR"],
+                ["• NIK, NAMA, GOL, NO KAMAR, LOKASI HUNIAN"],
                 [""],
-                ["FORMAT DATA YANG DISESUAIKAN:"],
-                ["1. GENDER: LAKI-LAKI atau PEREMPUAN"],
-                ["2. GOL (Golongan): Bisa diisi dengan nilai apa saja (tidak ada batasan)"],
+                ["PILIHAN YANG TERSEDIA:"],
+                ["1. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
+                ["2. GENDER: LAKI-LAKI atau PEREMPUAN"],
                 ["3. STATUS KAMAR: TERISI, TERSEDIA, RUSAK, DIPERBAIKI"],
-                ["4. LOKASI HUNIAN: P2 SURYA RESIDANCE, MENTARI, PELANGI"],
-                ["5. FASILITAS: CR, NR"],
-                ["6. FLOOR: Lantai Bawah, Lantai Atas"],
-                ["7. BLOCK: Diisi manual (contoh: A, B, C, BLOK 1, dll)"],
-                ["8. TANGGAL: Format YYYY-MM-DD (contoh: 2023-12-31)"],
-                ["9. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
+                ["4. FASILITAS: CR atau NR"],
+                ["5. PERUSAHAAN: PT. HJF, PT. INKA, PT. KAI, VENDOR LAINNYA"],
                 [""],
                 ["CATATAN:"],
                 ["• Data dengan NIK yang sudah ada akan diupdate"],
                 ["• Pastikan format kolom sesuai dengan contoh"],
                 ["• Simpan file dalam format .xlsx sebelum diupload"],
                 ["• Maksimal ukuran file: 10MB"],
-                ["• Golongan tidak memiliki batasan khusus, bisa diisi dengan nilai bebas"]
+                ["• Golongan bisa diisi dengan nilai bebas"]
             ];
             
             const ws2 = XLSX.utils.aoa_to_sheet(instructions);
@@ -2235,7 +2256,7 @@
             }, 3000);
         }
 
-        // ==================== FUNGSI IMPORT EXCEL (DIKOREKSI) ====================
+        // ==================== FUNGSI IMPORT EXCEL ====================
 
         // Setup event listeners saat halaman dimuat
         window.onload = function() {
@@ -2348,45 +2369,6 @@
             }
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl + N untuk tambah data (hanya di tab manajemen data)
-            if (e.ctrlKey && e.key === 'n' && activeTab === 'manajemen-data') {
-                e.preventDefault();
-                openModal();
-            }
-            
-            // Ctrl + F untuk fokus search
-            if (e.ctrlKey && e.key === 'f') {
-                e.preventDefault();
-                document.getElementById('globalSearch').focus();
-            }
-            
-            // Ctrl + E untuk export (hanya di tab manajemen data)
-            if (e.ctrlKey && e.key === 'e' && activeTab === 'manajemen-data') {
-                e.preventDefault();
-                exportData();
-            }
-            
-            // Esc untuk tutup modal
-            if (e.key === 'Escape') {
-                if (!document.getElementById('modal-form').classList.contains('hidden')) {
-                    closeModal();
-                }
-                if (!document.getElementById('modal-preview').classList.contains('hidden')) {
-                    closePreviewModal();
-                }
-                if (!document.getElementById('modal-import').classList.contains('hidden')) {
-                    closeImportModal();
-                }
-                if (!document.getElementById('modal-delete-lokasi').classList.contains('hidden')) {
-                    closeDeleteLokasiModal();
-                }
-            }
-        });
-
-        // ==================== FUNGSI IMPORT EXCEL ====================
-        
         // Handle file select untuk import
         async function handleFileSelect(event) {
             const file = event.target.files[0];
@@ -2468,7 +2450,7 @@
             });
         }
 
-        // Process import data - FIXED FOR DATE ISSUES
+        // Process import data dengan validasi constraint
         async function processImportData(json) {
             if (!Array.isArray(json) || json.length === 0) {
                 showToast("File Excel tidak berisi data atau format tidak sesuai", "error");
@@ -2505,13 +2487,10 @@
                         isNew: true
                     };
 
-                    // Validasi NIK
+                    // Validasi NIK (tidak ada batasan khusus)
                     if (!processed.nik) {
                         processed.isValid = false;
                         processed.errors.push("NIK tidak boleh kosong");
-                    } else if (!isValidNIK(processed.nik)) {
-                        processed.isValid = false;
-                        processed.errors.push(`Format NIK tidak valid: "${processed.nik}"`);
                     } else {
                         processed.nik = processed.nik.toUpperCase();
                     }
@@ -2533,11 +2512,41 @@
                         processed.errors.push("No Kamar harus diisi");
                     }
 
+                    // Validasi lokasi hunian sesuai constraint
+                    if (!processed.lokasi_hunian) {
+                        processed.isValid = false;
+                        processed.errors.push("Lokasi Hunian harus diisi");
+                    } else if (!validLokasiHunian.includes(processed.lokasi_hunian)) {
+                        processed.isValid = false;
+                        processed.errors.push(`Lokasi Hunian harus salah satu dari: ${validLokasiHunian.join(', ')}`);
+                    }
+
+                    // Validasi perusahaan jika diisi
+                    if (processed.perusahaan && !validPerusahaan.includes(processed.perusahaan)) {
+                        processed.perusahaan = "VENDOR LAINNYA"; // Default jika tidak valid
+                    }
+
+                    // Validasi fasilitas jika diisi
+                    if (processed.fasilitas && !validFasilitas.includes(processed.fasilitas)) {
+                        processed.fasilitas = ""; // Kosongkan jika tidak valid
+                    }
+
+                    // Validasi status kamar
+                    if (processed.status_kamar && !validStatusKamar.includes(processed.status_kamar)) {
+                        processed.status_kamar = "TERISI"; // Default jika tidak valid
+                    }
+
+                    // Validasi gender
+                    if (processed.gender && !validGender.includes(processed.gender)) {
+                        processed.gender = ""; // Kosongkan jika tidak valid
+                    }
+
                     // Validasi tanggal
                     if (processed.tanggal_masuk_kerja) {
                         const validDate = validateAndFormatDate(processed.tanggal_masuk_kerja);
                         if (!validDate) {
                             processed.errors.push("Format tanggal masuk kerja tidak valid");
+                            processed.tanggal_masuk_kerja = null;
                         } else {
                             processed.tanggal_masuk_kerja = validDate;
                         }
@@ -2549,6 +2558,7 @@
                         const validDate = validateAndFormatDate(processed.tanggal_masuk_mess_hunian_p2);
                         if (!validDate) {
                             processed.errors.push("Format tanggal masuk mess tidak valid");
+                            processed.tanggal_masuk_mess_hunian_p2 = null;
                         } else {
                             processed.tanggal_masuk_mess_hunian_p2 = validDate;
                         }
@@ -2660,7 +2670,7 @@
             importPreviewData = [];
         }
 
-        // Proses import data ke database - FIXED FOR DATE ISSUES
+        // Proses import data ke database
         async function processImport() {
             const validData = importPreviewData.filter(item => item.isValid);
             
@@ -2676,7 +2686,7 @@
                 const toUpload = validData.map(item => {
                     const { id, rowNumber, isValid, errors, isNew, ...cleanData } = item;
                     
-                    // Pastikan tanggal di-set ke null jika kosong atau tidak valid
+                    // Pastikan tanggal di-set ke null jika kosong
                     if (!cleanData.tanggal_masuk_kerja || cleanData.tanggal_masuk_kerja === '') {
                         cleanData.tanggal_masuk_kerja = null;
                     }
@@ -2685,14 +2695,9 @@
                         cleanData.tanggal_masuk_mess_hunian_p2 = null;
                     }
                     
-                    // Format tanggal ke string ISO jika ada
-                    if (cleanData.tanggal_masuk_kerja) {
-                        cleanData.tanggal_masuk_kerja = cleanData.tanggal_masuk_kerja.toString();
-                    }
-                    
-                    if (cleanData.tanggal_masuk_mess_hunian_p2) {
-                        cleanData.tanggal_masuk_mess_hunian_p2 = cleanData.tanggal_masuk_mess_hunian_p2.toString();
-                    }
+                    // Set default values untuk field yang mungkin kosong
+                    if (!cleanData.status_kamar) cleanData.status_kamar = 'TERISI';
+                    if (!cleanData.perusahaan) cleanData.perusahaan = 'PT. HJF';
                     
                     return cleanData;
                 });
@@ -2706,6 +2711,7 @@
                     });
 
                 if (error) {
+                    console.error("Supabase error:", error);
                     throw new Error(error.message);
                 }
 
